@@ -1,0 +1,38 @@
+:root {
+  --blue: #2563eb;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.hero {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 40px;
+  cursor: pointer;
+  transition: .3s;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
