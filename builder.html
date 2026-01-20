@@ -3,26 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>Сбор варианта</title>
-<link rel="stylesheet" href="css/modern.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
-  <h1>Соберите вариант</h1>
-  <p class="muted">Выберите количество заданий каждого типа</p>
+  <h1>Составить вариант</h1>
+  <p>Выберите количество заданий каждого типа</p>
 </header>
 
 <div class="container card" id="builder"></div>
 
 <div class="container">
-  <button onclick="buildVariant()">Создать вариант</button>
+  <button onclick="build()">Создать вариант</button>
 </div>
 
 <script src="js/data/oge-structure.js"></script>
-<script src="js/data/ege-structure.js"></script>
 <script src="js/data/oge-bank.js"></script>
-<script src="js/data/ege-bank.js"></script>
-<script src="js/logic/variant-builder.js"></script>
+<script src="js/pages/builder.js"></script>
 
 </body>
 </html>
