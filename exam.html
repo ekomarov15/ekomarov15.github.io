@@ -7,18 +7,27 @@
 </head>
 <body>
 
-<div id="timer"></div>
-<div id="task"></div>
-<textarea id="answer" placeholder="Введите ответ"></textarea>
+<header>
+  <h1>Экзамен</h1>
+</header>
 
-<button onclick="nextTask()">Далее</button>
+<div class="container card">
+  <div id="task"></div>
+  <textarea id="answer"></textarea>
+  <button onclick="next()">Далее</button>
+</div>
 
-<script src="js/fipi/oge-structure.js"></script>
-<script src="js/fipi/ege-structure.js"></script>
-<script src="js/bank/oge-tasks.js"></script>
-<script src="js/bank/ege-tasks.js"></script>
-<script src="js/core/engine.js"></script>
-<script src="js/core/variant.js"></script>
-<script src="js/core/exam-mode.js"></script>
+<script src="js/data/oge-bank.js"></script>
+<script>
+let i = 0;
+const tasks = OGE_BANK.test;
+
+function next() {
+  document.getElementById("task").innerText = tasks[i]?.q || "Конец";
+  i++;
+}
+next();
+</script>
+
 </body>
 </html>
