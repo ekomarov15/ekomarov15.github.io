@@ -4,49 +4,83 @@
 <meta charset="UTF-8">
 <title>Экзамен</title>
 <link rel="stylesheet" href="css/modern.css">
+<style>
+#timer {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  font-size: 14px;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.1);
+}
+.task {
+  margin-bottom: 40px;
+}
+.task textarea {
+  width: 100%;
+  min-height: 120px;
+}
+.saved {
+  color: green;
+  font-size: 14px;
+}
+</style>
 </head>
 <body>
 
-<header><h1>Экзамен</h1></header>
-<div class="container card">
-  <div id="task-container"></div>
-  <textarea id="answer"></textarea>
-  <button onclick="nextTask()">Далее</button>
-</div>
+<div id="timer"></div>
+
+<header>
+  <h1>Экзамен</h1>
+  <p class="muted">Вы можете отвечать в любом порядке</p>
+</header>
+
+<div class="container" id="tasks"></div>
 
 <script>
-const exam = localStorage.getItem("exam");
-const structure = exam === "oge" ? OGE_STRUCTURE : EGE_STRUCTURE;
-const bank      = exam === "oge" ? OGE_BANK : EGE_BANK;
-let variant     = JSON.parse(localStorage.getItem("variant")) || [];
+const variant = JSON.parse(localStorage.getItem("variant")) || [];
+const answers = JSON.parse(localStorage.getItem("answers")) || {};
+const container = document.getElementById("tasks");
 
-let index = 0;
-let answers = {};
+// РЕНДЕР ВСЕХ ЗАДАНИЙ СРАЗУ
+variant.forEach((item, index) => {
+  const id = `task-${index}`;
+  const saved = answers[id];
 
-function renderTask() {
-  if (index >= variant.length) {
-    localStorage.setItem("answers", JSON.stringify(answers));
-    location.href = "result.html";
-    return;
-  }
+  container.innerHTML += `
+    <div class="card task">
+      <h2>Задание ${item.num}</h2>
+      <p style="font-size:18px">${item.task.text}</p>
 
-  let num = variant[index];
-  const t = bank[num] && bank[num][0];
+      <textarea id="${id}">${saved || ""}</textarea>
 
-  document.getElementById("task-container").innerHTML = `
-    <h3>Задание ${num}. ${structure[num].name}</h3>
-    <p>${t ? t.text : ""}</p>
+      <button onclick="save('${id}')">Сохранить ответ</button>
+      <span id="${id}-status" class="saved">
+        ${saved ? "✔ Ответ сохранён" : ""}
+      </span>
+    </div>
   `;
+});
+
+// СОХРАНЕНИЕ ОТВЕТА
+function save(id) {
+  answers[id] = document.getElementById(id).value;
+  localStorage.setItem("answers", JSON.stringify(answers));
+  document.getElementById(id + "-status").innerText = "✔ Ответ сохранён";
 }
 
-function nextTask() {
-  answers[variant[index]] = document.getElementById("answer").value;
-  index++;
-  document.getElementById("answer").value = "";
-  renderTask();
-}
+// ТАЙМЕР (ОГЭ / ЕГЭ)
+let time = localStorage.getItem("exam") === "oge" ? 235*60 : 210*60;
+const timer = document.getElementById("timer");
 
-renderTask();
+setInterval(() => {
+  time--;
+  timer.innerText =
+    Math.floor(time/60) + ":" + String(time%60).padStart(2,"0");
+  if (time <= 0) location.href = "result.html";
+}, 1000);
 </script>
 
 </body>
