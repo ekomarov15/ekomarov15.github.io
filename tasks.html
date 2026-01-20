@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Задания экзамена</title>
+<link rel="stylesheet" href="css/modern.css">
+</head>
+<body>
+
+<header>
+  <h1>Задания экзамена</h1>
+</header>
+
+<div class="container card" id="list"></div>
+
+<div class="container">
+  <button onclick="location.href='builder.html'">
+    Собрать вариант
+  </button>
+</div>
+
+<script src="js/data/oge-structure.js"></script>
+<script src="js/data/ege-structure.js"></script>
+<script>
+const exam = localStorage.getItem("exam");
+const structure = exam === "oge" ? OGE_STRUCTURE : EGE_STRUCTURE;
+const list = document.getElementById("list");
+
+for (let n in structure) {
+  list.innerHTML += `
+    <div class="task-row">
+      <div>Задание ${n}</div>
+      <div>${structure[n].name}</div>
+    </div>`;
+}
+</script>
+
+</body>
+</html>
