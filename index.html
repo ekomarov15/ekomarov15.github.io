@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Русский язык — ОГЭ и ЕГЭ</title>
-  <link rel="stylesheet" href="css/modern.css">
+<meta charset="UTF-8">
+<title>Русский язык</title>
+<link rel="stylesheet" href="css/modern.css">
 </head>
 <body>
 
-<header class="hero">
+<header>
   <h1>Русский язык</h1>
-  <p>Экзаменационный тренажёр • ФИПИ 2026</p>
+  <p class="muted">Подготовка к экзаменам • логика sdamgia</p>
 </header>
 
-<section class="grid">
-  <div class="card" onclick="start('oge')">
+<div class="container grid">
+  <div class="card">
     <h2>ОГЭ</h2>
-    <p>9 класс • изложение + сочинение</p>
+    <p>9 класс • 13 заданий</p>
+    <button onclick="go('oge')">Перейти</button>
   </div>
 
-  <div class="card" onclick="start('ege')">
+  <div class="card">
     <h2>ЕГЭ</h2>
-    <p>11 класс • тест + сочинение</p>
+    <p>11 класс • 27 заданий</p>
+    <button onclick="go('ege')">Перейти</button>
   </div>
-</section>
+</div>
 
 <script>
-function start(type) {
-  localStorage.setItem("examType", type);
-  location.href = "exam.html";
+function go(type) {
+  localStorage.setItem("exam", type);
+  location.href = "tasks.html";
 }
 </script>
 
