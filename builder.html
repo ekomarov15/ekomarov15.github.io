@@ -2,26 +2,27 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Конструктор варианта</title>
+<title>Сбор варианта</title>
 <link rel="stylesheet" href="css/modern.css">
 </head>
 <body>
 
 <header>
-  <h1>Собери свой вариант</h1>
+  <h1>Соберите вариант</h1>
+  <p class="muted">Выберите количество заданий каждого типа</p>
 </header>
 
-<div class="container card">
-  <h3>Автоматически</h3>
-  <button onclick="autoBuild()">Случайный вариант</button>
+<div class="container card" id="builder"></div>
 
-  <h3>Вручную</h3>
-  <label>Количество тестовых заданий:</label>
-  <input id="count" type="number" value="5">
-
-  <button onclick="manualBuild()">Создать вариант</button>
+<div class="container">
+  <button onclick="buildVariant()">Создать вариант</button>
 </div>
 
+<script src="js/data/oge-structure.js"></script>
+<script src="js/data/ege-structure.js"></script>
+<script src="js/data/oge-bank.js"></script>
+<script src="js/data/ege-bank.js"></script>
 <script src="js/logic/variant-builder.js"></script>
+
 </body>
 </html>
