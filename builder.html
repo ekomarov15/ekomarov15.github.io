@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Конструктор варианта</title>
+<link rel="stylesheet" href="css/modern.css">
+</head>
+<body>
+
+<header>
+  <h1>Собери свой вариант</h1>
+</header>
+
+<div class="container card">
+  <h3>Автоматически</h3>
+  <button onclick="autoBuild()">Случайный вариант</button>
+
+  <h3>Вручную</h3>
+  <label>Количество тестовых заданий:</label>
+  <input id="count" type="number" value="5">
+
+  <button onclick="manualBuild()">Создать вариант</button>
+</div>
+
+<script src="js/logic/variant-builder.js"></script>
+</body>
+</html>
