@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Русский язык</title>
-<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8" />
+<title>Русский язык — подготовка</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="center">
+<h1>Русский язык</h1>
+<p>Онлайн-сборка и решение КИМов</p>
+<a class="btn" href="exam.html">Приступить к сборке КИМа</a>
+</body>
+</html>
 
-<header>
-  <h1>Русский язык</h1>
-  <p class="muted">Подготовка к экзаменам • логика sdamgia</p>
-</header>
-
-<div class="container grid">
-  <div class="card">
-    <h2>ОГЭ</h2>
-    <p>9 класс • 13 заданий</p>
-    <button onclick="go('oge')">Перейти</button>
-  </div>
-
-  <div class="card">
-    <h2>ЕГЭ</h2>
-    <p>11 класс • 27 заданий</p>
-    <button onclick="go('ege')">Перейти</button>
-  </div>
+<!-- exam.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Выбор экзамена</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="center">
+<h2>Выберите экзамен</h2>
+<div class="row">
+<a class="btn" href="build.html?exam=oge">ОГЭ</a>
+<a class="btn" href="build.html?exam=ege">ЕГЭ</a>
 </div>
-
-<script>
-function go(type) {
-  localStorage.setItem("exam", type);
-  location.href = "tasks.html";
-}
-</script>
-
 </body>
 </html>
