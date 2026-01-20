@@ -3,85 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <title>Экзамен</title>
-<link rel="stylesheet" href="css/modern.css">
-<style>
-#timer {
-  position: fixed;
-  top: 12px;
-  right: 16px;
-  font-size: 14px;
-  background: #fff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0,0,0,.1);
-}
-.task {
-  margin-bottom: 40px;
-}
-.task textarea {
-  width: 100%;
-  min-height: 120px;
-}
-.saved {
-  color: green;
-  font-size: 14px;
-}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div id="timer"></div>
 
 <header>
-  <h1>Экзамен</h1>
-  <p class="muted">Вы можете отвечать в любом порядке</p>
+  <h1>Экзаменационная работа</h1>
+  <p>Отвечайте на задания в любом порядке</p>
 </header>
 
 <div class="container" id="tasks"></div>
 
-<script>
-const variant = JSON.parse(localStorage.getItem("variant")) || [];
-const answers = JSON.parse(localStorage.getItem("answers")) || {};
-const container = document.getElementById("tasks");
-
-// РЕНДЕР ВСЕХ ЗАДАНИЙ СРАЗУ
-variant.forEach((item, index) => {
-  const id = `task-${index}`;
-  const saved = answers[id];
-
-  container.innerHTML += `
-    <div class="card task">
-      <h2>Задание ${item.num}</h2>
-      <p style="font-size:18px">${item.task.text}</p>
-
-      <textarea id="${id}">${saved || ""}</textarea>
-
-      <button onclick="save('${id}')">Сохранить ответ</button>
-      <span id="${id}-status" class="saved">
-        ${saved ? "✔ Ответ сохранён" : ""}
-      </span>
-    </div>
-  `;
-});
-
-// СОХРАНЕНИЕ ОТВЕТА
-function save(id) {
-  answers[id] = document.getElementById(id).value;
-  localStorage.setItem("answers", JSON.stringify(answers));
-  document.getElementById(id + "-status").innerText = "✔ Ответ сохранён";
-}
-
-// ТАЙМЕР (ОГЭ / ЕГЭ)
-let time = localStorage.getItem("exam") === "oge" ? 235*60 : 210*60;
-const timer = document.getElementById("timer");
-
-setInterval(() => {
-  time--;
-  timer.innerText =
-    Math.floor(time/60) + ":" + String(time%60).padStart(2,"0");
-  if (time <= 0) location.href = "result.html";
-}, 1000);
-</script>
+<script src="js/pages/exam.js"></script>
+<script src="js/core/timer.js"></script>
 
 </body>
 </html>
