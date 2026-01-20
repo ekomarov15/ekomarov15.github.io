@@ -6,15 +6,46 @@
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<h2>Вариант</h2>
+<h2>Экзаменационный вариант</h2>
+
+<form id="examForm">
 <div class="task">
-<p><b>Задание 1.</b> Вставьте пропущенную букву.</p>
-<input type="text" />
+<p><b>Задание 1.</b> Вставьте пропущенную букву (1 балл)</p>
+<input type="text" name="q1" />
 </div>
+
 <div class="task">
-<p><b>Задание 2.</b> Расставьте знаки препинания.</p>
-<textarea></textarea>
+<p><b>Задание 2.</b> Расставьте знаки препинания (2 балла)</p>
+<textarea name="q2"></textarea>
 </div>
-<a class="btn" href="result.html">Завершить</a>
+
+<div class="task">
+<p><b>Сочинение.</b> Напишите рассуждение (макс. 7 баллов)</p>
+<textarea name="essay"></textarea>
+</div>
+
+<button type="submit" class="btn">Завершить работу</button>
+</form>
+
+<script>
+document.getElementById('examForm').addEventListener('submit', function(e) {
+e.preventDefault();
+
+let score = 0;
+if (this.q1.value.trim().toLowerCase() === 'о') score += 1;
+if (this.q2.value.trim().length > 5) score += 2;
+
+// имитация проверки сочинения
+let essayPoints = 0;
+if (this.essay.value.length > 200) essayPoints = 7;
+else if (this.essay.value.length > 120) essayPoints = 5;
+else if (this.essay.value.length > 60) essayPoints = 3;
+
+score += essayPoints;
+  localStorage.setItem('primaryScore', score);
+localStorage.setItem('essayScore', essayPoints);
+window.location.href = 'result.html';
+});
+</script>
 </body>
 </html>
