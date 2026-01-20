@@ -7,13 +7,16 @@
 </head>
 <body>
 
-<h1>Результаты экзамена</h1>
-<div id="results"></div>
+<header><h1>Результаты</h1></header>
+
+<div class="container card">
+  <pre id="output"></pre>
+</div>
 
 <script>
-const res = JSON.parse(localStorage.getItem("answers")) || {};
-document.getElementById("results").innerText =
-  "Ответов сохранено: " + Object.keys(res).length;
+const answers = JSON.parse(localStorage.getItem("answers")) || {};
+document.getElementById("output").innerText =
+  JSON.stringify(answers, null, 2);
 </script>
 
 </body>
