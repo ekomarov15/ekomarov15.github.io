@@ -7,26 +7,46 @@
 </head>
 <body>
 
-<header>
-  <h1>Экзамен</h1>
-</header>
-
+<header><h1>Экзамен</h1></header>
 <div class="container card">
-  <div id="task"></div>
+  <div id="task-container"></div>
   <textarea id="answer"></textarea>
-  <button onclick="next()">Далее</button>
+  <button onclick="nextTask()">Далее</button>
 </div>
 
-<script src="js/data/oge-bank.js"></script>
 <script>
-let i = 0;
-const tasks = OGE_BANK.test;
+const exam = localStorage.getItem("exam");
+const structure = exam === "oge" ? OGE_STRUCTURE : EGE_STRUCTURE;
+const bank      = exam === "oge" ? OGE_BANK : EGE_BANK;
+let variant     = JSON.parse(localStorage.getItem("variant")) || [];
 
-function next() {
-  document.getElementById("task").innerText = tasks[i]?.q || "Конец";
-  i++;
+let index = 0;
+let answers = {};
+
+function renderTask() {
+  if (index >= variant.length) {
+    localStorage.setItem("answers", JSON.stringify(answers));
+    location.href = "result.html";
+    return;
+  }
+
+  let num = variant[index];
+  const t = bank[num] && bank[num][0];
+
+  document.getElementById("task-container").innerHTML = `
+    <h3>Задание ${num}. ${structure[num].name}</h3>
+    <p>${t ? t.text : ""}</p>
+  `;
 }
-next();
+
+function nextTask() {
+  answers[variant[index]] = document.getElementById("answer").value;
+  index++;
+  document.getElementById("answer").value = "";
+  renderTask();
+}
+
+renderTask();
 </script>
 
 </body>
