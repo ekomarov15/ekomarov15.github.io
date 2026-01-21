@@ -1,5 +1,5 @@
 // generator.js
-import { bank } from "./bank.js";
+import { bank } from "bank.js";
 
 function random(arr){
   return arr[Math.floor(Math.random() * arr.length)];
