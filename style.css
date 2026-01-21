@@ -1,60 +1,46 @@
-/* style.css */
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
 body {
   margin: 0;
-  background: #f3f4f6;
-  color: #111;
+  font-family: Inter, Arial, sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
-  background: #0f172a;
-  color: white;
-}
-
-.nav a {
-  color: white;
-  margin-left: 15px;
-  text-decoration: none;
-}
-
-.hero {
-  background: white;
-  padding: 50px 20px;
-  text-align: center;
-}
-
-.exam {
-  max-width: 1000px;
-  margin: auto;
-  padding: 30px 20px;
-}
-
-.constructor {
-  background: #fff;
+header {
   padding: 20px;
-  border: 1px solid #ddd;
-  margin-bottom: 20px;
+  background: #1e3a8a;
+  color: white;
+  font-size: 20px;
 }
 
-.task-type {
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.centered {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  height: 100vh;
+}
+
+.card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
 button {
-  padding: 8px 15px;
+  margin: 10px;
+  padding: 12px 20px;
   background: #2563eb;
   color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -62,34 +48,9 @@ button:hover {
   background: #1d4ed8;
 }
 
-.variant .task {
+.task {
   background: white;
-  border: 1px solid #ddd;
   padding: 15px;
-  margin-bottom: 10px;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 5px;
-}
-
-.footer {
-  background: #0f172a;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-
-.burger {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .nav {
-    display: none;
-  }
-  .burger {
-    display: block;
-  }
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
