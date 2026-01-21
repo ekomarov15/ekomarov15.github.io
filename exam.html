@@ -9,12 +9,12 @@
 
 <style>
 :root{
-  --lavender:#7c7cff;
-  --lavender-dark:#5f5fdc;
-  --bg:#f4f3ff;
+  --blue:#2563eb;
+  --blue-dark:#1e40af;
+  --bg:#eef4ff;
   --card:#ffffff;
-  --text:#2b2b3a;
-  --muted:#6f6f8a;
+  --text:#1f2937;
+  --muted:#64748b;
 }
 
 body{
@@ -31,10 +31,10 @@ body{
 }
 
 .header{
-  background:linear-gradient(135deg,var(--lavender),var(--lavender-dark));
+  background:linear-gradient(135deg,var(--blue),var(--blue-dark));
   color:white;
-  padding:28px;
-  border-radius:24px;
+  padding:26px;
+  border-radius:22px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -47,37 +47,58 @@ body{
 
 .task{
   background:var(--card);
-  border-radius:22px;
-  padding:26px;
+  border-radius:20px;
+  padding:24px;
   margin-top:22px;
   box-shadow:0 10px 26px rgba(0,0,0,.08);
 }
 
-.options label{
-  display:block;
+.task h2{
+  margin-top:0;
+}
+
+.option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#f1f5ff;
   margin-bottom:10px;
+}
+
+input[type="checkbox"],
+input[type="text"]{
+  transform:scale(1.2);
 }
 
 input[type="text"], textarea{
   width:100%;
   padding:14px;
   border-radius:14px;
-  border:1px solid #dcdcff;
+  border:1px solid #c7d2fe;
   font-size:16px;
+  font-family:Inter,sans-serif;
 }
 
-textarea{ min-height:140px }
+textarea{
+  min-height:140px;
+}
 
 button{
   margin-top:30px;
   padding:16px 26px;
   border:none;
   border-radius:16px;
-  background:var(--lavender);
+  background:var(--blue);
   color:white;
   font-size:18px;
   font-weight:600;
   cursor:pointer;
+}
+
+button:hover{
+  background:var(--blue-dark);
 }
 </style>
 </head>
@@ -105,70 +126,99 @@ const timerEl = document.getElementById("timer");
 const variant = generateVariant();
 let answers = {};
 
-let timeLeft = 3*3600 + 55*60;
-
-setInterval(()=>{
+// ===== ТАЙМЕР =====
+let timeLeft = 3 * 3600 + 55 * 60;
+setInterval(() => {
   timeLeft--;
-  const h=String(Math.floor(timeLeft/3600)).padStart(2,'0');
-  const m=String(Math.floor(timeLeft%3600/60)).padStart(2,'0');
-  const s=String(timeLeft%60).padStart(2,'0');
-  timerEl.textContent=`${h}:${m}:${s}`;
-  if(timeLeft<=0) finishExam();
-},1000);
+  const h = String(Math.floor(timeLeft / 3600)).padStart(2,'0');
+  const m = String(Math.floor(timeLeft % 3600 / 60)).padStart(2,'0');
+  const s = String(timeLeft % 60).padStart(2,'0');
+  timerEl.textContent = `${h}:${m}:${s}`;
+  if(timeLeft <= 0) finishExam();
+}, 1000);
 
-window.saveAnswer=(n,v)=>answers[n]=v;
+// ===== СОХРАНЕНИЕ ОТВЕТА =====
+window.saveAnswer = (num, value) => {
+  answers[num] = value;
+};
 
-variant.forEach(t=>{
-  if(t.number===1){
-    examEl.innerHTML+=`
+// ===== ОБРАБОТКА ЧЕКБОКСОВ =====
+window.handleCheckbox = (num) => {
+  const checked = [...document.querySelectorAll(`input[name="q${num}"]:checked`)]
+    .map(el => el.value)
+    .sort()
+    .join("");
+  saveAnswer(num, checked);
+};
+
+// ===== ОТРИСОВКА =====
+variant.forEach(task => {
+
+  // 1 — изложение
+  if(task.number === 1){
+    examEl.innerHTML += `
     <div class="task">
       <h2>1️⃣ Изложение</h2>
       <textarea oninput="saveAnswer(1,this.value)"></textarea>
     </div>`;
   }
 
-  else if([2,3,6,10,11].includes(t.number)){
-    examEl.innerHTML+=`
+  // МНОЖЕСТВЕННЫЙ ВЫБОР
+  else if([2,3,6,10,11].includes(task.number)){
+    examEl.innerHTML += `
     <div class="task">
-      <h2>Задание ${t.number}</h2>
-      ${t.data.options.map((o,i)=>`
-        <label>
-          <input type="radio" name="q${t.number}"
-          onchange="saveAnswer(${t.number},${i+1})"> ${o}
-        </label>`).join("")}
+      <h2>Задание ${task.number}</h2>
+      ${task.data.options.map((opt,i)=>`
+        <label class="option">
+          <input type="checkbox"
+            name="q${task.number}"
+            value="${i+1}"
+            onchange="handleCheckbox(${task.number})">
+          ${opt}
+        </label>
+      `).join("")}
     </div>`;
   }
 
-  else if([4,5,7].includes(t.number)){
-    examEl.innerHTML+=`
+  // ПОСЛЕДОВАТЕЛЬНОСТЬ ЦИФР
+  else if([4,5,7].includes(task.number)){
+    examEl.innerHTML += `
     <div class="task">
-      <h2>Задание ${t.number}</h2>
-      <input type="text" oninput="saveAnswer(${t.number},this.value)">
+      <h2>Задание ${task.number}</h2>
+      <input type="text"
+        placeholder="Например: 235"
+        oninput="saveAnswer(${task.number},this.value)">
     </div>`;
   }
 
-  else if([8,9,12].includes(t.number)){
-    examEl.innerHTML+=`
+  // СЛОВО / СЛОВОСОЧЕТАНИЕ
+  else if([8,9,12].includes(task.number)){
+    examEl.innerHTML += `
     <div class="task">
-      <h2>Задание ${t.number}</h2>
-      <input type="text" oninput="saveAnswer(${t.number},this.value)">
+      <h2>Задание ${task.number}</h2>
+      <input type="text"
+        placeholder="Введите ответ"
+        oninput="saveAnswer(${task.number},this.value.trim().toLowerCase())">
     </div>`;
   }
 
-  else if(t.number===13){
-    examEl.innerHTML+=`
+  // 13 — сочинение
+  else if(task.number === 13){
+    examEl.innerHTML += `
     <div class="task">
-      <h2>✍️ Сочинение</h2>
-      <p>Критерии ФИПИ: содержание, логика, аргументация, речь, грамотность</p>
+      <h2>✍️ Сочинение (задание 13)</h2>
+      <p><strong>Критерии ФИПИ:</strong> содержание, логика, аргументация, речь, грамотность</p>
       <textarea oninput="saveAnswer(13,this.value)"></textarea>
     </div>`;
   }
 });
 
-window.finishExam=()=>{
-  localStorage.setItem("oge_result",JSON.stringify({variant,answers}));
-  location.href="results.html";
+// ===== ЗАВЕРШЕНИЕ =====
+window.finishExam = () => {
+  localStorage.setItem("oge_result", JSON.stringify({ variant, answers }));
+  location.href = "results.html";
 };
 </script>
+
 </body>
 </html>
