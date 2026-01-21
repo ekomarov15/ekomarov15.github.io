@@ -1,106 +1,102 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Тренажёр ОГЭ и ЕГЭ по русскому языку</title>
-  <meta name="description" content="Онлайн-тренажёр ОГЭ и ЕГЭ по русскому языку: устные и письменные задания, таймер, подсказки, проверка структуры." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Практика русского языка — ОГЭ и ЕГЭ</title>
+  <meta name="description" content="Интерактивная практика заданий ОГЭ и ЕГЭ по русскому языку: аргументация, анализ текста, таймер, опора на критерии." />
 
-  <!-- Шрифты -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Тема без мигания -->
   <script>
     (function(){
       try{
-        const saved = localStorage.getItem('pref-theme') || 'light';
-        if (saved === 'dark') document.documentElement.classList.add('dark');
+        if(localStorage.getItem('theme') === 'dark'){
+          document.documentElement.classList.add('dark');
+        }
       }catch(e){}
     })();
   </script>
 
   <style>
     :root{
-      --bg:#faf7f3;
+      --bg:#f4f6fb;
       --card:#ffffff;
-      --text:#1b1f2a;
-      --muted:#6b7280;
-      --primary:#c2410c;
-      --primary-600:#9a3412;
-      --accent:#fde68a;
-      --shadow:0 12px 30px rgba(0,0,0,.08);
+      --text:#101827;
+      --muted:#5b6475;
+      --primary:#4f1d2f;
+      --primary-2:#2e1065;
+      --ring:#d1c4e9;
+      --shadow:0 12px 28px rgba(16,24,39,.1);
     }
+
     .dark{
-      --bg:#111827;
-      --card:rgba(255,255,255,.08);
-      --text:#f3f4f6;
-      --muted:#9ca3af;
-      --primary:#fb923c;
-      --primary-600:#f97316;
-      --accent:#7c2d12;
-      --shadow:0 18px 40px rgba(0,0,0,.45);
+      --bg:#0f172a;
+      --card:rgba(255,255,255,.07);
+      --text:#eef2ff;
+      --muted:#a5b4fc;
+      --primary:#c084fc;
+      --primary-2:#818cf8;
+      --ring:#6366f1;
+      --shadow:0 18px 40px rgba(0,0,0,.5);
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:Inter,system-ui,Arial,sans-serif;
+      font-family:Inter,system-ui,sans-serif;
       background:
-        radial-gradient(900px 500px at 90% -10%, #fde68a55, transparent),
-        radial-gradient(800px 400px at -10% 20%, #fed7aa55, transparent),
+        radial-gradient(900px 500px at 80% -10%, #a78bfa55, transparent),
+        radial-gradient(700px 400px at -10% 20%, #fca5a555, transparent),
         var(--bg);
       color:var(--text);
     }
 
-    a{text-decoration:none;color:inherit}
-
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .wrap{max-width:1100px;margin:auto;padding:26px}
 
     header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:16px;
+      margin-bottom:30px;
     }
 
     .brand{
       display:flex;
-      align-items:center;
       gap:14px;
+      align-items:center;
     }
 
     .logo{
-      width:44px;
-      height:44px;
+      width:46px;
+      height:46px;
       border-radius:14px;
-      background:linear-gradient(135deg,var(--primary),var(--accent));
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      color:white;
+      font-weight:800;
       display:grid;
       place-items:center;
-      font-weight:800;
-      color:#3b0a00;
-      box-shadow:0 6px 16px rgba(0,0,0,.25);
+      box-shadow:0 6px 18px rgba(0,0,0,.3);
     }
 
     .brand-title{font-weight:700}
     .badge{font-size:12px;color:var(--muted)}
 
-    .theme-toggle{
+    .theme{
+      background:none;
+      border:1px solid #ffffff33;
       padding:10px 14px;
       border-radius:10px;
-      border:1px solid #ffffff33;
-      background:transparent;
       cursor:pointer;
       color:var(--text);
     }
 
-    main{padding:48px 0 32px}
-
     .hero{
       display:grid;
       grid-template-columns:1.1fr .9fr;
-      gap:32px;
+      gap:36px;
       align-items:center;
     }
 
@@ -110,150 +106,145 @@
 
     .card{
       background:var(--card);
-      border-radius:22px;
-      padding:30px;
+      border-radius:24px;
+      padding:34px;
       box-shadow:var(--shadow);
       border:1px solid #ffffff22;
       backdrop-filter:blur(10px);
     }
 
     h1{
-      font-size:clamp(30px,5vw,42px);
-      margin:0 0 14px;
+      font-size:clamp(30px,5vw,44px);
       line-height:1.15;
+      margin:0 0 16px;
     }
 
-    .sub{
+    .lead{
       font-size:17px;
       color:var(--muted);
-      margin-bottom:26px;
+      margin-bottom:28px;
     }
 
-    .cta{
+    .actions{
       display:flex;
+      gap:16px;
       flex-wrap:wrap;
-      gap:14px;
     }
 
     .btn{
-      font-size:20px;
-      padding:18px 28px;
+      font-size:18px;
+      padding:18px 26px;
       border-radius:14px;
       font-weight:600;
-      background:linear-gradient(135deg,var(--primary),var(--primary-600));
       color:white;
-      box-shadow:0 10px 24px rgba(194,65,12,.35);
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      box-shadow:0 10px 24px rgba(79,29,47,.35);
       transition:transform .1s ease;
     }
 
-    .btn:hover{transform:scale(1.05)}
+    .btn:hover{transform:scale(1.06)}
 
-    .features{
+    .list{
       display:grid;
       gap:16px;
     }
 
-    .feature{
+    .item{
       display:flex;
       gap:14px;
-      align-items:flex-start;
-      padding:14px;
-      border-radius:16px;
+      padding:16px;
+      border-radius:18px;
       background:#ffffff0d;
       border:1px dashed #ffffff33;
     }
 
-    .icon{
-      font-size:22px;
-    }
+    .icon{font-size:22px}
 
     footer{
+      margin-top:50px;
       text-align:center;
       font-size:13px;
       color:var(--muted);
-      padding:30px 0 10px;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <header>
-      <a class="brand" href="./index.html">
-        <div class="logo">РЯ</div>
-        <div>
-          <div class="brand-title">Тренажёр по русскому языку</div>
-          <div class="badge">ОГЭ · ЕГЭ</div>
-        </div>
-      </a>
-      <button class="theme-toggle" id="themeBtn">🌓 Тема</button>
-    </header>
+<div class="wrap">
 
-    <main>
-      <section class="hero">
-        <div class="card">
-          <h1>Готовься к ОГЭ и ЕГЭ по русскому языку уверенно</h1>
-          <p class="sub">
-            Тренажёр для отработки заданий экзамена: структура ответа,
-            логика, аргументация и грамотность — без лишней теории.
-          </p>
-          <div class="cta">
-            <a href="oge/oge.html" class="btn">📘 Перейти к ОГЭ</a>
-            <a href="ege/ege.html" class="btn">📕 Перейти к ЕГЭ</a>
-          </div>
-        </div>
-
-        <div class="features">
-          <div class="feature">
-            <div class="icon">⚡</div>
-            <div>
-              <strong>Быстрый старт</strong><br>
-              Открыл задание — сразу работаешь, без регистрации.
-            </div>
-          </div>
-          <div class="feature">
-            <div class="icon">📝</div>
-            <div>
-              <strong>Экзаменационный формат</strong><br>
-              Задания по демоверсиям ФИПИ: сочинения, анализ текста, теория.
-            </div>
-          </div>
-          <div class="feature">
-            <div class="icon">⏱</div>
-            <div>
-              <strong>Таймер</strong><br>
-              Тренируйся укладываться во время, как на реальном экзамене.
-            </div>
-          </div>
-          <div class="feature">
-            <div class="icon">✅</div>
-            <div>
-              <strong>Подсказки и структура</strong><br>
-              План ответа, критерии и напоминания о типичных ошибках.
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div>© 2025 — Онлайн-тренажёр. Демо-версия.</div>
-      <div style="margin-top:6px">
-        Обратная связь:
-        <a href="mailto:myruslangexam@gmail.com">myruslangexam@gmail.com</a>
+  <header>
+    <div class="brand">
+      <div class="logo">РЯ</div>
+      <div>
+        <div class="brand-title">Практика русского языка</div>
+        <div class="badge">Подготовка к ОГЭ и ЕГЭ</div>
       </div>
-    </footer>
-  </div>
+    </div>
+    <button class="theme" id="themeBtn">🌓 Тема</button>
+  </header>
 
-  <script>
-    const btn = document.getElementById('themeBtn');
-    btn.addEventListener('click', ()=>{
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem(
-        'pref-theme',
-        document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-      );
-    });
-  </script>
+  <main>
+    <section class="hero">
+      <div class="card">
+        <h1>Осмысленная тренировка экзаменационного русского языка</h1>
+        <p class="lead">
+          Платформа для системной практики заданий ОГЭ и ЕГЭ:
+          анализ текста, аргументация, логика изложения и работа по критериям.
+        </p>
+        <div class="actions">
+          <a class="btn" href="oge/oge.html">ОГЭ · практика</a>
+          <a class="btn" href="ege/ege.html">ЕГЭ · практика</a>
+        </div>
+      </div>
+
+      <div class="list">
+        <div class="item">
+          <div class="icon">📖</div>
+          <div>
+            <strong>Экзаменационные форматы</strong><br>
+            Задания, приближённые к официальным моделям, без лишнего усложнения.
+          </div>
+        </div>
+        <div class="item">
+          <div class="icon">🧠</div>
+          <div>
+            <strong>Логика и структура</strong><br>
+            Помощь в построении связного, аргументированного ответа.
+          </div>
+        </div>
+        <div class="item">
+          <div class="icon">⏳</div>
+          <div>
+            <strong>Контроль времени</strong><br>
+            Формирование экзаменационного темпа и самодисциплины.
+          </div>
+        </div>
+        <div class="item">
+          <div class="icon">🎯</div>
+          <div>
+            <strong>Опора на критерии</strong><br>
+            Фокус на том, за что реально ставят баллы.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 · Учебный проект · Демо-версия<br>
+    Связь: <a href="mailto:rus.practice.exam@gmail.com">rus.practice.exam@gmail.com</a>
+  </footer>
+
+</div>
+
+<script>
+  document.getElementById('themeBtn').onclick = ()=>{
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem(
+      'theme',
+      document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    );
+  };
+</script>
 </body>
 </html>
