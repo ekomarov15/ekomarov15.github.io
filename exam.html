@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пробный ОГЭ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:#fff1ef;
+  color:#3a2b2a;
+}
+.wrap{
+  max-width:900px;
+  margin:auto;
+  padding:24px;
+}
+.task{
+  background:white;
+  border-radius:20px;
+  padding:24px;
+  margin-top:20px;
+  box-shadow:0 12px 26px rgba(0,0,0,.08);
+}
+</style>
+</head>
+
+<body>
+<div class="wrap" id="exam"></div>
+
+<script type="module">
+import { generateVariant } from "./generator.js";
+
+const exam = document.getElementById("exam");
+const variant = generateVariant();
+
+variant.forEach(item => {
+
+  if(item.number === 1){
+    exam.innerHTML += `
+      <div class="task">
+        <h2>Задание 1. Изложение</h2>
+        <p>${item.data.instruction}</p>
+        <p><strong>Тема:</strong> ${item.data.topic}</p>
+        <textarea style="width:100%;min-height:120px"></textarea>
+      </div>
+    `;
+  }
+
+  else if(item.number >= 2 && item.number <= 12){
+    const options = item.data.options.map(o =>
+      `<label><input type="radio" name="q${item.number}"> ${o}</label><br>`
+    ).join("");
+
+    exam.innerHTML += `
+      <div class="task">
+        <h2>Задание ${item.number}</h2>
+        <p>${item.data.question}</p>
+        ${options}
+      </div>
+    `;
+  }
+
+  else if(item.number === 13){
+    exam.innerHTML += `
+      <div class="task">
+        <h2>Задание 13. Сочинение (${item.data.type})</h2>
+        <p><strong>Тема:</strong> ${item.data.theme}</p>
+        <p>${item.data.instruction}</p>
+        <textarea style="width:100%;min-height:160px"></textarea>
+      </div>
+    `;
+  }
+
+});
+</script>
+</body>
+</html>
