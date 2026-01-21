@@ -39,3 +39,17 @@ function buildVariant() {
   localStorage.setItem("variant", JSON.stringify(variant));
   location.href = "variant.html";
 }
+
+
+function check() {
+  let score = 0;
+
+  document.querySelectorAll("input[data-answer]").forEach(i => {
+    if (i.value.trim().toLowerCase() === i.dataset.answer.toLowerCase()) {
+      score++;
+    }
+  });
+
+  localStorage.setItem("result", score);
+  location.href = "results.html";
+}
