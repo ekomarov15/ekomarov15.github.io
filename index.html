@@ -3,53 +3,75 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Подготовка к ОГЭ и ЕГЭ по русскому языку</title>
+  <title>ОГЭ и ЕГЭ по русскому языку</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="header">
-  <div class="logo">Русский язык | ОГЭ / ЕГЭ</div>
+  <div class="logo">Русский язык • ОГЭ / ЕГЭ</div>
   <nav class="nav" id="nav">
     <a href="#hero">Главная</a>
     <a href="#oge">ОГЭ</a>
     <a href="#ege">ЕГЭ</a>
+    <a href="#results">Результаты</a>
   </nav>
   <button class="burger" id="burger">☰</button>
 </header>
 
 <section class="hero" id="hero">
-  <h1>Подготовка к ОГЭ и ЕГЭ</h1>
-  <p>Соберите свой вариант КИМа и проверьте результат онлайн</p>
+  <h1>Конструктор вариантов ОГЭ и ЕГЭ</h1>
+  <p>Выберите типы заданий и соберите свой КИМ</p>
 </section>
 
-<section class="exam-section" id="oge">
-  <h2>Банк заданий ОГЭ</h2>
+<section class="exam" id="oge">
+  <h2>ОГЭ</h2>
   <div class="constructor">
-    <label>
-      Количество заданий (2–12):
-      <input type="number" id="oge-count" min="1" max="11" value="5">
-    </label>
-    <button onclick="generateTest('oge')">Собрать вариант ОГЭ</button>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="spelling"> Орфография</label>
+      <input type="number" min="1" max="10" value="3" data-count="spelling">
+    </div>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="grammar"> Грамматика</label>
+      <input type="number" min="1" max="10" value="3" data-count="grammar">
+    </div>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="syntax"> Синтаксис</label>
+      <input type="number" min="1" max="10" value="2" data-count="syntax">
+    </div>
+    <button onclick="generateVariant('oge')">Собрать вариант ОГЭ</button>
   </div>
-  <div id="oge-test"></div>
+  <div class="variant" id="oge-variant"></div>
 </section>
 
-<section class="exam-section" id="ege">
-  <h2>Банк заданий ЕГЭ</h2>
+<section class="exam" id="ege">
+  <h2>ЕГЭ</h2>
   <div class="constructor">
-    <label>
-      Количество заданий (1–26):
-      <input type="number" id="ege-count" min="1" max="26" value="10">
-    </label>
-    <button onclick="generateTest('ege')">Собрать вариант ЕГЭ</button>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="lexic"> Лексика</label>
+      <input type="number" min="1" max="10" value="4" data-count="lexic">
+    </div>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="punctuation"> Пунктуация</label>
+      <input type="number" min="1" max="10" value="4" data-count="punctuation">
+    </div>
+    <div class="task-type">
+      <label><input type="checkbox" checked data-type="text"> Анализ текста</label>
+      <input type="number" min="1" max="10" value="3" data-count="text">
+    </div>
+    <button onclick="generateVariant('ege')">Собрать вариант ЕГЭ</button>
   </div>
-  <div id="ege-test"></div>
+  <div class="variant" id="ege-variant"></div>
+</section>
+
+<section id="results">
+  <h2>История результатов</h2>
+  <ul id="results-list"></ul>
 </section>
 
 <footer class="footer">
-  <p>© 2026 Подготовка к ОГЭ и ЕГЭ | Неофициальный учебный проект</p>
+  <p>Учебный проект. Неофициальный ресурс ФИПИ.</p>
 </footer>
 
 <script src="script.js"></script>
