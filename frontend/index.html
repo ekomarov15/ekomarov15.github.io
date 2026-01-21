@@ -2,15 +2,54 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>SDAMGIA+</title>
+  <title>SDAMGIA+ — Подготовка к ЕГЭ и ОГЭ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>SDAMGIA+</h1>
-<button onclick="loadVariant()">Сгенерировать вариант ЕГЭ</button>
+<header class="header">
+  <h1>SDAMGIA+</h1>
+  <p>Онлайн-подготовка к ЕГЭ и ОГЭ по русскому языку</p>
+</header>
 
-<div id="tasks"></div>
+<main class="container">
+
+  <section class="cards">
+    <div class="card">
+      <h2>📘 ЕГЭ</h2>
+      <p>Полный вариант (1–27), таймер, разборы</p>
+      <button onclick="startExam('ege')">Начать ЕГЭ</button>
+    </div>
+
+    <div class="card">
+      <h2>📗 ОГЭ</h2>
+      <p>Задания в формате ОГЭ</p>
+      <button onclick="startExam('oge')">Начать ОГЭ</button>
+    </div>
+
+    <div class="card">
+      <h2>🧪 Тренировка</h2>
+      <p>Отдельные задания по темам</p>
+      <button onclick="alert('В разработке')">Выбрать задания</button>
+    </div>
+  </section>
+
+  <section class="info">
+    <h3>Что умеет SDAMGIA+</h3>
+    <ul>
+      <li>✔ Автогенерация вариантов</li>
+      <li>✔ Все задания 1–27</li>
+      <li>✔ Комментарии к ответам</li>
+      <li>✔ Формат ФИПИ (без копирования)</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>© 2026 SDAMGIA+ | Учебный проект</p>
+</footer>
 
 <script src="app.js"></script>
 </body>
