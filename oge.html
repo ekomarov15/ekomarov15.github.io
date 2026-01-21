@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ОГЭ по русскому языку</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+      margin:0;
+      font-family:Inter,system-ui,sans-serif;
+      background:#fbfaf8;
+      color:#2b2f38;
+    }
+
+    .wrap{
+      max-width:900px;
+      margin:auto;
+      padding:32px 24px;
+    }
+
+    h1{
+      font-size:36px;
+      margin-bottom:12px;
+    }
+
+    .lead{
+      color:#7a7f8c;
+      margin-bottom:36px;
+    }
+
+    .modes{
+      display:grid;
+      gap:24px;
+    }
+
+    .mode{
+      background:white;
+      border-radius:22px;
+      padding:32px;
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+    }
+
+    .mode h2{
+      margin-top:0;
+    }
+
+    .mode p{
+      color:#7a7f8c;
+      margin-bottom:20px;
+    }
+
+    .btn{
+      display:inline-block;
+      padding:14px 22px;
+      border-radius:14px;
+      background:#8b9dd6;
+      color:white;
+      font-weight:600;
+      text-decoration:none;
+    }
+
+    .btn.alt{
+      background:#8fbfa8;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <h1>ОГЭ по русскому языку</h1>
+  <p class="lead">
+    Выберите формат работы: тренировка отдельных заданий или экзамен целиком.
+  </p>
+
+  <div class="modes">
+
+    <div class="mode">
+      <h2>🧩 Отдельные задания</h2>
+      <p>
+        Практика конкретных типов заданий: орфография, пунктуация,
+        работа с текстом, сочинение.
+      </p>
+      <a href="tasks.html" class="btn">Перейти к заданиям</a>
+    </div>
+
+    <div class="mode">
+      <h2>📝 Экзамен целиком</h2>
+      <p>
+        Полный вариант ОГЭ с таймером и структурой,
+        максимально приближённой к реальному экзамену.
+      </p>
+      <a href="exam.html" class="btn alt">Начать экзамен</a>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
