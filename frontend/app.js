@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (egeBtn) {
     egeBtn.addEventListener('click', () => {
       // переход на страницу экзамена
-      window.location.href = 'frontend/ege.html'
+      window.location.href = 'ege.html'
     })
   }
 })
