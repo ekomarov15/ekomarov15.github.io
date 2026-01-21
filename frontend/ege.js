@@ -1,37 +1,50 @@
-API_URL = http://localhost:3000
+// 🔧 ВАЖНО:
+// если backend запущен локально — оставь localhost
+// если задеплоен — замени на URL Render
+const API_URL = 'http://localhost:3000/api/variant'
+
 let examData = []
 let userAnswers = {}
 
-// ====== ТАЙМЕР ======
+// =================== ТАЙМЕР ===================
 let time = 3 * 60 * 60 + 30 * 60
 
-function updateTimer() {
-  const h = String(Math.floor(time / 3600)).padStart(2, '0')
-  const m = String(Math.floor((time % 3600) / 60)).padStart(2, '0')
-  const s = String(time % 60).padStart(2, '0')
+function startTimer() {
+  const timerEl = document.getElementById('timer')
 
-  document.getElementById('timer').textContent = `${h}:${m}:${s}`
+  setInterval(() => {
+    const h = String(Math.floor(time / 3600)).padStart(2, '0')
+    const m = String(Math.floor((time % 3600) / 60)).padStart(2, '0')
+    const s = String(time % 60).padStart(2, '0')
 
-  if (time <= 0) finishExam()
-  time--
+    timerEl.textContent = `${h}:${m}:${s}`
+
+    if (time <= 0) finishExam()
+    time--
+  }, 1000)
 }
-setInterval(updateTimer, 1000)
 
-// ====== ЗАГРУЗКА ВАРИАНТА ======
+// =================== ЗАГРУЗКА ===================
 fetch(API_URL)
   .then(res => res.json())
   .then(data => {
     examData = data
     renderTasks(data)
+    startTimer()
+  })
+  .catch(err => {
+    document.getElementById('tasks').innerHTML =
+      '❌ Не удалось загрузить задания. Запусти backend.'
+    console.error(err)
   })
 
 function renderTasks(tasks) {
   const container = document.getElementById('tasks')
+  container.innerHTML = ''
 
   tasks.forEach(task => {
-    const block = document.createElement('div')
-    block.className = 'task'
-    block.id = `task-${task.number}`
+    const div = document.createElement('div')
+    div.className = 'task'
 
     let html = `<h3>Задание ${task.number}</h3><p>${task.text}</p>`
 
@@ -48,27 +61,26 @@ function renderTasks(tasks) {
         `
       })
     } else {
-      html += `
-        <textarea rows="6" style="width:100%"
-        placeholder="Введите ответ (27 задание)"></textarea>
-      `
+      html += `<textarea rows="6" style="width:100%"></textarea>`
     }
 
-    block.innerHTML = html
-    container.appendChild(block)
+    div.innerHTML = html
+    container.appendChild(div)
   })
 }
 
-function saveAnswer(taskNumber, value) {
-  userAnswers[taskNumber] = value
+function saveAnswer(task, value) {
+  userAnswers[task] = value
 }
 
-// ====== ЗАВЕРШЕНИЕ И ПРОВЕРКА ======
+// =================== ЗАВЕРШЕНИЕ ===================
+document.getElementById('finishBtn').onclick = finishExam
+
 function finishExam() {
   let score = 0
 
-  examData.forEach(task => {
-    if (task.correct !== null && userAnswers[task.number] === task.correct) {
+  examData.forEach(t => {
+    if (t.correct !== null && userAnswers[t.number] === t.correct) {
       score++
     }
   })
@@ -76,25 +88,27 @@ function finishExam() {
   showResults(score)
 }
 
-// ====== ПОКАЗ РЕЗУЛЬТАТОВ ======
+// =================== РЕЗУЛЬТАТ ===================
 function showResults(score) {
   const container = document.getElementById('tasks')
   container.innerHTML = `<h2>Результат: ${score} / 26</h2>`
 
   examData.forEach(task => {
-    const user = userAnswers[task.number]
-    const correct = task.correct
-
-    let resultHTML = `
-      <div class="task">
-        <h3>Задание ${task.number}</h3>
-        <p>${task.text}</p>
-    `
+    let html = `<div class="task"><h3>Задание ${task.number}</h3>`
 
     if (task.answers && task.answers.length) {
       task.answers.forEach((a, i) => {
         let cls = ''
-        if (i === correct) cls = 'correct'
-        if (i === user && i !== correct) cls = 'wrong'
+        if (i === task.correct) cls = 'correct'
+        if (userAnswers[task.number] === i && i !== task.correct) cls = 'wrong'
+        html += `<div class="${cls}">${a}</div>`
+      })
+      html += `<p><b>Пояснение:</b> ${task.explanation}</p>`
+    } else {
+      html += `<p><i>Сочинение проверяется отдельно</i></p>`
+    }
 
-        re
+    html += `</div>`
+    container.innerHTML += html
+  })
+}
