@@ -10,6 +10,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
+.actions{
+  display:flex;
+  gap:16px;
+  margin-top:24px;
+  flex-wrap:wrap;
+}
+
+button.secondary{
+  background:#e0e7ff;
+  color:#1e3a8a;
+}
+
+button.secondary:hover{
+  background:#c7d2fe;
+}
+
+  
 body{
   margin:0;
   font-family:Inter,sans-serif;
@@ -81,7 +99,7 @@ button{
     <h1>📊 Результаты экзамена</h1>
   </div>
 
-  <button href="index.html">📄 Вернуться на главную</button>
+  <button class="secondary" onclick="goHome()">🏠 Вернуться на главную</button>
 </div>
 
 <script>
@@ -178,6 +196,13 @@ document.getElementById("result").insertAdjacentHTML(
   "beforeend",
   `<p><strong>Тестовая часть:</strong> ${score} / ${max}</p>`
 );
+</script>
+
+<script>
+function goHome(){
+  // если главная страница index.html
+  location.href = "index.html";
+}
 </script>
 
 </body>
