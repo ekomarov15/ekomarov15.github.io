@@ -130,5 +130,55 @@ function exportPDF(){
   pdf.save("oge-result.pdf");
 }
 </script>
+
+  <script>
+const data = JSON.parse(localStorage.getItem("oge_result"));
+const tbody = document.getElementById("table-body");
+
+let score = 0;
+let max = 0;
+
+data.variant.forEach(task => {
+  if(task.number >= 2 && task.number <= 12){
+    max++;
+
+    const user = data.answers[task.number];
+    const correct = task.data.answer;
+
+    let status = "";
+    let cls = "";
+
+    if(user === undefined || String(user).trim() === ""){
+      status = "—";
+      cls = "empty";
+    }
+    else if(String(user).trim() === String(correct)){
+      status = "✔";
+      cls = "ok";
+      score++;
+    }
+    else{
+      status = "✘";
+      cls = "bad";
+    }
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${task.number}</td>
+        <td>${user ?? "—"}</td>
+        <td>${correct}</td>
+        <td class="${cls}">${status}</td>
+      </tr>
+    `;
+  }
+});
+
+// итог
+document.getElementById("result").insertAdjacentHTML(
+  "beforeend",
+  `<p><strong>Тестовая часть:</strong> ${score} / ${max}</p>`
+);
+</script>
+
 </body>
 </html>
