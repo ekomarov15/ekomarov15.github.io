@@ -3,42 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Пробный ОГЭ по русскому языку</title>
+<title>ОГЭ по русскому языку — Экзамен</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --accent:#f37b6d;
-  --bg:#fff4f2;
+  --lavender:#7c7cff;
+  --lavender-dark:#5f5fdc;
+  --bg:#f4f3ff;
   --card:#ffffff;
-  --text:#2e2a29;
-  --muted:#7a6f6d;
+  --text:#2b2b3a;
+  --muted:#6f6f8a;
 }
 
 body{
   margin:0;
-  font-family:Inter,system-ui,sans-serif;
+  font-family:Inter,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
 
 .wrap{
-  max-width:920px;
+  max-width:960px;
   margin:auto;
-  padding:28px 20px 60px;
+  padding:24px 20px 60px;
 }
 
 .header{
-  background:var(--accent);
+  background:linear-gradient(135deg,var(--lavender),var(--lavender-dark));
   color:white;
-  padding:32px;
-  border-radius:28px;
-  margin-bottom:28px;
+  padding:28px;
+  border-radius:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.header h1{
-  margin:0 0 6px;
+.timer{
+  font-size:20px;
+  font-weight:700;
 }
 
 .task{
@@ -46,53 +50,34 @@ body{
   border-radius:22px;
   padding:26px;
   margin-top:22px;
-  box-shadow:0 12px 26px rgba(0,0,0,.08);
-}
-
-.task h2{
-  margin-top:0;
-}
-
-.desc{
-  color:var(--muted);
-  margin-bottom:12px;
+  box-shadow:0 10px 26px rgba(0,0,0,.08);
 }
 
 .options label{
   display:block;
-  padding:10px 14px;
-  border-radius:12px;
-  margin-bottom:8px;
-  cursor:pointer;
-  background:#fafafa;
+  margin-bottom:10px;
 }
 
-.options input{
-  margin-right:8px;
-}
-
-input[type="text"]{
+input[type="text"], textarea{
   width:100%;
-  padding:12px 14px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  font-size:16px;
-}
-
-textarea{
-  width:100%;
-  min-height:150px;
   padding:14px;
   border-radius:14px;
-  border:1px solid #ddd;
-  font-family:Inter,sans-serif;
+  border:1px solid #dcdcff;
   font-size:16px;
 }
 
-.answer-hint{
-  font-size:14px;
-  color:var(--muted);
-  margin-top:8px;
+textarea{ min-height:140px }
+
+button{
+  margin-top:30px;
+  padding:16px 26px;
+  border:none;
+  border-radius:16px;
+  background:var(--lavender);
+  color:white;
+  font-size:18px;
+  font-weight:600;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -101,93 +86,50 @@ textarea{
 <div class="wrap">
 
   <div class="header">
-    <h1>📝 Пробный экзамен ОГЭ</h1>
-    <p>Вариант сформирован автоматически по банку заданий</p>
+    <h1>📝 Пробный ОГЭ по русскому языку</h1>
+    <div class="timer" id="timer">03:55:00</div>
   </div>
 
   <div id="exam"></div>
+
+  <button onclick="finishExam()">Завершить экзамен</button>
 
 </div>
 
 <script type="module">
 import { generateVariant } from "./generator.js";
 
-const exam = document.getElementById("exam");
+const examEl = document.getElementById("exam");
+const timerEl = document.getElementById("timer");
+
 const variant = generateVariant();
+let answers = {};
 
-/*
-ТИПЫ ОТВЕТОВ ПО ЗАДАНИЯМ ОГЭ:
-2,3,6,10,11 — выбор ответа
-4,5,7 — последовательность цифр
-8,9,12 — слово / словосочетание
-*/
+let timeLeft = 3*3600 + 55*60;
 
-variant.forEach(item => {
+setInterval(()=>{
+  timeLeft--;
+  const h=String(Math.floor(timeLeft/3600)).padStart(2,'0');
+  const m=String(Math.floor(timeLeft%3600/60)).padStart(2,'0');
+  const s=String(timeLeft%60).padStart(2,'0');
+  timerEl.textContent=`${h}:${m}:${s}`;
+  if(timeLeft<=0) finishExam();
+},1000);
 
-  // ===== ЗАДАНИЕ 1 =====
-  if(item.number === 1){
-    exam.innerHTML += `
-      <div class="task">
-        <h2>Задание 1. Изложение</h2>
-        <p class="desc">${item.data.instruction}</p>
-        <p><strong>Тема:</strong> ${item.data.topic}</p>
-        <textarea placeholder="Напишите сжатое изложение..."></textarea>
-      </div>
-    `;
+window.saveAnswer=(n,v)=>answers[n]=v;
+
+variant.forEach(t=>{
+  if(t.number===1){
+    examEl.innerHTML+=`
+    <div class="task">
+      <h2>1️⃣ Изложение</h2>
+      <textarea oninput="saveAnswer(1,this.value)"></textarea>
+    </div>`;
   }
 
-  // ===== ВЫБОР ОТВЕТА =====
-  else if([2,3,6,10,11].includes(item.number)){
-    const options = item.data.options.map((o,i) =>
-      `<label><input type="radio" name="q${item.number}"> ${o}</label>`
-    ).join("");
-
-    exam.innerHTML += `
-      <div class="task">
-        <h2>Задание ${item.number}</h2>
-        <p class="desc">${item.data.question}</p>
-        <div class="options">${options}</div>
-      </div>
-    `;
-  }
-
-  // ===== ПОСЛЕДОВАТЕЛЬНОСТЬ ЦИФР =====
-  else if([4,5,7].includes(item.number)){
-    exam.innerHTML += `
-      <div class="task">
-        <h2>Задание ${item.number}</h2>
-        <p class="desc">${item.data.question}</p>
-        <input type="text" placeholder="Введите последовательность цифр">
-        <div class="answer-hint">Ответ запишите без пробелов и запятых</div>
-      </div>
-    `;
-  }
-
-  // ===== СЛОВО / СЛОВОСОЧЕТАНИЕ =====
-  else if([8,9,12].includes(item.number)){
-    exam.innerHTML += `
-      <div class="task">
-        <h2>Задание ${item.number}</h2>
-        <p class="desc">${item.data.question}</p>
-        <input type="text" placeholder="Введите ответ">
-      </div>
-    `;
-  }
-
-  // ===== СОЧИНЕНИЕ =====
-  else if(item.number === 13){
-    exam.innerHTML += `
-      <div class="task">
-        <h2>Задание 13. Сочинение (${item.data.type})</h2>
-        <p><strong>Тема:</strong> ${item.data.theme}</p>
-        <p class="desc">${item.data.instruction}</p>
-        <textarea placeholder="Напишите сочинение-рассуждение..."></textarea>
-      </div>
-    `;
-  }
-
-});
-</script>
-
-</body>
-</html>
+  else if([2,3,6,10,11].includes(t.number)){
+    examEl.innerHTML+=`
+    <div class="task">
+      <h2>Задание ${t.number}</h2>
+      ${t.data.options.map((o,i)=>`
+        <label>
