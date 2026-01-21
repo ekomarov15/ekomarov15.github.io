@@ -1,4 +1,4 @@
-
+API_URL = http://localhost:3000
 let examData = []
 let userAnswers = {}
 
