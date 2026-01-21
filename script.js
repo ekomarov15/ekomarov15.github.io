@@ -1,44 +1,41 @@
-let exam = localStorage.getItem("exam");
-let variant = [];
+// script.js
 
-function selectExam(type) {
-  localStorage.setItem("exam", type);
-  location.href = "constructor.html";
-}
+const exam = localStorage.getItem("exam");
 
-function createVariant() {
-  // упрощённый пример
-  variant = [
-    { q: "Укажите слово с проверяемой гласной", a: "гора" },
-    { q: "Определите часть речи слова «бегущий»", a: "причастие" }
-  ];
-  localStorage.setItem("variant", JSON.stringify(variant));
-  location.href = "variant.html";
-}
+const BANK = exam === "oge" ? OGE_BANK : EGE_BANK;
+const constructorDiv = document.getElementById("constructor");
 
-if (location.pathname.includes("variant")) {
-  const data = JSON.parse(localStorage.getItem("variant") || "[]");
-  const container = document.getElementById("variant");
-  data.forEach((t, i) => {
-    container.innerHTML += `
+// ---------- РЕНДЕР КОНСТРУКТОРА ----------
+if (constructorDiv) {
+  Object.keys(BANK).forEach(type => {
+    const max = BANK[type].length;
+    constructorDiv.innerHTML += `
       <div class="task">
-        <b>${i + 1}.</b> ${t.q}
-        <input type="text" data-answer="${t.a}">
+        <b>${type}</b><br>
+        Количество:
+        <input type="number" min="0" max="${max}" value="1" data-type="${type}">
       </div>
     `;
   });
 }
 
-function checkVariant() {
-  let score = 0;
-  document.querySelectorAll("input").forEach(i => {
-    if (i.value.trim().toLowerCase() === i.dataset.answer) score++;
-  });
-  localStorage.setItem("result", score);
-  location.href = "results.html";
+// ---------- ПЕРЕМЕШИВАНИЕ ----------
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
 }
 
-if (location.pathname.includes("results")) {
-  document.getElementById("result").textContent =
-    "Ваш результат: " + localStorage.getItem("result");
+// ---------- СБОРКА ВАРИАНТА ----------
+function buildVariant() {
+  let variant = [];
+
+  document.querySelectorAll("input[data-type]").forEach(input => {
+    const type = input.dataset.type;
+    const count = Number(input.value);
+
+    const pool = shuffle([...BANK[type]]).slice(0, count);
+    variant.push(...pool.map(t => ({ ...t, taskType: type })));
+  });
+
+  localStorage.setItem("variant", JSON.stringify(variant));
+  location.href = "variant.html";
 }
