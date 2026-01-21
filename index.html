@@ -1,28 +1,259 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>SDAMGIA+</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тренажёр ОГЭ и ЕГЭ по русскому языку</title>
+  <meta name="description" content="Онлайн-тренажёр ОГЭ и ЕГЭ по русскому языку: устные и письменные задания, таймер, подсказки, проверка структуры." />
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Тема без мигания -->
+  <script>
+    (function(){
+      try{
+        const saved = localStorage.getItem('pref-theme') || 'light';
+        if (saved === 'dark') document.documentElement.classList.add('dark');
+      }catch(e){}
+    })();
+  </script>
+
+  <style>
+    :root{
+      --bg:#faf7f3;
+      --card:#ffffff;
+      --text:#1b1f2a;
+      --muted:#6b7280;
+      --primary:#c2410c;
+      --primary-600:#9a3412;
+      --accent:#fde68a;
+      --shadow:0 12px 30px rgba(0,0,0,.08);
+    }
+    .dark{
+      --bg:#111827;
+      --card:rgba(255,255,255,.08);
+      --text:#f3f4f6;
+      --muted:#9ca3af;
+      --primary:#fb923c;
+      --primary-600:#f97316;
+      --accent:#7c2d12;
+      --shadow:0 18px 40px rgba(0,0,0,.45);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:
+        radial-gradient(900px 500px at 90% -10%, #fde68a55, transparent),
+        radial-gradient(800px 400px at -10% 20%, #fed7aa55, transparent),
+        var(--bg);
+      color:var(--text);
+    }
+
+    a{text-decoration:none;color:inherit}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--primary),var(--accent));
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:#3b0a00;
+      box-shadow:0 6px 16px rgba(0,0,0,.25);
+    }
+
+    .brand-title{font-weight:700}
+    .badge{font-size:12px;color:var(--muted)}
+
+    .theme-toggle{
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid #ffffff33;
+      background:transparent;
+      cursor:pointer;
+      color:var(--text);
+    }
+
+    main{padding:48px 0 32px}
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:32px;
+      align-items:center;
+    }
+
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:22px;
+      padding:30px;
+      box-shadow:var(--shadow);
+      border:1px solid #ffffff22;
+      backdrop-filter:blur(10px);
+    }
+
+    h1{
+      font-size:clamp(30px,5vw,42px);
+      margin:0 0 14px;
+      line-height:1.15;
+    }
+
+    .sub{
+      font-size:17px;
+      color:var(--muted);
+      margin-bottom:26px;
+    }
+
+    .cta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+    }
+
+    .btn{
+      font-size:20px;
+      padding:18px 28px;
+      border-radius:14px;
+      font-weight:600;
+      background:linear-gradient(135deg,var(--primary),var(--primary-600));
+      color:white;
+      box-shadow:0 10px 24px rgba(194,65,12,.35);
+      transition:transform .1s ease;
+    }
+
+    .btn:hover{transform:scale(1.05)}
+
+    .features{
+      display:grid;
+      gap:16px;
+    }
+
+    .feature{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      padding:14px;
+      border-radius:16px;
+      background:#ffffff0d;
+      border:1px dashed #ffffff33;
+    }
+
+    .icon{
+      font-size:22px;
+    }
+
+    footer{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      padding:30px 0 10px;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="./index.html">
+        <div class="logo">РЯ</div>
+        <div>
+          <div class="brand-title">Тренажёр по русскому языку</div>
+          <div class="badge">ОГЭ · ЕГЭ</div>
+        </div>
+      </a>
+      <button class="theme-toggle" id="themeBtn">🌓 Тема</button>
+    </header>
 
-<header class="header">
-  <h1>SDAMGIA+</h1>
-  <p>Подготовка к ЕГЭ и ОГЭ по русскому языку</p>
-</header>
+    <main>
+      <section class="hero">
+        <div class="card">
+          <h1>Готовься к ОГЭ и ЕГЭ по русскому языку уверенно</h1>
+          <p class="sub">
+            Тренажёр для отработки заданий экзамена: структура ответа,
+            логика, аргументация и грамотность — без лишней теории.
+          </p>
+          <div class="cta">
+            <a href="oge/oge.html" class="btn">📘 Перейти к ОГЭ</a>
+            <a href="ege/ege.html" class="btn">📕 Перейти к ЕГЭ</a>
+          </div>
+        </div>
 
-<main class="container">
-  <div class="cards">
+        <div class="features">
+          <div class="feature">
+            <div class="icon">⚡</div>
+            <div>
+              <strong>Быстрый старт</strong><br>
+              Открыл задание — сразу работаешь, без регистрации.
+            </div>
+          </div>
+          <div class="feature">
+            <div class="icon">📝</div>
+            <div>
+              <strong>Экзаменационный формат</strong><br>
+              Задания по демоверсиям ФИПИ: сочинения, анализ текста, теория.
+            </div>
+          </div>
+          <div class="feature">
+            <div class="icon">⏱</div>
+            <div>
+              <strong>Таймер</strong><br>
+              Тренируйся укладываться во время, как на реальном экзамене.
+            </div>
+          </div>
+          <div class="feature">
+            <div class="icon">✅</div>
+            <div>
+              <strong>Подсказки и структура</strong><br>
+              План ответа, критерии и напоминания о типичных ошибках.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-    <div class="card">
-      <h2>📘 ЕГЭ</h2>
-      <p>Полный вариант (1–27)</p>
-      <button id="egeBtn">Начать ЕГЭ</button>
-    </div>
+    <footer>
+      <div>© 2025 — Онлайн-тренажёр. Демо-версия.</div>
+      <div style="margin-top:6px">
+        Обратная связь:
+        <a href="mailto:myruslangexam@gmail.com">myruslangexam@gmail.com</a>
+      </div>
+    </footer>
+  </div>
 
-    <div class="card">
-      <h2>📗 ОГЭ</h2>
-      <p>В разработке</p>
-      <button disabled>Скоро</button>
+  <script>
+    const btn = document.getElementById('themeBtn');
+    btn.addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem(
+        'pref-theme',
+        document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+      );
+    });
+  </script>
+</body>
+</html>
