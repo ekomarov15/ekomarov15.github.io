@@ -133,3 +133,42 @@ variant.forEach(t=>{
       <h2>Задание ${t.number}</h2>
       ${t.data.options.map((o,i)=>`
         <label>
+          <input type="radio" name="q${t.number}"
+          onchange="saveAnswer(${t.number},${i+1})"> ${o}
+        </label>`).join("")}
+    </div>`;
+  }
+
+  else if([4,5,7].includes(t.number)){
+    examEl.innerHTML+=`
+    <div class="task">
+      <h2>Задание ${t.number}</h2>
+      <input type="text" oninput="saveAnswer(${t.number},this.value)">
+    </div>`;
+  }
+
+  else if([8,9,12].includes(t.number)){
+    examEl.innerHTML+=`
+    <div class="task">
+      <h2>Задание ${t.number}</h2>
+      <input type="text" oninput="saveAnswer(${t.number},this.value)">
+    </div>`;
+  }
+
+  else if(t.number===13){
+    examEl.innerHTML+=`
+    <div class="task">
+      <h2>✍️ Сочинение</h2>
+      <p>Критерии ФИПИ: содержание, логика, аргументация, речь, грамотность</p>
+      <textarea oninput="saveAnswer(13,this.value)"></textarea>
+    </div>`;
+  }
+});
+
+window.finishExam=()=>{
+  localStorage.setItem("oge_result",JSON.stringify({variant,answers}));
+  location.href="results.html";
+};
+</script>
+</body>
+</html>
