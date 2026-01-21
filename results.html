@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Результаты ОГЭ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:#f4f3ff;
+}
+
+.wrap{
+  max-width:800px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.card{
+  background:white;
+  border-radius:24px;
+  padding:30px;
+  box-shadow:0 12px 30px rgba(0,0,0,.1);
+}
+
+button{
+  margin-top:20px;
+  padding:14px 24px;
+  border:none;
+  border-radius:14px;
+  background:#7c7cff;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card" id="result">
+    <h1>📊 Результаты экзамена</h1>
+  </div>
+
+  <button onclick="exportPDF()">📄 Скачать PDF</button>
+</div>
+
+<script>
+const data = JSON.parse(localStorage.getItem("oge_result"));
+const res = document.getElementById("result");
+
+let score=0, max=0;
+
+data.variant.forEach(t=>{
+  if(t.number>=2 && t.number<=12){
+    max++;
+    if(String(data.answers[t.number])===String(t.data.answer)) score++;
+  }
+});
+
+res.innerHTML+=`
+<p><strong>Тестовая часть:</strong> ${score} / ${max}</p>
+<p>✍️ Изложение и сочинение проверяются по критериям ФИПИ</p>
+`;
+
+function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  pdf.text("Результаты ОГЭ по русскому языку",10,10);
+  pdf.text(`Тестовая часть: ${score} / ${max}`,10,20);
+  pdf.save("oge-result.pdf");
+}
+</script>
+</body>
+</html>
