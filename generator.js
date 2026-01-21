@@ -1,11 +1,12 @@
 // generator.js
-import { bank } from "bank.js";
+import { bank } from "./bank.js";
 
 function random(arr){
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function generateVariant(){
+
   const variant = [];
 
   // 1 — изложение
@@ -14,12 +15,14 @@ export function generateVariant(){
     data: random(bank.task1)
   });
 
-  // 2–12 — тест
+  // 2–12 — только если есть задания
   for(let i = 2; i <= 12; i++){
-    variant.push({
-      number: i,
-      data: random(bank.tests[i])
-    });
+    if(bank.tests[i] && bank.tests[i].length > 0){
+      variant.push({
+        number: i,
+        data: random(bank.tests[i])
+      });
+    }
   }
 
   // 13 — сочинение
