@@ -3,76 +3,17 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>ОГЭ и ЕГЭ по русскому языку</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подготовка к экзаменам</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="centered">
 
-<header class="header">
-  <div class="logo">Русский язык • ОГЭ / ЕГЭ</div>
-  <nav class="nav" id="nav">
-    <a href="#hero">Главная</a>
-    <a href="#oge">ОГЭ</a>
-    <a href="#ege">ЕГЭ</a>
-    <a href="#results">Результаты</a>
-  </nav>
-  <button class="burger" id="burger">☰</button>
-</header>
-
-<section class="hero" id="hero">
-  <h1>Конструктор вариантов ОГЭ и ЕГЭ</h1>
-  <p>Выберите типы заданий и соберите свой КИМ</p>
-</section>
-
-<section class="exam" id="oge">
-  <h2>ОГЭ</h2>
-  <div class="constructor">
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="spelling"> Орфография</label>
-      <input type="number" min="1" max="10" value="3" data-count="spelling">
-    </div>
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="grammar"> Грамматика</label>
-      <input type="number" min="1" max="10" value="3" data-count="grammar">
-    </div>
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="syntax"> Синтаксис</label>
-      <input type="number" min="1" max="10" value="2" data-count="syntax">
-    </div>
-    <button onclick="generateVariant('oge')">Собрать вариант ОГЭ</button>
-  </div>
-  <div class="variant" id="oge-variant"></div>
-</section>
-
-<section class="exam" id="ege">
-  <h2>ЕГЭ</h2>
-  <div class="constructor">
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="lexic"> Лексика</label>
-      <input type="number" min="1" max="10" value="4" data-count="lexic">
-    </div>
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="punctuation"> Пунктуация</label>
-      <input type="number" min="1" max="10" value="4" data-count="punctuation">
-    </div>
-    <div class="task-type">
-      <label><input type="checkbox" checked data-type="text"> Анализ текста</label>
-      <input type="number" min="1" max="10" value="3" data-count="text">
-    </div>
-    <button onclick="generateVariant('ege')">Собрать вариант ЕГЭ</button>
-  </div>
-  <div class="variant" id="ege-variant"></div>
-</section>
-
-<section id="results">
-  <h2>История результатов</h2>
-  <ul id="results-list"></ul>
-</section>
-
-<footer class="footer">
-  <p>Учебный проект. Неофициальный ресурс ФИПИ.</p>
-</footer>
+<div class="card">
+  <h1>Подготовка к экзаменам</h1>
+  <p>Выберите экзамен</p>
+  <button onclick="selectExam('oge')">ОГЭ</button>
+  <button onclick="selectExam('ege')">ЕГЭ</button>
+</div>
 
 <script src="script.js"></script>
 </body>
