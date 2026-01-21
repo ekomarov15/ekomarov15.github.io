@@ -6,21 +6,16 @@
 
 body {
   margin: 0;
-  background: #f7f7f7;
-  color: #222;
+  background: #f3f4f6;
+  color: #111;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 15px 20px;
-  background: #1e293b;
+  background: #0f172a;
   color: white;
-}
-
-.logo {
-  font-weight: bold;
 }
 
 .nav a {
@@ -29,41 +24,37 @@ body {
   text-decoration: none;
 }
 
-.nav a:hover {
-  text-decoration: underline;
-}
-
-.burger {
-  display: none;
-  font-size: 24px;
-  background: none;
-  color: white;
-  border: none;
-}
-
 .hero {
-  padding: 60px 20px;
-  text-align: center;
   background: white;
+  padding: 50px 20px;
+  text-align: center;
 }
 
-.exam-section {
-  padding: 40px 20px;
-  max-width: 900px;
+.exam {
+  max-width: 1000px;
   margin: auto;
+  padding: 30px 20px;
 }
 
 .constructor {
-  display: flex;
-  gap: 15px;
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
   margin-bottom: 20px;
 }
 
+.task-type {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 button {
-  padding: 10px 15px;
-  border: none;
+  padding: 8px 15px;
   background: #2563eb;
   color: white;
+  border: none;
   cursor: pointer;
 }
 
@@ -71,31 +62,32 @@ button:hover {
   background: #1d4ed8;
 }
 
-.task {
+.variant .task {
   background: white;
+  border: 1px solid #ddd;
   padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 5px;
 }
 
 .footer {
+  background: #0f172a;
+  color: white;
   text-align: center;
   padding: 20px;
-  background: #1e293b;
-  color: white;
+}
+
+.burger {
+  display: none;
 }
 
 @media (max-width: 768px) {
   .nav {
     display: none;
-    flex-direction: column;
-    background: #1e293b;
-    position: absolute;
-    top: 60px;
-    right: 0;
-  }
-  .nav.active {
-    display: flex;
   }
   .burger {
     display: block;
