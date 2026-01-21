@@ -1,0 +1,57 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Подготовка к ОГЭ и ЕГЭ по русскому языку</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Русский язык | ОГЭ / ЕГЭ</div>
+  <nav class="nav" id="nav">
+    <a href="#hero">Главная</a>
+    <a href="#oge">ОГЭ</a>
+    <a href="#ege">ЕГЭ</a>
+  </nav>
+  <button class="burger" id="burger">☰</button>
+</header>
+
+<section class="hero" id="hero">
+  <h1>Подготовка к ОГЭ и ЕГЭ</h1>
+  <p>Соберите свой вариант КИМа и проверьте результат онлайн</p>
+</section>
+
+<section class="exam-section" id="oge">
+  <h2>Банк заданий ОГЭ</h2>
+  <div class="constructor">
+    <label>
+      Количество заданий (2–12):
+      <input type="number" id="oge-count" min="1" max="11" value="5">
+    </label>
+    <button onclick="generateTest('oge')">Собрать вариант ОГЭ</button>
+  </div>
+  <div id="oge-test"></div>
+</section>
+
+<section class="exam-section" id="ege">
+  <h2>Банк заданий ЕГЭ</h2>
+  <div class="constructor">
+    <label>
+      Количество заданий (1–26):
+      <input type="number" id="ege-count" min="1" max="26" value="10">
+    </label>
+    <button onclick="generateTest('ege')">Собрать вариант ЕГЭ</button>
+  </div>
+  <div id="ege-test"></div>
+</section>
+
+<footer class="footer">
+  <p>© 2026 Подготовка к ОГЭ и ЕГЭ | Неофициальный учебный проект</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
