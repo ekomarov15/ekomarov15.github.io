@@ -60,8 +60,15 @@ let score=0, max=0;
 data.variant.forEach(t=>{
   if(t.number>=2 && t.number<=12){
     max++;
-    if(String(data.answers[t.number])===String(t.data.answer)) score++;
-  }
+    const userAnswer = data.answers[t.number];
+
+if(
+  userAnswer !== undefined &&
+  String(userAnswer).trim() !== "" &&
+  String(userAnswer).trim() === String(t.data.answer)
+){
+  score++;
+}
 });
 
 res.innerHTML+=`
