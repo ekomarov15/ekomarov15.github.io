@@ -1,263 +1,305 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Русский язык · ОГЭ и ЕГЭ</title>
-  <meta name="description" content="Спокойная онлайн-практика по русскому языку для подготовки к ОГЭ и ЕГЭ." />
+import React, { useState, useEffect } from 'react';
+import { Search, BookOpen, Clock, Award, User, Menu, X, Filter, Star, Play, CheckCircle, ChevronRight } from 'lucide-react';
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+const App = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('tasks');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
 
-  <style>
-    :root{
-  --bg-main: #eef2ff;
-  --accent: #6b7cff;
-  --card: #ffffff;
-  --text: #2b2f38;
-  --muted: #6f7685;
-}
-
-
-   body{
-  margin:0;
-  font-family:Inter,system-ui,sans-serif;
-  background:#eef2f;
-  color:#2b2f38;
-}
-.wrap{
-  max-width:900px;
-  margin:auto;
-  padding:40px 24px;
-}
-    
-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:48px;
+  // Mock data for tasks
+  const mockTasks = [
+    {
+      id: 1,
+      title: 'Орфографический анализ',
+      category: 'analysis',
+      difficulty: 'easy',
+      time: '5 мин',
+      solved: true,
+      rating: 4.8,
+      description: 'Анализ орфограмм в тексте'
+    },
+    {
+      id: 2,
+      title: 'Пунктуационный анализ',
+      category: 'analysis',
+      difficulty: 'medium',
+      time: '8 мин',
+      solved: false,
+      rating: 4.6,
+      description: 'Расстановка знаков препинания'
+    },
+    {
+      id: 3,
+      title: 'Синтаксический анализ',
+      category: 'analysis',
+      difficulty: 'hard',
+      time: '12 мин',
+      solved: false,
+      rating: 4.9,
+      description: 'Анализ синтаксических конструкций'
+    },
+    {
+      id: 4,
+      title: 'Семантический анализ',
+      category: 'analysis',
+      difficulty: 'medium',
+      time: '7 мин',
+      solved: true,
+      rating: 4.7,
+      description: 'Анализ смысловых связей'
+    },
+    {
+      id: 5,
+      title: 'Текст как речевое произведение',
+      category: 'text',
+      difficulty: 'easy',
+      time: '6 мин',
+      solved: false,
+      rating: 4.5,
+      description: 'Анализ структуры текста'
+    },
+    {
+      id: 6,
+      title: 'Средства связи предложений',
+      category: 'text',
+      difficulty: 'medium',
+      time: '9 мин',
+      solved: false,
+      rating: 4.8,
+      description: 'Изучение связующих элементов'
     }
-    
-.card{
-  background:white;
-  border-radius:28px;
-  padding:40px;
-  box-shadow:0 14px 30px rgba(0,0,0,.08);
-}
-h1{font-size:38px;margin-top:0}
-p{color:#6b7280;font-size:16px}
-.buttons{margin-top:32px;display:flex;gap:16px;flex-wrap:wrap}
-.btn{
-  padding:16px 26px;
-  border-radius:16px;
-  background:#6b7cff;
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-}
-.brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
+  ];
+
+  const categories = [
+    { id: 'all', name: 'Все категории', icon: BookOpen },
+    { id: 'analysis', name: 'Анализ', icon: Search },
+    { id: 'text', name: 'Текст', icon: BookOpen },
+    { id: 'grammar', name: 'Грамматика', icon: Award }
+  ];
+
+  const difficulties = [
+    { id: 'all', name: 'Любой уровень' },
+    { id: 'easy', name: 'Легкий' },
+    { id: 'medium', name: 'Средний' },
+    { id: 'hard', name: 'Сложный' }
+  ];
+
+  const filteredTasks = mockTasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         task.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || task.category === selectedCategory;
+    const matchesDifficulty = difficultyFilter === 'all' || task.difficulty === difficultyFilter;
+    return matchesSearch && matchesCategory && matchesDifficulty;
+  });
+
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case 'easy': return 'text-green-600 bg-green-50';
+      case 'medium': return 'text-yellow-600 bg-yellow-50';
+      case 'hard': return 'text-red-600 bg-red-50';
+      default: return 'text-gray-600 bg-gray-50';
     }
+  };
 
-    .logo{
-      width:46px;
-      height:46px;
-      border-radius:14px;
-      background:var(--accent-soft);
-      display:grid;
-      place-items:center;
-      font-size:22px;
-    }
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-2xl font-bold text-blue-800">Русский язык</h1>
+              </div>
+            </div>
+            
+            <nav className="hidden md:flex space-x-8">
+              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">Задания</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">Тесты</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">Курс</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">Статистика</a>
+            </nav>
 
-    .badge{font-size:12px;color:var(--muted)}
+            <div className="flex items-center space-x-4">
+              <div className="relative hidden sm:block">
+                <input
+                  type="text"
+                  placeholder="Поиск заданий..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+              <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200">
+                <User className="h-6 w-6" />
+              </button>
+              <button 
+                className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-t">
+            <div className="px-4 py-2 space-y-2">
+              <input
+                type="text"
+                placeholder="Поиск заданий..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <Search className="absolute left-6 top-4 h-5 w-5 text-gray-400" />
+            </div>
+            <div className="px-4 py-4 space-y-2">
+              <a href="#" className="block text-gray-700 hover:text-blue-600 font-medium">Задания</a>
+              <a href="#" className="block text-gray-700 hover:text-blue-600 font-medium">Тесты</a>
+              <a href="#" className="block text-gray-700 hover:text-blue-600 font-medium">Курс</a>
+              <a href="#" className="block text-gray-700 hover:text-blue-600 font-medium">Статистика</a>
+            </div>
+          </div>
+        )}
+      </header>
 
-    /* ---------- Intro ---------- */
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filters */}
+        <div className="mb-8 bg-white rounded-lg shadow-sm p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <h2 className="text-xl font-semibold text-gray-800">Сборка КИМов</h2>
+            <div className="flex flex-wrap gap-4">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
+              <select
+                value={difficultyFilter}
+                onChange={(e) => setDifficultyFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {difficulties.map(difficulty => (
+                  <option key={difficulty.id} value={difficulty.id}>{difficulty.name}</option>
+                ))}
+              </select>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Filter className="h-5 w-5" />
+                <span>Применить фильтры</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-    .intro{
-      max-width:620px;
-      margin-bottom:52px;
-    }
+        {/* Task List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredTasks.map(task => (
+            <div key={task.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{task.title}</h3>
+                    <p className="text-gray-600 text-sm mb-3">{task.description}</p>
+                  </div>
+                  {task.solved && (
+                    <CheckCircle className="h-6 w-6 text-green-500 ml-2 flex-shrink-0" />
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(task.difficulty)}`}>
+                    {task.difficulty === 'easy' ? 'Легкий' : 
+                     task.difficulty === 'medium' ? 'Средний' : 'Сложный'}
+                  </span>
+                  <div className="flex items-center space-x-1 text-yellow-500">
+                    <Star className="h-4 w-4 fill-current" />
+                    <span className="text-sm font-medium">{task.rating}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-4 w-4" />
+                    <span>{task.time}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <BookOpen className="h-4 w-4" />
+                    <span>№{task.id}</span>
+                  </div>
+                </div>
+                
+                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  <Play className="h-4 w-4" />
+                  <span>Начать решение</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
-    .lead{
-      font-size:17px;
-      color:var(--muted);
-    }
+        {filteredTasks.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <Search className="h-16 w-16 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Задания не найдены</h3>
+            <p className="text-gray-500">Попробуйте изменить параметры поиска или фильтры</p>
+          </div>
+        )}
+      </main>
 
-    /* ---------- Exam choice ---------- */
-
-    .exam-choice{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:24px;
-      margin-bottom:64px;
-    }
-
-    @media(max-width:800px){
-      .exam-choice{grid-template-columns:1fr}
-    }
-
-    .exam-card{
-      background:white(--paper);
-      border-radius:18px;
-      padding:32px;
-      box-shadow:0 6px 16px rgba(0,0,0,.07);
-      gap:14px;
-    }
-
-    .exam-card h2{
-      margin:0 0 10px;
-      font-size:22px;
-    }
-
-    .exam-card p{
-      color:var(--muted);
-      margin-bottom:20px;
-    }
-/* ---------- Steps ---------- */
-
-    .steps{
-      margin-bottom:64px;
-    }
-
-    .steps-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:20px;
-    }
-
-    @media(max-width:900px){
-      .steps-grid{grid-template-columns:1fr}
-    }
-
-    .step{
-      background:var(--paper);
-      border-radius:18px;
-      padding:26px;
-      box-shadow:0 6px 16px rgba(0,0,0,.05);
-    }
-
-    .step .emoji{
-      font-size:26px;
-      margin-bottom:10px;
-    }
-
-    /* ---------- Benefits ---------- */
-
-    .notes{
-      display:grid;
-      gap:18px;
-    }
-
-    .note{
-      background:var(--paper);
-      border-radius:18px;
-      padding:22px 24px;
-      box-shadow:0 6px 16px rgba(0,0,0,.05);
-      display:flex;
-      gap:14px;
-    }
-
-    .note .emoji{font-size:22px}
-
-    footer{
-      margin-top:72px;
-      padding-top:28px;
-      border-top:1px dashed #e5e7eb;
-      text-align:center;
-      font-size:13px;
-      color:var(--muted);
-    }
-  </style>
-</head>
-
-<body>
-<div class="wrap">
-
-  <header>
-    <div class="brand">
-      <div class="logo">📘</div>
-      <div>
-        <strong>Русский язык</strong>
-        <div class="badge">Практика для ОГЭ и ЕГЭ</div>
-      </div>
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Русский язык</h3>
+              <p className="text-gray-300">Образовательная платформа для подготовки к ОГЭ и ЕГЭ по русскому языку</p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-4">Навигация</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#" className="hover:text-white">Задания</a></li>
+                <li><a href="#" className="hover:text-white">Тесты</a></li>
+                <li><a href="#" className="hover:text-white">Курс</a></li>
+                <li><a href="#" className="hover:text-white">Статистика</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium mb-4">Поддержка</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#" className="hover:text-white">Помощь</a></li>
+                <li><a href="#" className="hover:text-white">Контакты</a></li>
+                <li><a href="#" className="hover:text-white">Отзывы</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium mb-4">Информация</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#" className="hover:text-white">О платформе</a></li>
+                <li><a href="#" className="hover:text-white">Правила</a></li>
+                <li><a href="#" className="hover:text-white">Конфиденциальность</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+            <p>&copy; 2026 Русский язык. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  </header>
+  );
+};
 
-  <main>
-
-    <!-- Intro -->
-    <section class="intro">
-      <h1>Подготовка к экзаменам по русскому языку</h1>
-      <p class="lead">
-        Платформа для отработки заданий экзамена.
-        Помогает освоить базу в решении заданий в формате экзамена.
-      </p>
-    </section>
-
-    <!-- Exam choice -->
-    <section class="exam-choice">
-      <div class="exam-card">
-        <h2>✏️ ОГЭ</h2>
-        <p>Практика заданий в формате экзамена для 9 классов.</p>
-        <br>
-        <a href="oge.html" class="btn">📕 ОГЭ</a>
-      </div>
-      <div class="exam-card">
-        <h2>🖊 ЕГЭ</h2>
-        <p>Работа с экзаменационными форматами и критериями для 11 классов.</p>
-        <br>
-        <a href="ege.html" class="btn alt">📘 ЕГЭ</a>
-      </div>
-    </section>
-
-    <!-- Steps -->
-    <section class="steps">
-      <h2 style="margin-bottom:24px">Этапы выполения заданий</h2>
-      <div class="steps-grid">
-        <div class="step">
-          <div class="emoji">📄</div>
-          <strong>Открываешь задание</strong><br>
-          Видишь формат и требования.
-        </div>
-        <div class="step">
-          <div class="emoji">🧠</div>
-          <strong>Продумываешь ответ</strong><br>
-          Работаешь с логикой, структурой и смыслом.
-        </div>
-        <div class="step">
-          <div class="emoji">🎯</div>
-          <strong>Сверяешься с критериями</strong><br>
-          Понимаешь, за что ставят баллы.
-        </div>
-      </div>
-    </section>
-
-    <!-- Benefits -->
-    <section class="notes">
-      <div class="note">
-        <div class="emoji">🧩</div>
-        <div><strong>Понятная структура</strong><br>Без перегрузки и лишних элементов.</div>
-      </div>
-      <div class="note">
-        <div class="emoji">⏳</div>
-        <div><strong>Комфортный темп</strong><br>Помогает привыкнуть к экзаменационному времени.</div>
-      </div>
-      <div class="note">
-        <div class="emoji">📘</div>
-        <div><strong>Экзаменационный стиль</strong><br>Форматы приближены к реальным заданиям.</div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    © 2026 · Учебный проект · Демо-версия<br>
-    Связь: <a href="mailto:rus.practice.exam@gmail.com">rus.practice.exam@gmail.com</a>
-  </footer>
-
-</div>
-</body>
-</html>
+export default App;
