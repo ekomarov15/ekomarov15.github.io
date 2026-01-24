@@ -1,0 +1,36 @@
+body {
+font-family: Arial, sans-serif;
+margin: 0;
+background: #f4f6f8;
+}
+header {
+background: #1e3a8a;
+color: white;
+padding: 20px;
+}
+.cards {
+display: flex;
+gap: 20px;
+justify-content: center;
+margin: 40px;
+}
+.card {
+background: white;
+padding: 30px;
+text-decoration: none;
+color: black;
+font-size: 20px;
+border-radius: 10px;
+}
+.task-preview {
+background: white;
+margin: 20px;
+padding: 20px;
+border-radius: 10px;
+cursor: pointer;
+}
+footer {
+text-align: center;
+padding: 20px;
+color: #666;
+}
