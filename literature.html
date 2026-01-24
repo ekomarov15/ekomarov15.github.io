@@ -11,7 +11,10 @@
 <h1>Литература</h1>
 <nav><a href="index.html">← На главную</a></nav>
 </header>
-
+<select id="filter" onchange="loadTasks('russian')">
+<option value="">Все задания</option>
+<option value="1">№1</option> ... <option value="13">№13</option>
+</select>
 <main id="taskList"></main>
 
 <script src="data.js"></script>
