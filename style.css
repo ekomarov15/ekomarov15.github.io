@@ -34,3 +34,16 @@ text-align: center;
 padding: 20px;
 color: #666;
 }
+
+textarea, input {
+width: 100%;
+margin: 10px 0;
+padding: 8px;
+}
+button {
+padding: 10px 20px;
+background: #1e3a8a;
+color: white;
+border: none;
+border-radius: 6px;
+}
