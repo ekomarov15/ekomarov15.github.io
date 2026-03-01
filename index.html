@@ -2,59 +2,265 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Эксперт ЕГЭ — Проверка работы</title>
 
-<title>Литература</title>
+<!-- OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f2f4f8;
+    color: #2c3e50;
+}
+
+header {
+    background: linear-gradient(90deg, #1a237e, #3949ab);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.container {
+    display: flex;
+    gap: 25px;
+    padding: 25px;
+}
+
+.editor-section {
+    flex: 3;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+#editor {
+    min-height: 420px;
+    border: 1px solid #dcdcdc;
+    padding: 15px;
+    border-radius: 10px;
+    line-height: 1.7;
+}
+
+.toolbar button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-k1 { background: #ffd6d6; }
+.btn-k2 { background: #fff5c2; }
+.btn-k3 { background: #d4fcd4; }
+.btn-save { background: #303f9f; color: white; }
+
+.sidebar {
+    flex: 1;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.criteria {
+    background: #f8f9ff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+input[type="number"], textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.score-box, .grade-box {
+    background: #e8eaf6;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.ocr-box {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f1f3ff;
+    border-radius: 10px;
+}
+
+.progress {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #3949ab;
+}
+
+@media print {
+    .toolbar, .sidebar, header, .ocr-box {
+        display: none;
+    }
+}
+</style>
 </head>
-
 <body>
 
-<header class="header">
-    <div class="container">
-        <h1>Литература</h1>
-        <nav>
-            <a href="analysis.html">Анализ</a>
-            <a href="exam.html">Экзамен</a>
-            <a href="practice.html">Практика</a>
-        </nav>
-    </div>
-</header>
+<header>Экспертная проверка письменной работы (ЕГЭ)</header>
 
-<section class="hero">
-    <div class="container">
-        <h2>Изучай литературу глубже</h2>
-        <p>
-            Подробный анализ произведений, подготовка к экзамену
-            и практические задания в современном формате.
-        </p>
-    </div>
-</section>
+<div class="container">
 
-<main class="container cards">
+<div class="editor-section">
 
-    <a href="analysis.html" class="card">
-        <h3>Подробный анализ</h3>
-        <p>Темы, проблемы, герои и авторская позиция.</p>
-    </a>
+<div class="toolbar">
+    <button class="btn-k1" onclick="highlight('#ffd6d6')">К1 Орфография</button>
+    <button class="btn-k2" onclick="highlight('#fff5c2')">К2 Пунктуация</button>
+    <button class="btn-k3" onclick="highlight('#d4fcd4')">К3 Грамматика</button>
+    <button class="btn-save" onclick="savePDF()">PDF</button>
+</div>
 
-    <a href="exam.html" class="card">
-        <h3>Подготовка к экзамену</h3>
-        <p>Структура экзамена, демоверсия и критерии.</p>
-    </a>
+<div id="editor" contenteditable="true"></div>
 
-    <a href="practice.html" class="card">
-        <h3>Практические задания</h3>
-        <p>Задания экзаменационного формата и тесты.</p>
-    </a>
+<div class="ocr-box">
+<b>Загрузить фото работы</b><br>
+<input type="file" accept="image/*" onchange="processImage(event)">
+<button onclick="clearEditor()">Очистить текст</button>
+<div class="progress" id="progress"></div>
+</div>
 
-</main>
+</div>
 
-<footer>
-    <p>© 2026 Литература</p>
-</footer>
+<div class="sidebar">
+
+<div class="criteria">
+<b>К1 — Орфография (0–3)</b>
+<input type="number" id="k1" min="0" max="3" oninput="calculate()">
+<textarea placeholder="Комментарий по орфографии"></textarea>
+</div>
+
+<div class="criteria">
+<b>К2 — Пунктуация (0–3)</b>
+<input type="number" id="k2" min="0" max="3" oninput="calculate()">
+<textarea placeholder="Комментарий по пунктуации"></textarea>
+</div>
+
+<div class="criteria">
+<b>К3 — Грамматика (0–3)</b>
+<input type="number" id="k3" min="0" max="3" oninput="calculate()">
+<textarea placeholder="Комментарий по грамматике"></textarea>
+</div>
+
+<div class="score-box">
+Сумма: <span id="total">0</span> / 9
+</div>
+
+<div class="grade-box">
+Оценка: <span id="grade">—</span>
+</div>
+
+<textarea placeholder="Общий комментарий эксперта"></textarea>
+
+</div>
+
+</div>
+
+<script>
+function highlight(color) {
+    document.execCommand("backColor", false, color);
+}
+
+function calculate() {
+    const k1 = +document.getElementById("k1").value || 0;
+    const k2 = +document.getElementById("k2").value || 0;
+    const k3 = +document.getElementById("k3").value || 0;
+
+    const total = k1 + k2 + k3;
+    document.getElementById("total").innerText = total;
+
+    let grade = 2;
+    if (total >= 8) grade = 5;
+    else if (total >= 6) grade = 4;
+    else if (total >= 4) grade = 3;
+
+    document.getElementById("grade").innerText = grade;
+}
+
+/* ===== Улучшенное OCR ===== */
+async function processImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const progress = document.getElementById("progress");
+    progress.innerText = "Подготовка изображения...";
+
+    const image = new Image();
+    image.src = URL.createObjectURL(file);
+
+    image.onload = async () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        ctx.drawImage(image, 0, 0);
+
+        // Предобработка — повышение контраста
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i+1] + data[i+2]) / 3;
+            const value = avg > 150 ? 255 : 0;
+            data[i] = data[i+1] = data[i+2] = value;
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+
+        progress.innerText = "Распознавание текста...";
+
+        const result = await Tesseract.recognize(canvas, 'rus', {
+            logger: m => {
+                if (m.status === "recognizing text") {
+                    progress.innerText = "Распознавание: " + Math.round(m.progress * 100) + "%";
+                }
+            }
+        });
+
+        document.getElementById("editor").innerHTML += "<p>" + result.data.text.replace(/\n/g,"<br>") + "</p>";
+        progress.innerText = "Готово ✅";
+    };
+}
+
+function clearEditor() {
+    document.getElementById("editor").innerHTML = "";
+}
+
+async function savePDF() {
+    const { jsPDF } = window.jspdf;
+    const canvas = await html2canvas(document.body);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const width = pdf.internal.pageSize.getWidth();
+    const height = canvas.height * width / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    pdf.save("ege_check.pdf");
+}
+</script>
 
 </body>
 </html>
