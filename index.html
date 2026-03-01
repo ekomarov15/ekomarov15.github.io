@@ -2,32 +2,28 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Эксперт ЕГЭ — Полная система</title>
-
-<!-- OCR -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<!-- PDF -->
+<title>Эксперт ЕГЭ — Редактор с оценкой</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
-body {margin:0;font-family:'Segoe UI',sans-serif;background:#f2f4f8;color:#2c3e50;}
-header {background:linear-gradient(90deg,#1a237e,#3949ab);color:white;padding:20px;text-align:center;font-size:22px;font-weight:600;}
+body {margin:0;font-family:'Segoe UI',sans-serif;background:#f0f2f5;color:#2c3e50;}
+header {background: linear-gradient(90deg,#1a237e,#3949ab);color:white;padding:20px;text-align:center;font-size:24px;font-weight:600;}
 .container {display:flex;gap:25px;padding:25px;}
-.editor-section {flex:3;background:white;padding:25px;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
-#editor {min-height:420px;border:1px solid #dcdcdc;padding:15px;border-radius:10px;line-height:1.7;}
-.toolbar button {padding:8px 16px;margin-right:10px;border:none;border-radius:8px;cursor:pointer;font-size:14px;}
+.editor-section {flex:3;background:white;padding:25px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
+#editor {min-height:420px;border:1px solid #dcdcdc;padding:15px;border-radius:10px;line-height:1.7;background:#fff;overflow-y:auto;}
+.toolbar button {padding:8px 16px;margin-right:10px;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;transition:0.2s;}
+.toolbar button:hover {opacity:0.85;}
 .btn-k1 {background:#ffd6d6;}
 .btn-k2 {background:#fff5c2;}
 .btn-k3 {background:#d4fcd4;}
-.btn-save {background:#303f9f;color:white;}
-.sidebar {flex:1;background:white;padding:25px;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
+.btn-save {background:#3949ab;color:white;}
+.sidebar {flex:1;background:white;padding:25px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 .criteria {background:#f8f9ff;padding:12px;border-radius:10px;margin-bottom:15px;}
-input[type="number"],textarea {width:100%;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #ccc;}
+label {font-weight:bold;margin-top:6px;display:block;}
+select, textarea {width:100%;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #ccc;font-size:14px;}
 .score-box,.grade-box {background:#e8eaf6;padding:12px;border-radius:12px;text-align:center;font-weight:bold;margin-top:10px;}
-.ocr-box {margin-top:15px;padding:10px;background:#f1f3ff;border-radius:10px;}
-.progress {margin-top:5px;font-size:13px;color:#3949ab;}
-@media print {.toolbar,.sidebar,header,.ocr-box{display:none;}}
+textarea {height:60px;resize:vertical;}
+@media print {.toolbar,.sidebar,header{display:none;}}
 </style>
 </head>
 <body>
@@ -37,126 +33,108 @@ input[type="number"],textarea {width:100%;margin-top:6px;padding:6px;border-radi
 <div class="container">
 
 <div class="editor-section">
-
 <div class="toolbar">
-<button class="btn-k1" onclick="highlight('#ffd6d6')">К1 Орфография</button>
-<button class="btn-k2" onclick="highlight('#fff5c2')">К2 Пунктуация</button>
-<button class="btn-k3" onclick="highlight('#d4fcd4')">К3 Грамматика</button>
-<button class="btn-save" onclick="savePDF()">Сохранить PDF</button>
+    <button class="btn-k1" onclick="highlight('#ffd6d6')">К1 Орфография</button>
+    <button class="btn-k2" onclick="highlight('#fff5c2')">К2 Пунктуация</button>
+    <button class="btn-k3" onclick="highlight('#d4fcd4')">К3 Грамматика</button>
+    <button class="btn-save" onclick="savePDF()">Сохранить PDF</button>
 </div>
 
-<div id="editor" contenteditable="true"></div>
-
-<div class="ocr-box">
-<b>Загрузить фото рукописной работы</b><br>
-<input type="file" accept="image/*" onchange="processImage(event)">
-<div class="progress" id="progress"></div>
-</div>
-
+<div id="editor" contenteditable="true" placeholder="Введите текст работы здесь..."></div>
 </div>
 
 <div class="sidebar">
 
 <div class="criteria">
-<b>К1 — Орфография (0–3)</b>
-<input type="number" id="k1" min="0" max="3" oninput="calculate()">
+<label>К1 — Орфография (0–3 балла)</label>
+<select id="k1" onchange="calculate()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
 <textarea id="c1" placeholder="Комментарий по К1"></textarea>
 </div>
 
 <div class="criteria">
-<b>К2 — Пунктуация (0–3)</b>
-<input type="number" id="k2" min="0" max="3" oninput="calculate()">
+<label>К2 — Пунктуация (0–3 балла)</label>
+<select id="k2" onchange="calculate()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
 <textarea id="c2" placeholder="Комментарий по К2"></textarea>
 </div>
 
 <div class="criteria">
-<b>К3 — Грамматика (0–3)</b>
-<input type="number" id="k3" min="0" max="3" oninput="calculate()">
+<label>К3 — Грамматика (0–3 балла)</label>
+<select id="k3" onchange="calculate()">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
 <textarea id="c3" placeholder="Комментарий по К3"></textarea>
 </div>
 
 <div class="score-box">
-Сумма: <span id="total">0</span> / 9
+Сумма баллов: <span id="total">0</span> / 9
 </div>
 
 <div class="grade-box">
 Оценка: <span id="grade">—</span>
 </div>
 
-<textarea id="finalComment" placeholder="Общий комментарий эксперта" style="height:80px;margin-top:10px;"></textarea>
+<h3>Общий комментарий эксперта</h3>
+<textarea id="finalComment" placeholder="Введите общий комментарий здесь..."></textarea>
 
 </div>
 
 </div>
 
 <script>
-// Выделение ошибок
+// Выделение текста цветом
 function highlight(color){document.execCommand("backColor",false,color);}
 
-// Автоподсчёт баллов
+// Подсчёт баллов и оценка
 function calculate(){
-const k1=+document.getElementById("k1").value||0;
-const k2=+document.getElementById("k2").value||0;
-const k3=+document.getElementById("k3").value||0;
-const total=k1+k2+k3;
-document.getElementById("total").innerText=total;
-let grade=2;
-if(total>=8)grade=5;
-else if(total>=6)grade=4;
-else if(total>=4)grade=3;
-document.getElementById("grade").innerText=grade;
+    const k1 = +document.getElementById("k1").value;
+    const k2 = +document.getElementById("k2").value;
+    const k3 = +document.getElementById("k3").value;
+    const total = k1 + k2 + k3;
+    document.getElementById("total").innerText = total;
+
+    const percent = total / 9 * 100;
+    let grade = 2;
+    if(percent >= 90) grade = 5;
+    else if(percent >= 75) grade = 4;
+    else if(percent >= 55) grade = 3;
+    document.getElementById("grade").innerText = grade;
 }
 
-// OCR рукописного текста
-async function processImage(event){
-const file=event.target.files[0];
-if(!file)return;
-const progress=document.getElementById("progress");
-progress.innerText="Распознавание...";
-
-const result=await Tesseract.recognize(
-file,
-'rus+eng',
-{logger:m=>{
-if(m.status==="recognizing text"){
-progress.innerText="Распознавание: "+Math.round(m.progress*100)+"%";
-}}}
-);
-
-const cleanText=result.data.text.replace(/\n{2,}/g,"\n");
-document.getElementById("editor").innerHTML+="<p>"+cleanText.replace(/\n/g,"<br>")+"</p>";
-progress.innerText="Готово ✅";
-}
-
-// PDF с выделениями и комментариями
+// Сохранение PDF только с текстом редактора и общим комментарием
 async function savePDF(){
-const { jsPDF }=window.jspdf;
-const editorSection=document.querySelector(".editor-section");
-const canvas=await html2canvas(editorSection,{scale:2});
-const imgData=canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const editor = document.getElementById("editor");
+    const canvas = await html2canvas(editor,{scale:2,backgroundColor:null});
+    const imgData = canvas.toDataURL("image/png");
 
-const pdf=new jsPDF("p","mm","a4");
-const width=pdf.internal.pageSize.getWidth();
-const height=canvas.height*width/canvas.width;
+    const pdf = new jsPDF("p","mm","a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgHeight = canvas.height * pageWidth / canvas.width;
+    pdf.addImage(imgData,"PNG",0,0,pageWidth,imgHeight);
 
-pdf.addImage(imgData,"PNG",0,0,width,height);
+    const comment = document.getElementById("finalComment").value;
+    pdf.setFontSize(12);
+    let yPos = imgHeight + 10;
+    if(yPos > pageHeight - 50){pdf.addPage(); yPos = 10;}
+    pdf.text("Общий комментарий эксперта:",10,yPos); yPos+=7;
+    const commentLines = pdf.splitTextToSize(comment,pageWidth-20);
+    commentLines.forEach(line=>{pdf.text(line,10,yPos);yPos+=7;});
 
-// Добавляем комментарии по К1-К3 и общий комментарий
-const c1=document.getElementById("c1").value;
-const c2=document.getElementById("c2").value;
-const c3=document.getElementById("c3").value;
-const finalComment=document.getElementById("finalComment").value;
-
-pdf.setFontSize(12);
-let yPos=height+10;
-if(yPos>pdf.internal.pageSize.getHeight()-50){pdf.addPage(); yPos=10;}
-pdf.text("Комментарии по критериям:",10,yPos); yPos+=7;
-pdf.text("К1 — Орфография: "+c1,10,yPos); yPos+=7;
-pdf.text("К2 — Пунктуация: "+c2,10,yPos); yPos+=7;
-pdf.text("К3 — Грамматика: "+c3,10,yPos); yPos+=7;
-pdf.text("Общий комментарий: "+finalComment,10,yPos); yPos+=7;
-
-pdf.save("ege_full_check.pdf");
+    pdf.save("ege_checked_work.pdf");
 }
 </script>
 
