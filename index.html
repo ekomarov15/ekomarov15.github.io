@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
-  --bg:#fbfdff;
+  --bg:#fefeff;
   --card:#ffffff; --text:#0b1020; --muted:#5a6475;
   --primary:#2b6cff; --primary-600:#1f58d9; --ring:#bfd3ff;
   --success:#25c26e; --shadow:0 10px 25px rgba(17,24,39,.08);
@@ -62,18 +62,19 @@ a{color:inherit; text-decoration:none;}
   flex:1; padding:18px; border-radius:16px; background:var(--card);
   border:1px solid #ffffff1f; box-shadow:var(--shadow);
   font-size:16px; line-height:1.7; overflow-y:auto; color:var(--text);
+  min-height:0; /* чтобы занимал всю высоту блока */
 }
 
 /* Панель кнопок с бледными оттенками */
 .toolbar{display:flex; gap:10px; flex-wrap:wrap;}
 .toolbar button{
-  padding:14px 20px; border:none; border-radius:12px;
-  cursor:pointer; transition:transform 0.1s; font-size:16px;
+  padding:10px 16px; border:none; border-radius:12px;
+  cursor:pointer; transition:transform 0.1s; font-size:15px;
 }
 .toolbar button:hover{transform:scale(1.05);}
-.btn-k1{background:#ffc1c1; color:#000; font-weight:400;}
-.btn-k2{background:#b6e2b6; color:#000; font-weight:400;}
-.btn-k3{background:#fff9a8; color:#000; font-weight:400;}
+.btn-k1{background:#ffc1c1; color:#000; font-weight:300;}
+.btn-k2{background:#b6e2b6; color:#000; font-weight:300;}
+.btn-k3{background:#fff9a8; color:#000; font-weight:300;}
 .btn-save{background:var(--primary); color:white; font-weight:700;}
 
 /* Боковая панель критериев */
@@ -89,9 +90,7 @@ a{color:inherit; text-decoration:none;}
   box-sizing:border-box;
 }
 textarea{
-  resize:none; /* отключаем масштабирование */
-  min-height:60px; max-height:100px; /* ограничение по блоку */
-  overflow-y:auto; /* скролл внутри блока */
+  resize:none; min-height:60px; max-height:120px; overflow-y:auto;
 }
 .score-box, .grade-box{
   padding:12px; border-radius:16px; background:#eaf0ff; font-weight:700; text-align:center; font-size:16px;
@@ -175,17 +174,17 @@ function highlight(color){
 }
 
 function calculate(){
-  const k1=+document.getElementById("k1").value;
-  const k2=+document.getElementById("k2").value;
-  const k3=+document.getElementById("k3").value;
-  const total=k1+k2+k3;
-  document.getElementById("total").innerText=total;
-  const percent=total/9*100;
-  let grade=2;
-  if(percent>=90) grade=5;
-  else if(percent>=75) grade=4;
-  else if(percent>=55) grade=3;
-  document.getElementById("grade").innerText=grade;
+  const k1 = +document.getElementById("k1").value;
+  const k2 = +document.getElementById("k2").value;
+  const k3 = +document.getElementById("k3").value;
+  const total = k1 + k2 + k3;
+  document.getElementById("total").innerText = total;
+  const percent = total / 9 * 100;
+  let grade = 2; // по умолчанию
+  if(percent >= 88) grade = 5;
+  else if(percent >= 75) grade = 4;
+  else if(percent >= 50) grade = 3;
+  document.getElementById("grade").innerText = grade;
 }
 
 async function savePDF(){
