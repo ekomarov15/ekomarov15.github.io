@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Эксперт ЕГЭ — Редактор с оценкой</title>
+<title>Эксперт ЕГЭ — Текст с комментариями</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 body {margin:0;font-family:'Segoe UI',sans-serif;background:#f0f2f5;color:#2c3e50;}
-header {background: linear-gradient(90deg,#1a237e,#3949ab);color:white;padding:20px;text-align:center;font-size:24px;font-weight:600;}
+header {background:linear-gradient(90deg,#1a237e,#3949ab);color:white;padding:20px;text-align:center;font-size:24px;font-weight:600;}
 .container {display:flex;gap:25px;padding:25px;}
 .editor-section {flex:3;background:white;padding:25px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 #editor {min-height:420px;border:1px solid #dcdcdc;padding:15px;border-radius:10px;line-height:1.7;background:#fff;overflow-y:auto;}
@@ -23,6 +23,9 @@ label {font-weight:bold;margin-top:6px;display:block;}
 select, textarea {width:100%;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #ccc;font-size:14px;}
 .score-box,.grade-box {background:#e8eaf6;padding:12px;border-radius:12px;text-align:center;font-weight:bold;margin-top:10px;}
 textarea {height:60px;resize:vertical;}
+table {width:100%;border-collapse:collapse;margin-top:10px;}
+table, th, td {border:1px solid #ccc;}
+th, td {padding:6px;text-align:left;font-size:13px;}
 @media print {.toolbar,.sidebar,header{display:none;}}
 </style>
 </head>
@@ -86,15 +89,12 @@ textarea {height:60px;resize:vertical;}
 Оценка: <span id="grade">—</span>
 </div>
 
-<h3>Общий комментарий эксперта</h3>
-<textarea id="finalComment" placeholder="Введите общий комментарий здесь..."></textarea>
-
 </div>
 
 </div>
 
 <script>
-// Выделение текста цветом
+// Выделение текста
 function highlight(color){document.execCommand("backColor",false,color);}
 
 // Подсчёт баллов и оценка
@@ -105,7 +105,7 @@ function calculate(){
     const total = k1 + k2 + k3;
     document.getElementById("total").innerText = total;
 
-    const percent = total / 9 * 100;
+    const percent = total/9*100;
     let grade = 2;
     if(percent >= 90) grade = 5;
     else if(percent >= 75) grade = 4;
@@ -113,9 +113,11 @@ function calculate(){
     document.getElementById("grade").innerText = grade;
 }
 
-// Сохранение PDF только с текстом редактора и общим комментарием
+// Сохранение PDF с текстом и таблицей комментариев
 async function savePDF(){
     const { jsPDF } = window.jspdf;
+
+    // Сначала конвертируем текст редактора в картинку с выделениями
     const editor = document.getElementById("editor");
     const canvas = await html2canvas(editor,{scale:2,backgroundColor:null});
     const imgData = canvas.toDataURL("image/png");
@@ -126,15 +128,53 @@ async function savePDF(){
     const imgHeight = canvas.height * pageWidth / canvas.width;
     pdf.addImage(imgData,"PNG",0,0,pageWidth,imgHeight);
 
-    const comment = document.getElementById("finalComment").value;
-    pdf.setFontSize(12);
+    // Добавляем таблицу комментариев под текстом
+    const k1 = document.getElementById("k1").value;
+    const k2 = document.getElementById("k2").value;
+    const k3 = document.getElementById("k3").value;
+    const c1 = document.getElementById("c1").value;
+    const c2 = document.getElementById("c2").value;
+    const c3 = document.getElementById("c3").value;
+
     let yPos = imgHeight + 10;
     if(yPos > pageHeight - 50){pdf.addPage(); yPos = 10;}
-    pdf.text("Общий комментарий эксперта:",10,yPos); yPos+=7;
-    const commentLines = pdf.splitTextToSize(comment,pageWidth-20);
-    commentLines.forEach(line=>{pdf.text(line,10,yPos);yPos+=7;});
 
-    pdf.save("ege_checked_work.pdf");
+    pdf.setFontSize(12);
+    pdf.text("Комментарии по критериям:",10,yPos); yPos+=6;
+
+    const tableTop = yPos;
+    const col1 = 10, col2 = 40, col3 = pageWidth-50;
+    const rowHeight = 10;
+
+    // Заголовок таблицы
+    pdf.setFillColor(220,220,220);
+    pdf.rect(col1-1, yPos-7, pageWidth-20, rowHeight, 'F');
+    pdf.text("Критерий", col1, yPos);
+    pdf.text("Баллы", col2, yPos);
+    pdf.text("Комментарий", col3, yPos); yPos+=rowHeight;
+
+    // К1
+    pdf.setFillColor(255,214,214);
+    pdf.rect(col1-1, yPos-7, pageWidth-20, rowHeight, 'F');
+    pdf.text("К1 — Орфография", col1, yPos);
+    pdf.text(k1.toString(), col2, yPos);
+    pdf.text(c1, col3, yPos); yPos+=rowHeight;
+
+    // К2
+    pdf.setFillColor(255,245,194);
+    pdf.rect(col1-1, yPos-7, pageWidth-20, rowHeight, 'F');
+    pdf.text("К2 — Пунктуация", col1, yPos);
+    pdf.text(k2.toString(), col2, yPos);
+    pdf.text(c2, col3, yPos); yPos+=rowHeight;
+
+    // К3
+    pdf.setFillColor(212,252,212);
+    pdf.rect(col1-1, yPos-7, pageWidth-20, rowHeight, 'F');
+    pdf.text("К3 — Грамматика", col1, yPos);
+    pdf.text(k3.toString(), col2, yPos);
+    pdf.text(c3, col3, yPos); yPos+=rowHeight;
+
+    pdf.save("ege_text_with_comments.pdf");
 }
 </script>
 
