@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Редактор проверки сочинений ОГЭ/ЕГЭ</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.container {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: normal;
+}
+#toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* кнопки слева */
+}
+.color-btn {
+    padding: 6px 12px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: normal;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+.color-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.k1 { background-color: #e74c3c; }  /* красный */
+.k2 { background-color: #57c17d; }  /* зелёный */
+.k3 { background-color: #f9c77f; }  /* светло-оранжевый */
+.clear { background-color: #7f8c8d; } /* серый */
+
+#essay {
+    width: 100%;
+    min-height: 250px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #fff;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+span.highlight.k1 { background-color: #f5bebe; }
+span.highlight.k2 { background-color: #bce7bc; }
+span.highlight.k3 { background-color: #f9e0b2; }
+span.highlight { padding: 2px 3px; border-radius: 3px; }
+
+.scores-container {
+    background-color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.scores-container label {
+    display: block;
+    margin: 6px 0 4px;
+}
+.scores-container input[type="number"],
+.scores-container textarea {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.scores-container textarea { min-height: 70px; resize: vertical; }
+.total-score { margin-top: 10px; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Редактор проверки сочинений ОГЭ/ЕГЭ</h1>
+
+    <div id="toolbar">
+        <button class="color-btn k1" onclick="setColor('k1')">К1 Орфография</button>
+        <button class="color-btn k2" onclick="setColor('k2')">К2 Грамматика</button>
+        <button class="color-btn k3" onclick="setColor('k3')">К3 Пунктуация</button>
+        <button class="color-btn clear" onclick="setColor(null)">Снять выделение</button>
+    </div>
+
+    <div id="essay" contenteditable="true" placeholder="Вставьте текст сочинения здесь..."></div>
+
+    <div class="scores-container">
+        <label for="score-k1">Баллы за К1:</label>
+        <input type="number" id="score-k1" min="0" max="5" placeholder="0-5" oninput="updateTotal()">
+
+        <label for="score-k2">Баллы за К2:</label>
+        <input type="number" id="score-k2" min="0" max="5" placeholder="0-5" oninput="updateTotal()">
+
+        <label for="score-k3">Баллы за К3:</label>
+        <input type="number" id="score-k3" min="0" max="5" placeholder="0-5" oninput="updateTotal()">
+
+        <div class="total-score">Итоговый балл: <span id="total-score">0</span></div>
+
+        <label for="comment">Общий комментарий:</label>
+        <textarea id="comment" placeholder="Введите общий комментарий к сочинению"></textarea>
+    </div>
+</div>
+
+<script>
+let currentColor = null;
+function setColor(color) { currentColor = color; }
+
+const essayDiv = document.getElementById('essay');
+essayDiv.addEventListener('mouseup', () => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (range.toString().trim() === "") return;
+
+    if (currentColor === null) {
+        const span = getParentSpan(range.startContainer);
+        if (span) { span.outerHTML = span.innerHTML; }
+        selection.removeAllRanges();
+        return;
+    }
+
+    const span = document.createElement('span');
+    span.className = `highlight ${currentColor}`;
+    span.textContent = range.toString();
+    range.deleteContents();
+    range.insertNode(span);
+    selection.removeAllRanges();
+});
+
+function getParentSpan(node) {
+    while (node && node !== essayDiv) {
+        if (node.nodeType === 1 && node.tagName === 'SPAN' && node.classList.contains('highlight')) return node;
+        node = node.parentNode;
+    }
+    return null;
+}
+
+function updateTotal() {
+    const k1 = parseInt(document.getElementById('score-k1').value) || 0;
+    const k2 = parseInt(document.getElementById('score-k2').value) || 0;
+    const k3 = parseInt(document.getElementById('score-k3').value) || 0;
+    document.getElementById('total-score').textContent = k1 + k2 + k3;
+}
+</script>
+
+</body>
+</html>
