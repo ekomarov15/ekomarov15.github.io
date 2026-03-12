@@ -3,742 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Филолог.ру — платформа для филологов</title>
+    <title>Эксперт.ру - Образовательная платформа</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            background: #f5f9ff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #1a2b3e;
-            line-height: 1.5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
 
-        .app {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        /* === СОВРЕМЕННЫЙ ХЕДЕР === */
-        .header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 16px 28px;
-            margin-bottom: 28px;
-            box-shadow: 0 10px 30px rgba(0, 20, 40, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.7);
+        /* Навигация */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
+            align-items: center;
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #1e3a5f, #2c5282);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
-        }
-        .logo span {
-            font-weight: 300;
-            color: #6f8fc0;
-            -webkit-text-fill-color: #6f8fc0;
+            text-decoration: none;
         }
 
         .nav-menu {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
         }
 
-        .nav-item {
-            padding: 10px 24px;
-            border-radius: 40px;
+        .nav-menu a {
+            text-decoration: none;
+            color: #4b5563;
             font-weight: 500;
-            color: #2a405c;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
         }
 
-        .nav-item:hover {
-            background: #e7f0fd;
-            border-color: #b9d0ee;
+        .nav-menu a:hover {
+            background: #f3f4f6;
+            color: #2563eb;
         }
 
-        .nav-item.active {
-            background: #1e3a5f;
+        .nav-menu a.active {
+            background: #2563eb;
             color: white;
-            border-color: #1e3a5f;
         }
 
-        .auth-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .login-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
+            padding: 0.5rem 1.5rem !important;
+            border-radius: 40px !important;
         }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: white;
-            padding: 8px 20px 8px 15px;
-            border-radius: 50px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        .login-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            background: #1e3a5f;
-            border-radius: 50%;
+        /* Основной контент */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Главная страница */
+        .home-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .hero-section {
+            text-align: center;
             color: white;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
             font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-text {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* Авторизация */
+        .auth-container {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: #6b7280;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 50px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 40px;
+            background: transparent;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-btn.active {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .auth-btn {
-            padding: 10px 25px;
-            border-radius: 40px;
-            border: 1px solid #c3d6f0;
-            background: white;
-            font-weight: 600;
-            color: #1e3a5f;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .auth-btn.primary {
-            background: #1e3a5f;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border-color: #1e3a5f;
-        }
-
-        /* === СТРАНИЦЫ === */
-        .page {
-            display: none;
-            animation: fadeIn 0.2s ease;
-        }
-        .page.active-page {
-            display: block;
-        }
-        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-
-        /* === ЗАГЛУШКИ ДЛЯ ПУСТЫХ СТРАНИЦ === */
-        .placeholder-page {
-            background: white;
-            border-radius: 48px;
-            padding: 80px 40px;
-            text-align: center;
-            color: #8da3c0;
-            font-size: 1.8rem;
-            font-weight: 300;
-            border: 2px dashed #d4e2f5;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.02);
-        }
-
-        /* === СТРАНИЦА ПРОВЕРКИ РАБОТ (усовершенствованная) === */
-        .check-layout {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 28px;
-        }
-
-        .editor-card, .criteria-card {
-            background: white;
-            border-radius: 48px;
-            padding: 28px;
-            box-shadow: 0 20px 45px -15px rgba(0,30,70,0.15);
-            border: 1px solid rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .section-header h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: #1e2f4b;
-        }
-        .badge-new {
-            background: #e05a5a;
-            color: white;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        /* входящие работы */
-        .inbox-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 30px;
-            background: #f2f8ff;
-            padding: 16px;
-            border-radius: 40px;
-        }
-
-        .inbox-card {
-            background: white;
-            border-radius: 30px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            border: 1px solid #e3ecf7;
-            cursor: pointer;
-            transition: 0.2s;
-            flex: 1 1 240px;
-        }
-        .inbox-card:hover {
-            border-color: #1e3a5f;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(0,30,70,0.1);
-        }
-        .inbox-card.new {
-            border-left: 8px solid #3f8fd2;
-        }
-        .student-avatar {
-            width: 48px;
-            height: 48px;
-            background: #edf3fd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #1e3a5f;
-        }
-
-        /* тулбар */
-        .toolbar-modern {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            background: #f2f8ff;
-            padding: 20px;
-            border-radius: 60px;
-            margin: 25px 0;
-            border: 1px solid #dfecfc;
-        }
-
-        .crit-btn {
             border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-        .crit-btn:hover {
-            filter: brightness(0.96);
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(45,100,200,0.15);
-        }
-
-        /* цвета критериев (чистая палитра) */
-        .btn-gk1 { background: #fce9b4; color: #5e4a2a; }
-        .btn-gk2 { background: #c2f0d4; color: #1c603c; }
-        .btn-gk3 { background: #c3e2ff; color: #19487a; }
-        .btn-gk4 { background: #e7d1ff; color: #49346e; }
-        .btn-fk1 { background: #ffd3e8; color: #992b64; }
-        .btn-sk1 { background: #ffdbb5; color: #7b4f24; }
-        .btn-sk2 { background: #c9f0c9; color: #256f46; }
-        .btn-sk3 { background: #d3def5; color: #2b4670; }
-        .btn-sk4 { background: #b7eef5; color: #1a737d; }
-
-        /* редактор */
-        .text-editor-modern {
-            background: #ffffff;
-            border-radius: 36px;
-            padding: 28px;
-            min-height: 400px;
-            max-height: 550px;
-            overflow-y: auto;
-            border: 2px solid #eaf1fd;
-            line-height: 1.8;
-            font-size: 1.05rem;
-            outline: none;
-            transition: 0.2s;
-            box-shadow: inset 0 2px 10px #f0f7ff;
-        }
-        .text-editor-modern:focus {
-            border-color: #1e3a5f;
-        }
-
-        /* маркеры */
-        .mark-gk1 { background: rgba(252, 233, 180, 0.7); border-bottom: 3px solid #e3b35c; }
-        .mark-gk2 { background: rgba(194, 240, 212, 0.7); border-bottom: 3px solid #42a86b; }
-        .mark-gk3 { background: rgba(195, 226, 255, 0.7); border-bottom: 3px solid #4c8fd4; }
-        .mark-gk4 { background: rgba(231, 209, 255, 0.7); border-bottom: 3px solid #a572e0; }
-        .mark-fk1 { background: rgba(255, 211, 232, 0.7); border-bottom: 3px solid #de559b; }
-        .mark-sk1 { background: rgba(255, 219, 181, 0.7); border-bottom: 3px solid #cd9145; }
-        .mark-sk2 { background: rgba(201, 240, 201, 0.7); border-bottom: 3px solid #4ba36b; }
-        .mark-sk3 { background: rgba(211, 222, 245, 0.7); border-bottom: 3px solid #5377b5; }
-        .mark-sk4 { background: rgba(183, 238, 245, 0.7); border-bottom: 3px solid #369caa; }
-
-        /* правая панель */
-        .type-switch-modern {
-            background: #f2f8ff;
-            border-radius: 60px;
-            padding: 8px;
-            display: flex;
-            gap: 8px;
-            margin-bottom: 25px;
-        }
-        .type-option {
-            flex: 1;
-            text-align: center;
-            padding: 14px 8px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #3b5a7c;
-            transition: 0.2s;
-        }
-        .type-option.active {
-            background: white;
-            color: #1e3a5f;
-            box-shadow: 0 6px 18px rgba(0,50,90,0.1);
-        }
-        .type-option input { display: none; }
-
-        .criteria-list {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-
-        .criterion-card-modern {
-            background: #fafdff;
-            border-radius: 32px;
-            padding: 22px;
-            border: 1px solid #e3efff;
-            transition: 0.1s;
-        }
-
-        .criterion-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .criterion-header span:first-child {
-            font-weight: 600;
-            color: #1e3f62;
-        }
-        .criterion-max {
-            background: #e1edfd;
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .score-slider {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 15px 0;
-        }
-        .score-input-modern {
-            width: 85px;
-            padding: 14px 12px;
-            border: 2px solid #d0e2f7;
-            border-radius: 40px;
-            font-weight: 700;
+            border-radius: 12px;
             font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-accounts {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #6b7280;
             text-align: center;
-            background: white;
-        }
-        .criterion-comment-modern {
-            width: 100%;
-            border: 2px solid #d9e8fa;
-            border-radius: 28px;
-            padding: 16px;
-            font-size: 0.95rem;
-            resize: vertical;
-            background: white;
-            margin-top: 12px;
         }
 
-        .total-modern {
-            background: #1e3a5f;
-            color: white;
-            border-radius: 36px;
-            padding: 28px;
-            margin-top: 25px;
-        }
-        .total-row-modern {
-            display: flex;
-            justify-content: space-between;
-            font-size: 2.3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        .global-comment-modern {
-            background: #ffffff20;
-            border: 2px solid #ffffff40;
-            border-radius: 30px;
-            padding: 18px;
-            width: 100%;
-            color: white;
-            margin: 20px 0;
-            resize: vertical;
-        }
-        .global-comment-modern::placeholder { color: #bfd9ff; }
-        .actions-modern {
-            display: flex;
-            gap: 12px;
-        }
-        .btn-primary-modern {
-            background: white;
-            color: #1e3a5f;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            flex: 1;
-            font-size: 1rem;
-        }
-        .btn-secondary-modern {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-            padding: 16px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            flex: 1;
+        .test-accounts p {
+            margin: 0.3rem 0;
         }
 
-        /* модалки авторизации */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal.active-modal { display: flex; }
-        .modal-card {
-            background: white;
-            border-radius: 60px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-        }
-        .modal-title { font-size: 2rem; margin-bottom: 25px; }
-        .input-group { margin-bottom: 20px; }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 16px 22px;
-            border: 2px solid #dbe6f2;
-            border-radius: 50px;
-            font-size: 1rem;
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                gap: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .auth-container {
+                padding: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- Хедер -->
-        <header class="header">
-            <div class="logo" onclick="showPage('home')">Филолог<span>.ру</span></div>
-            <nav class="nav-menu">
-                <span class="nav-item" onclick="showPage('home')">Главная</span>
-                <span class="nav-item active" onclick="showPage('works')">Работы</span>
-                <span class="nav-item" onclick="showPage('library')">Библиотека</span>
-                <span class="nav-item" onclick="showPage('experts')">Экспертам</span>
-                <span class="nav-item" onclick="showPage('about')">О проекте</span>
-            </nav>
-            <div class="auth-section" id="authSection">
-                <div class="user-profile" onclick="showPage('profile')">
-                    <div class="avatar">А</div>
-                    <span>Анна Н.</span>
-                </div>
-                <button class="auth-btn" id="logoutBtn">Выйти</button>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <a href="#" class="logo" onclick="showHome()">Эксперт.ру</a>
+        <ul class="nav-menu">
+            <li><a href="#" onclick="showHome()" id="nav-home" class="active">Главная</a></li>
+            <li><a href="#" onclick="goToExpert()" id="nav-expert">Работы</a></li>
+            <li><a href="#" onclick="showAuth()" id="nav-login" class="login-btn">Войти</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content" id="mainContent">
+        <!-- Главная страница (показывается по умолчанию) -->
+        <div id="homeSection" class="home-container">
+            <div class="hero-section">
+                <h1 class="hero-title">Добро пожаловать на Эксперт.ру!</h1>
+                <p class="hero-subtitle">Профессиональная платформа для проверки учебных работ</p>
+                <a href="#" onclick="showAuth()" class="cta-button">Начать работу</a>
             </div>
-        </header>
 
-        <!-- СТРАНИЦЫ -->
-        <!-- Главная -->
-        <div id="homePage" class="page">
-            <div class="placeholder-page">
-                📚 Главная страница — скоро здесь будет лента материалов
-            </div>
-        </div>
-
-        <!-- Работы (проверка) -->
-        <div id="worksPage" class="page active-page">
-            <div class="check-layout">
-                <!-- левая колонка -->
-                <div class="editor-card">
-                    <div class="section-header">
-                        <h2>📥 Входящие работы</h2>
-                        <span class="badge-new">3 новых</span>
-                    </div>
-                    <div class="inbox-grid" id="incomingList"></div>
-
-                    <h2 style="margin: 20px 0 10px;">🛠 Редактор</h2>
-                    <div class="toolbar-modern" id="toolbar"></div>
-                    <div id="editor" class="text-editor-modern" contenteditable="true">
-                        Выберите работу из списка...
-                    </div>
-                    <div style="color:#8aa5c5; margin-top:12px;">✓ выделите фрагмент → нажмите критерий</div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3 class="feature-title">Умная проверка</h3>
+                    <p class="feature-text">Выделяйте ошибки по критериям цветом прямо в тексте. Удобный редактор с подсветкой.</p>
                 </div>
-
-                <!-- правая колонка -->
-                <div class="criteria-card">
-                    <h2>📋 Оценивание</h2>
-                    <div class="type-switch-modern" id="workTypeSwitch">
-                        <label class="type-option active" id="essayOption">
-                            <input type="radio" name="workType" value="essay" checked> Сочинение
-                        </label>
-                        <label class="type-option" id="dictantOption">
-                            <input type="radio" name="workType" value="dictant"> Диктант
-                        </label>
-                    </div>
-
-                    <div id="criteriaContainer" class="criteria-list"></div>
-
-                    <div class="total-modern">
-                        <div class="total-row-modern">
-                            <span>Итого</span>
-                            <span id="totalScore">0</span>
-                        </div>
-                        <textarea id="globalComment" class="global-comment-modern" placeholder="Общий комментарий..." rows="2"></textarea>
-                        <div class="actions-modern">
-                            <button class="btn-primary-modern" id="saveWorkBtn">💾 Сохранить</button>
-                            <button class="btn-secondary-modern" id="exportPdfBtn">📄 PDF</button>
-                        </div>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Гибкие критерии</h3>
+                    <p class="feature-text">ГК1-ГК4, ФК1 для диктантов и дополнительные СК1-СК4 для сочинений.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Автоматический подсчет</h3>
+                    <p class="feature-text">Система сама считает общий балл. Остается только сохранить работу или экспортировать в PDF.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Быстрый старт</h3>
+                    <p class="feature-text">Простая авторизация и понятный интерфейс. Начните проверять работы за минуту.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Библиотека -->
-        <div id="libraryPage" class="page">
-            <div class="placeholder-page">
-                📖 Библиотека текстов — скоро откроется
+        <!-- Форма авторизации (скрыта по умолчанию) -->
+        <div id="authSection" style="display: none;" class="auth-container">
+            <div class="auth-header">
+                <h2 class="auth-title">Вход в систему</h2>
+                <p class="auth-subtitle">Выберите роль и войдите в свой кабинет</p>
+            </div>
+            
+            <div class="role-selector">
+                <button class="role-btn active" onclick="setRole('expert')">Эксперт</button>
+                <button class="role-btn" onclick="setRole('student')">Ученик</button>
+            </div>
+
+            <form onsubmit="login(event)">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required value="expert@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" required value="123456">
+                </div>
+                <button type="submit" class="auth-btn">Войти</button>
+            </form>
+            
+            <div class="test-accounts">
+                <p><strong>Тестовые аккаунты:</strong></p>
+                <p>👨‍🏫 Эксперт: expert@example.com / 123456</p>
+                <p>👨‍🎓 Ученик: student@example.com / 123456</p>
             </div>
         </div>
-
-        <!-- Экспертам -->
-        <div id="expertsPage" class="page">
-            <div class="placeholder-page">
-                🔍 Кабинет эксперта — дополнительные материалы
-            </div>
-        </div>
-
-        <!-- О проекте -->
-        <div id="aboutPage" class="page">
-            <div class="placeholder-page">
-                🌿 О проекте Филолог.ру — информация
-            </div>
-        </div>
-
-        <!-- Личный кабинет -->
-        <div id="profilePage" class="page">
-            <div class="placeholder-page">
-                👤 Личный кабинет (заглушка)
-            </div>
-        </div>
-
-        <!-- модалки авторизации (упрощенно) -->
-        <div id="loginModal" class="modal"></div>
     </div>
 
     <script>
-        // ========== ДАННЫЕ ==========
-        const incomingWorks = [
-            { id: 1, student: 'Михаил С.', avatar: 'М', title: 'Образ осени', text: 'Осенний лес встретил нас тишиной. Листья, словно золотые монеты, устилали тропинку. Воздух был прозрачен и свеж. Мы шли долго, пока не вышли к старой сторожке. Её крыша лишилась нескольких досок, но в целом она сохранилась. Пунктуационная ошибка: конец придаточного, поэтому нужна запятая.', type: 'essay' },
-            { id: 2, student: 'Анна П.', avatar: 'А', title: 'Тема дружбы', text: 'Дружба занимает важное место в лирике Пушкина. Стихотворение "К Чаадаеву" проникнуто искренним чувством. Однако хочется отметить, что тема раскрыта не полностью.', type: 'essay' },
-            { id: 3, student: 'Иван К.', avatar: 'И', title: 'Диктант', text: 'Весенний ручей журчал среди камней. Солнце поднималось всё выше, и лёд на реке начал таять. Вдали показались первые проталины.', type: 'dictant' }
-        ];
-        let currentWork = incomingWorks[0];
+        let currentRole = 'expert';
 
-        // ========== КРИТЕРИИ ==========
-        const baseCriteria = {
-            gk1: { label: 'ГК1 (орфографические)', short: 'ГК1', max: 3, colorClass: 'btn-gk1', marker: 'mark-gk1' },
-            gk2: { label: 'ГК2 (пунктуационные)', short: 'ГК2', max: 3, colorClass: 'btn-gk2', marker: 'mark-gk2' },
-            gk3: { label: 'ГК3 (грамматические)', short: 'ГК3', max: 3, colorClass: 'btn-gk3', marker: 'mark-gk3' },
-            gk4: { label: 'ГК4 (речевые)', short: 'ГК4', max: 3, colorClass: 'btn-gk4', marker: 'mark-gk4' },
-            fk1: { label: 'ФК1 (фактическая точность)', short: 'ФК1', max: 1, colorClass: 'btn-fk1', marker: 'mark-fk1' }
-        };
-        const essaySpecific = {
-            sk1: { label: 'СК1 (отражение позиции автора)', short: 'СК1', max: 1, colorClass: 'btn-sk1', marker: 'mark-sk1' },
-            sk2: { label: 'СК2 (комментарий к позиции)', short: 'СК2', max: 3, colorClass: 'btn-sk2', marker: 'mark-sk2' },
-            sk3: { label: 'СК3 (собственное отношение)', short: 'СК3', max: 2, colorClass: 'btn-sk3', marker: 'mark-sk3' },
-            sk4: { label: 'СК4 (фактическая точность речи)', short: 'СК4', max: 1, colorClass: 'btn-sk4', marker: 'mark-sk4' }
-        };
-
-        let currentCriteria = { ...baseCriteria, ...essaySpecific };
-        let scores = {}, comments = {};
-
-        function resetScores() {
-            scores = {}; comments = {};
-            Object.keys(currentCriteria).forEach(k => { scores[k] = 0; comments[k] = ''; });
+        // Показать главную
+        function showHome() {
+            document.getElementById('homeSection').style.display = 'block';
+            document.getElementById('authSection').style.display = 'none';
+            
+            document.getElementById('nav-home').classList.add('active');
+            document.getElementById('nav-expert').classList.remove('active');
+            document.getElementById('nav-login').classList.remove('active');
         }
 
-        // ========== НАВИГАЦИЯ ==========
-        window.showPage = (pageId) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId + 'Page').classList.add('active-page');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.textContent.toLowerCase().includes(pageId === 'works' ? 'работы' : pageId));
-            if (activeNav) activeNav.classList.add('active');
-        };
-
-        // ========== РАБОТЫ ==========
-        function renderIncoming() {
-            const container = document.getElementById('incomingList');
-            if (!container) return;
-            container.innerHTML = incomingWorks.map(w => `
-                <div class="inbox-card new" onclick="loadWork(${w.id})">
-                    <div class="student-avatar">${w.avatar}</div>
-                    <div>
-                        <div style="font-weight:600;">${w.student}</div>
-                        <small>${w.title}</small>
-                    </div>
-                </div>
-            `).join('');
+        // Показать форму авторизации
+        function showAuth() {
+            document.getElementById('homeSection').style.display = 'none';
+            document.getElementById('authSection').style.display = 'block';
+            
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-expert').classList.remove('active');
+            document.getElementById('nav-login').classList.add('active');
         }
 
-        window.loadWork = (id) => {
-            const work = incomingWorks.find(w => w.id === id);
-            if (!work) return;
-            currentWork = work;
-            document.getElementById('editor').innerHTML = work.text;
-            document.querySelector(`input[name="workType"][value="${work.type}"]`).checked = true;
-            document.querySelectorAll('.type-option').forEach(o => o.classList.remove('active'));
-            if (work.type === 'essay') document.getElementById('essayOption').classList.add('active');
-            else document.getElementById('dictantOption').classList.add('active');
-            updateType(work.type);
-        };
-
-        function updateType(type) {
-            currentCriteria = type === 'essay' ? { ...baseCriteria, ...essaySpecific } : { ...baseCriteria };
-            resetScores();
-            renderToolbar();
-            renderCriteria();
-            updateTotal();
-        }
-
-        function renderToolbar() {
-            const toolbar = document.getElementById('toolbar');
-            if (!toolbar) return;
-            toolbar.innerHTML = '';
-            Object.entries(currentCriteria).forEach(([key, def]) => {
-                const btn = document.createElement('button');
-                btn.className = `crit-btn ${def.colorClass}`;
-                btn.textContent = def.short;
-                btn.dataset.crit = key;
-                btn.addEventListener('click', () => applyHighlight(def.marker));
-                toolbar.appendChild(btn);
-            });
-        }
-
-        function applyHighlight(className) {
-            const editor = document.getElementById('editor');
-            const sel = window.getSelection();
-            if (!sel.rangeCount || sel.getRangeAt(0).collapsed) return alert('Выделите текст');
-            const range = sel.getRangeAt(0);
-            if (!editor.contains(range.commonAncestorContainer)) return alert('Только в редакторе');
-            const span = document.createElement('span');
-            span.className = className;
-            try { range.surroundContents(span); } catch (e) {
-                const frag = range.extractContents();
-                span.appendChild(frag);
-                range.insertNode(span);
+        // Переход к странице эксперта
+        function goToExpert() {
+            // Проверяем, авторизован ли пользователь
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const userRole = localStorage.getItem('userRole');
+            
+            if (isLoggedIn && userRole === 'expert') {
+                window.location.href = 'expert.html';
+            } else {
+                alert('Пожалуйста, войдите как эксперт');
+                showAuth();
             }
-            sel.removeAllRanges();
         }
 
-        function renderCriteria() {
-            const container = document.getElementById('criteriaContainer');
-            if (!container) return;
-            let html = '';
-            Object.entries(currentCriteria).forEach(([key, def]) => {
-                html += `<div class="criterion-card-modern">`;
-                html += `<div class="criterion-header"><span>${def.label}</span><span class="criterion-max">макс ${def.max}</span></div>`;
-                html += `<div class="score-slider">`;
-                html += `<input type="number" class="score-input-modern" data-key="${key}" value="${scores[key] || 0}" min="0" max="${def.max}">`;
-                html += `<span style="color:#456f9c;">/ ${def.max}</span>`;
-                html += `</div>`;
-                html += `<textarea class="criterion-comment-modern" data-key="${key}" placeholder="Комментарий к критерию" rows="2">${(comments[key] || '').replace(/</g, '&lt;')}</textarea>`;
-                html += `</div>`;
-            });
-            container.innerHTML = html;
-
-            document.querySelectorAll('.score-input-modern').forEach(inp => {
-                inp.addEventListener('input', function(e) {
-                    const key = this.dataset.key;
-                    let val = parseInt(this.value, 10) || 0;
-                    const max = currentCriteria[key].max;
-                    if (val < 0) val = 0; if (val > max) val = max;
-                    this.value = val;
-                    scores[key] = val;
-                    updateTotal();
-                });
-            });
-            document.querySelectorAll('.criterion-comment-modern').forEach(ta => {
-                ta.addEventListener('input', e => comments[e.target.dataset.key] = e.target.value);
-            });
+        // Установка роли
+        function setRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Меняем тестовый email
+            document.getElementById('email').value = role === 'expert' ? 'expert@example.com' : 'student@example.com';
         }
 
-        function updateTotal() {
-            let total = 0;
-            Object.keys(currentCriteria).forEach(k => total += scores[k] || 0);
-            document.getElementById('totalScore').innerText = total;
+        // Вход в систему
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Проверка учетных данных
+            if (email === 'expert@example.com' && password === '123456') {
+                // Сохраняем состояние в localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', 'expert');
+                localStorage.setItem('userName', 'Анна Сергеевна');
+                
+                // Перенаправляем на страницу эксперта
+                window.location.href = 'expert.html';
+            } 
+            else if (email === 'student@example.com' && password === '123456') {
+                alert('Демо-режим ученика. Для проверки работ войдите как эксперт.');
+            } 
+            else {
+                alert('Неверный email или пароль');
+            }
         }
 
-        // переключение типа
-        document.querySelectorAll('input[name="workType"]').forEach(r => {
-            r.addEventListener('change', (e) => updateType(e.target.value));
-        });
-
-        // сохранение
-        document.getElementById('saveWorkBtn')?.addEventListener('click', () => {
-            alert('Сохранено в системе (консоль)');
-            console.log({ scores, comments, global: document.getElementById('globalComment').value });
-        });
-        document.getElementById('exportPdfBtn')?.addEventListener('click', () => alert('PDF сформирован'));
-
-        // инициализация
-        renderIncoming();
-        loadWork(1); // загружаем первую работу
+        // Проверяем, не авторизован ли уже пользователь при загрузке страницы
+        window.onload = function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const userRole = localStorage.getItem('userRole');
+            
+            if (isLoggedIn && userRole === 'expert') {
+                // Если пользователь уже авторизован как эксперт, показываем кнопку перехода
+                document.getElementById('nav-expert').style.display = 'block';
+            }
+        }
     </script>
 </body>
+</html>
 </html>
