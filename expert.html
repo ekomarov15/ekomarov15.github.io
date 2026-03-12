@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эксперт.ру - Проверка работ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white !important;
+            padding: 0.5rem 1.5rem !important;
+            border-radius: 40px !important;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626 !important;
+        }
+
+        /* Основной контент */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Заголовок */
+        .works-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .works-title {
+            font-size: 2rem;
+            color: #1f2937;
+        }
+
+        .back-btn {
+            background: #f3f4f6;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 40px;
+            color: #4b5563;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* Список работ */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .work-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .work-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            border-color: #2563eb;
+        }
+
+        .work-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 40px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .work-type.essay {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .work-type.dictation {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .work-student {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .work-date {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Редактор проверки */
+        .checker-container {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .checker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .student-info h2 {
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .student-info p {
+            color: #6b7280;
+        }
+
+        .work-type-selector {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .type-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 40px;
+            background: white;
+            color: #4b5563;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .type-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Текстовый редактор */
+        .editor-section {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .text-editor {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .criteria-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .criteria-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+        }
+
+        .criteria-btn.gk1 { background: #ef4444; }
+        .criteria-btn.gk2 { background: #f97316; }
+        .criteria-btn.gk3 { background: #eab308; }
+        .criteria-btn.gk4 { background: #10b981; }
+        .criteria-btn.fk1 { background: #3b82f6; }
+        .criteria-btn.sk1 { background: #8b5cf6; }
+        .criteria-btn.sk2 { background: #ec4899; }
+        .criteria-btn.sk3 { background: #14b8a6; }
+        .criteria-btn.sk4 { background: #f43f5e; }
+
+        .editor-content {
+            min-height: 350px;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            outline: none;
+            line-height: 1.8;
+            color: #1f2937;
+            overflow-y: auto;
+            font-size: 1rem;
+        }
+
+        .editor-content .gk1 { background: rgba(239, 68, 68, 0.2); border-bottom: 2px solid #ef4444; }
+        .editor-content .gk2 { background: rgba(249, 115, 22, 0.2); border-bottom: 2px solid #f97316; }
+        .editor-content .gk3 { background: rgba(234, 179, 8, 0.2); border-bottom: 2px solid #eab308; }
+        .editor-content .gk4 { background: rgba(16, 185, 129, 0.2); border-bottom: 2px solid #10b981; }
+        .editor-content .fk1 { background: rgba(59, 130, 246, 0.2); border-bottom: 2px solid #3b82f6; }
+        .editor-content .sk1 { background: rgba(139, 92, 246, 0.2); border-bottom: 2px solid #8b5cf6; }
+        .editor-content .sk2 { background: rgba(236, 72, 153, 0.2); border-bottom: 2px solid #ec4899; }
+        .editor-content .sk3 { background: rgba(20, 184, 166, 0.2); border-bottom: 2px solid #14b8a6; }
+        .editor-content .sk4 { background: rgba(244, 63, 94, 0.2); border-bottom: 2px solid #f43f5e; }
+
+        /* Панель критериев */
+        .criteria-panel {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .criteria-panel h3 {
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .criterion-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            border-left: 4px solid;
+        }
+
+        .criterion-item.gk1 { border-left-color: #ef4444; }
+        .criterion-item.gk2 { border-left-color: #f97316; }
+        .criterion-item.gk3 { border-left-color: #eab308; }
+        .criterion-item.gk4 { border-left-color: #10b981; }
+        .criterion-item.fk1 { border-left-color: #3b82f6; }
+        .criterion-item.sk1 { border-left-color: #8b5cf6; }
+        .criterion-item.sk2 { border-left-color: #ec4899; }
+        .criterion-item.sk3 { border-left-color: #14b8a6; }
+        .criterion-item.sk4 { border-left-color: #f43f5e; }
+
+        .criterion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .criterion-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .criterion-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .criterion-score input {
+            width: 60px;
+            padding: 0.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .criterion-max {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .criterion-comment {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .total-score {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .total-score span {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .general-comment {
+            margin: 1.5rem 0;
+        }
+
+        .general-comment textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .save-btn, .pdf-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .save-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #059669;
+        }
+
+        .pdf-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .pdf-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .editor-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .works-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .checker-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">Эксперт.ру</a>
+        <ul class="nav-menu">
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="#" class="active">Работы</a></li>
+            <li class="user-badge" id="userBadge">
+                <div class="user-avatar" id="userAvatar">А</div>
+                <span id="userName">Анна Сергеевна</span>
+            </li>
+            <li><a href="#" onclick="logout()" class="logout-btn">Выйти</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <!-- Заголовок -->
+        <div class="works-header">
+            <h1 class="works-title" id="pageTitle">Работы на проверку</h1>
+            <button class="back-btn" id="backBtn" onclick="backToWorks()" style="display: none;">← Назад к списку</button>
+        </div>
+
+        <!-- Список работ -->
+        <div id="worksList" class="works-grid">
+            <!-- Работы будут загружаться динамически -->
+        </div>
+
+        <!-- Редактор проверки -->
+        <div id="checkerEditor" class="checker-container" style="display: none;">
+            <div class="checker-header">
+                <div class="student-info">
+                    <h2 id="currentStudent">Иван Петров</h2>
+                    <p id="currentWorkTitle">Сочинение по литературе</p>
+                </div>
+                <div class="work-type-selector">
+                    <button class="type-btn active" onclick="setWorkType('essay')" id="typeEssay">Сочинение</button>
+                    <button class="type-btn" onclick="setWorkType('dictation')" id="typeDictation">Диктант</button>
+                </div>
+            </div>
+
+            <div class="editor-section">
+                <!-- Текстовый редактор -->
+                <div class="text-editor">
+                    <div class="editor-toolbar">
+                        <button class="criteria-btn gk1" onclick="applyCriteria('gk1')">ГК1</button>
+                        <button class="criteria-btn gk2" onclick="applyCriteria('gk2')">ГК2</button>
+                        <button class="criteria-btn gk3" onclick="applyCriteria('gk3')">ГК3</button>
+                        <button class="criteria-btn gk4" onclick="applyCriteria('gk4')">ГК4</button>
+                        <button class="criteria-btn fk1" onclick="applyCriteria('fk1')">ФК1</button>
+                        <button class="criteria-btn sk1" onclick="applyCriteria('sk1')" id="sk1Btn">СК1</button>
+                        <button class="criteria-btn sk2" onclick="applyCriteria('sk2')" id="sk2Btn">СК2</button>
+                        <button class="criteria-btn sk3" onclick="applyCriteria('sk3')" id="sk3Btn">СК3</button>
+                        <button class="criteria-btn sk4" onclick="applyCriteria('sk4')" id="sk4Btn">СК4</button>
+                    </div>
+                    <div id="editorContent" class="editor-content" contenteditable="true">
+                        В романе "Война и мир" Толстой показывает нам множество персонажей. Особенно интересен образ Пьера Безухова. Пьер ищет смысл жизни, проходит через разочарования и приходит к пониманию простых истин. Автор мастерски раскрывает эволюцию героя. Композиция романа помогает показать развитие персонажа. Толстой использует различные художественные приемы для создания образа.
+                    </div>
+                </div>
+
+                <!-- Панель критериев -->
+                <div class="criteria-panel">
+                    <h3>Критерии оценивания</h3>
+                    <div id="criteriaList" class="criteria-list">
+                        <!-- Критерии будут загружаться динамически -->
+                    </div>
+
+                    <div class="total-score">
+                        Общий балл: <span id="totalScore">0</span>
+                    </div>
+
+                    <div class="general-comment">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Общий комментарий:</label>
+                        <textarea id="generalComment" placeholder="Напишите общий комментарий к работе..."></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="save-btn" onclick="saveWork()">💾 Сохранить работу</button>
+                        <button class="pdf-btn" onclick="saveToPDF()">📥 Сохранить в PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление (скрыто по умолчанию) -->
+    <div id="notification" class="notification" style="display: none;"></div>
+
+    <script>
+        // Состояние приложения
+        let currentWorkType = 'essay';
+        let currentWorkId = null;
+        let criteriaScores = {};
+
+        // Тестовые работы
+        const testWorks = [
+            {
+                id: 1,
+                student: 'Иван Петров',
+                title: 'Сочинение по литературе',
+                type: 'essay',
+                date: '2024-03-13',
+                text: 'В романе "Война и мир" Толстой показывает нам множество персонажей. Особенно интересен образ Пьера Безухова. Пьер ищет смысл жизни, проходит через разочарования и приходит к пониманию простых истин. Автор мастерски раскрывает эволюцию героя. Композиция романа помогает показать развитие персонажа. Толстой использует различные художественные приемы для создания образа.'
+            },
+            {
+                id: 2,
+                student: 'Анна Смирнова',
+                title: 'Сочинение по русской литературе',
+                type: 'essay',
+                date: '2024-03-12',
+                text: 'Образ Наташи Ростовой в романе "Война и мир" является одним из ключевых. Толстой показывает эволюцию героини от юной девушки до зрелой женщины. Наташа обладает удивительной чуткостью и эмоциональностью. Автор подчеркивает её близость к народу, способность к состраданию. Через образ Наташи Толстой раскрывает идею истинной красоты души.'
+            },
+            {
+                id: 3,
+                student: 'Михаил Сидоров',
+                title: 'Диктант по русскому языку',
+                type: 'dictation',
+                date: '2024-03-11',
+                text: 'Весеннее солнце ярко светило на голубом небе. С крыш капала веселая капель. На улицах появились первые лужи. Воробьи купались в них и громко чирикали. Воздух стал чистым и прозрачным. Природа просыпалась после долгого зимнего сна. Деревья набухали почками, готовясь к новому сезону.'
+            },
+            {
+                id: 4,
+                student: 'Елена Козлова',
+                title: 'Контрольный диктант',
+                type: 'dictation',
+                date: '2024-03-10',
+                text: 'Осенью лес особенно красив. Деревья стоят в золотом убранстве. Под ногами шуршит листва. Воздух прозрачен и свеж. Грибники собирают последние дары леса. Птицы готовятся к отлету в теплые края. Природа засыпает до весны, но в этом есть своя особая прелесть.'
+            }
+        ];
+
+        // Критерии для разных типов работ
+        const criteria = {
+            essay: {
+                gk1: { name: 'ГК1 (орфография)', max: 3, color: 'gk1' },
+                gk2: { name: 'ГК2 (пунктуация)', max: 3, color: 'gk2' },
+                gk3: { name: 'ГК3 (грамматика)', max: 3, color: 'gk3' },
+                gk4: { name: 'ГК4 (речь)', max: 3, color: 'gk4' },
+                fk1: { name: 'ФК1 (факты)', max: 1, color: 'fk1' },
+                sk1: { name: 'СК1 (композиция)', max: 1, color: 'sk1' },
+                sk2: { name: 'СК2 (раскрытие темы)', max: 3, color: 'sk2' },
+                sk3: { name: 'СК3 (аргументация)', max: 2, color: 'sk3' },
+                sk4: { name: 'СК4 (оригинальность)', max: 1, color: 'sk4' }
+            },
+            dictation: {
+                gk1: { name: 'ГК1 (орфография)', max: 3, color: 'gk1' },
+                gk2: { name: 'ГК2 (пунктуация)', max: 3, color: 'gk2' },
+                gk3: { name: 'ГК3 (грамматика)', max: 3, color: 'gk3' },
+                gk4: { name: 'ГК4 (речь)', max: 3, color: 'gk4' },
+                fk1: { name: 'ФК1 (факты)', max: 1, color: 'fk1' }
+            }
+        };
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем авторизацию
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!isLoggedIn || userRole !== 'expert') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Загружаем имя пользователя
+            const userName = localStorage.getItem('userName') || 'Анна Сергеевна';
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userAvatar').textContent = userName.charAt(0);
+
+            // Загружаем список работ
+            loadWorks();
+        });
+
+        // Выход из системы
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            window.location.href = 'index.html';
+        }
+
+        // Загрузка работ
+        function loadWorks() {
+            const worksList = document.getElementById('worksList');
+            
+            worksList.innerHTML = testWorks.map(work => `
+                <div class="work-card" onclick="openWork(${work.id})">
+                    <span class="work-type ${work.type === 'essay' ? 'essay' : 'dictation'}">
+                        ${work.type === 'essay' ? '✍️ Сочинение' : '📝 Диктант'}
+                    </span>
+                    <div class="work-student">👤 ${work.student}</div>
+                    <div class="work-title" style="margin-bottom: 0.5rem; color: #4b5563;">📌 ${work.title}</div>
+                    <div class="work-date">📅 ${work.date}</div>
+                </div>
+            `).join('');
+        }
+
+        // Открыть работу
+        function openWork(workId) {
+            const work = testWorks.find(w => w.id === workId);
+            if (!work) return;
+
+            currentWorkId = workId;
+            
+            document.getElementById('worksList').style.display = 'none';
+            document.getElementById('checkerEditor').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('pageTitle').textContent = 'Проверка работы';
+            
+            document.getElementById('currentStudent').textContent = work.student;
+            document.getElementById('currentWorkTitle').textContent = work.title;
+            document.getElementById('editorContent').innerHTML = work.text;
+
+            setWorkType(work.type);
+            showNotification('Работа открыта. Вы можете начать проверку.', 'info');
+        }
+
+        // Вернуться к списку работ
+        function backToWorks() {
+            document.getElementById('worksList').style.display = 'grid';
+            document.getElementById('checkerEditor').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('pageTitle').textContent = 'Работы на проверку';
+        }
+
+        // Установка типа работы
+        function setWorkType(type) {
+            currentWorkType = type;
+            
+            // Обновляем активную кнопку
+            document.getElementById('typeEssay').classList.remove('active');
+            document.getElementById('typeDictation').classList.remove('active');
+            document.getElementById(`type${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+
+            // Показываем/скрываем кнопки СК
+            const skButtons = ['sk1Btn', 'sk2Btn', 'sk3Btn', 'sk4Btn'];
+            skButtons.forEach(id => {
+                document.getElementById(id).style.display = type === 'essay' ? 'inline-block' : 'none';
+            });
+
+            // Загружаем критерии
+            loadCriteria();
+        }
+
+        // Загрузка критериев
+        function loadCriteria() {
+            const criteriaList = document.getElementById('criteriaList');
+            const currentCriteria = criteria[currentWorkType];
+            
+            criteriaList.innerHTML = '';
+            criteriaScores = {};
+
+            for (let [key, value] of Object.entries(currentCriteria)) {
+                criteriaScores[key] = 0;
+                
+                const criterionDiv = document.createElement('div');
+                criterionDiv.className = `criterion-item ${value.color}`;
+                criterionDiv.innerHTML = `
+                    <div class="criterion-header">
+                        <span class="criterion-name">${value.name}</span>
+                        <div class="criterion-score">
+                            <input type="number" min="0" max="${value.max}" value="0" id="score-${key}" onchange="updateScore('${key}', this.value, ${value.max})">
+                            <span class="criterion-max">/${value.max}</span>
+                        </div>
+                    </div>
+                    <textarea class="criterion-comment" id="comment-${key}" placeholder="Комментарий к критерию..." onchange="updateComment('${key}', this.value)"></textarea>
+                `;
+                criteriaList.appendChild(criterionDiv);
+            }
+
+            updateTotalScore();
+        }
+
+        // Обновление балла критерия
+        function updateScore(criterion, value, max) {
+            let score = parseInt(value) || 0;
+            if (score > max) score = max;
+            if (score < 0) score = 0;
+            
+            document.getElementById(`score-${criterion}`).value = score;
+            criteriaScores[criterion] = score;
+            updateTotalScore();
+        }
+
+        // Обновление комментария
+        function updateComment(criterion, comment) {
+            // Сохраняем комментарий
+            console.log(`Комментарий для ${criterion}: ${comment}`);
+        }
+
+        // Подсчет общего балла
+        function updateTotalScore() {
+            const total = Object.values(criteriaScores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScore').textContent = total;
+            return total;
+        }
+
+        // Применение критерия к выделенному тексту
+        function applyCriteria(criteria) {
+            const editor = document.getElementById('editorContent');
+            const selection = window.getSelection();
+            
+            if (selection.rangeCount > 0 && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.className = criteria;
+                span.textContent = range.toString();
+                
+                range.deleteContents();
+                range.insertNode(span);
+                
+                // Снимаем выделение
+                selection.removeAllRanges();
+                
+                showNotification(`Текст отмечен критерием ${criteria.toUpperCase()}`, 'info');
+            } else {
+                showNotification('Выделите текст, чтобы применить критерий', 'info');
+            }
+        }
+
+        // Сохранение работы
+        function saveWork() {
+            const totalScore = document.getElementById('totalScore').textContent;
+            const generalComment = document.getElementById('generalComment').value;
+            
+            // Собираем все комментарии по критериям
+            const criteriaComments = {};
+            for (let key of Object.keys(criteriaScores)) {
+                const commentEl = document.getElementById(`comment-${key}`);
+                if (commentEl) {
+                    criteriaComments[key] = commentEl.value;
+                }
+            }
+            
+            showNotification(`✅ Работа сохранена! Балл: ${totalScore}`, 'success');
+            
+            // Здесь была бы логика сохранения на сервер
+        }
+
+        // Сохранение в PDF
+        function saveToPDF() {
+            const totalScore = document.getElementById('totalScore').textContent;
+            const generalComment = document.getElementById('generalComment').value;
+            const studentName = document.getElementById('currentStudent').textContent;
+            const workTitle = document.getElementById('currentWorkTitle').textContent;
+            
+            // Формируем имя файла
+            const fileName = `${studentName}_${workTitle}_${totalScore}б.pdf`.replace(/\s+/g, '_');
+            
+            showNotification(`📥 PDF файл "${fileName}" готов к скачиванию`, 'success');
+            // Здесь была бы логика генерации PDF
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
