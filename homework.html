@@ -75,6 +75,11 @@
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-secondary {
+            background: #d5e4ff;
+            color: #1e3a5f;
         }
         .assignment-list {
             display: flex;
@@ -91,17 +96,31 @@
             flex-wrap: wrap;
             border: 1px solid #d0e0f0;
         }
+        .assignment-info {
+            flex: 2 1 300px;
+        }
         .assignment-info h3 { margin-bottom: 8px; color: #102b44; }
         .assignment-info p { color: #2f4b70; }
+        .assignment-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .btn-small {
             background: #d5e4ff;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 40px;
             font-weight: 600;
             color: #1e3a5f;
             cursor: pointer;
+            font-size: 0.9rem;
         }
+        .btn-small.delete {
+            background: #ffe0e0;
+            color: #b33;
+        }
+        hr { border: 1px solid #d4e2f0; margin: 40px 0; }
         .results-list {
             display: flex;
             flex-direction: column;
@@ -154,7 +173,16 @@
             border: 2px solid white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        hr { border: 1px solid #d4e2f0; margin: 40px 0; }
+        .cancel-edit {
+            background: #b0c6dd;
+            color: #1e3a5f;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -172,17 +200,10 @@
 
     <script>
         (function() {
-            // Получаем пользователя сначала из sessionStorage, потом из localStorage (для совместимости)
+            // Проверка авторизации и роли
             let user;
             try {
                 user = JSON.parse(sessionStorage.getItem('currentUser'));
-                if (!user) {
-                    user = JSON.parse(localStorage.getItem('currentUser'));
-                    if (user) {
-                        sessionStorage.setItem('currentUser', JSON.stringify(user));
-                        localStorage.removeItem('currentUser');
-                    }
-                }
             } catch (e) {
                 user = null;
             }
@@ -200,7 +221,6 @@
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 sessionStorage.removeItem('currentUser');
-                localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             });
 
@@ -222,55 +242,153 @@
                 }
             }
 
-            // УЧИТЕЛЬСКАЯ ВЕРСИЯ
+            // ---------- УЧИТЕЛЬСКАЯ ВЕРСИЯ (с редактированием и удалением) ----------
+            let editingId = null; // id редактируемого задания, если null — создание нового
+
             function renderTeacherView() {
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
                 container.innerHTML = `
-                    <h2>📝 Создать задание</h2>
+                    <h2>${editingId ? '✏️ Редактировать задание' : '📝 Создать задание'}</h2>
                     <div class="teacher-form">
-                        <input type="text" id="titleInput" placeholder="Название задания" />
+                        <input type="text" id="titleInput" placeholder="Название задания" value="" />
                         <textarea id="descInput" placeholder="Текст задания (можно использовать форматирование)" rows="5"></textarea>
                         <input type="number" id="maxScoreInput" placeholder="Максимальный балл" />
                         <textarea id="answerInput" placeholder="Ответ для учителя (виден только при проверке)" rows="3"></textarea>
-                        <button class="btn" id="createBtn">➕ Создать задание</button>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" id="saveBtn">${editingId ? '💾 Сохранить изменения' : '➕ Создать задание'}</button>
+                            ${editingId ? '<button class="cancel-edit" id="cancelEditBtn">Отмена</button>' : ''}
+                        </div>
                     </div>
                     <hr />
                     <h2>📋 Все задания</h2>
                     <div id="allAssignmentsList" class="assignment-list"></div>
                 `;
 
-                const assignments = JSON.parse(localStorage.getItem('assignments'));
-                const listDiv = document.getElementById('allAssignmentsList');
-                listDiv.innerHTML = assignments.map(a => `
-                    <div class="assignment-item">
-                        <div class="assignment-info">
-                            <h3>${a.title}</h3>
-                            <p>${a.description.substring(0,80)}…</p>
-                            <small>Макс. балл: ${a.maxScore}</small>
-                        </div>
-                    </div>
-                `).join('') || '<p>Пока нет заданий</p>';
+                // Если редактируем, заполняем поля
+                if (editingId) {
+                    const assignment = assignments.find(a => a.id == editingId);
+                    if (assignment) {
+                        document.getElementById('titleInput').value = assignment.title || '';
+                        document.getElementById('descInput').value = assignment.description || '';
+                        document.getElementById('maxScoreInput').value = assignment.maxScore || '';
+                        document.getElementById('answerInput').value = assignment.answer || '';
+                    }
+                }
 
-                document.getElementById('createBtn').addEventListener('click', () => {
+                // Отображаем список заданий с кнопками
+                const listDiv = document.getElementById('allAssignmentsList');
+                if (assignments.length === 0) {
+                    listDiv.innerHTML = '<p>Пока нет заданий</p>';
+                } else {
+                    listDiv.innerHTML = assignments.map(a => `
+                        <div class="assignment-item" data-id="${a.id}">
+                            <div class="assignment-info">
+                                <h3>${escapeHtml(a.title)}</h3>
+                                <p>${escapeHtml(a.description.substring(0,100))}…</p>
+                                <small>Макс. балл: ${a.maxScore}</small>
+                            </div>
+                            <div class="assignment-actions">
+                                <button class="btn-small edit-btn" data-id="${a.id}">✏️ Ред.</button>
+                                <button class="btn-small delete" data-id="${a.id}">🗑️ Удалить</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Обработчики кнопок в списке
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        editingId = id;
+                        renderTeacherView(); // перерендерим форму с заполненными данными
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    // На самом деле класс .delete, но выше я использовал "delete", поэтому исправим селектор
+                });
+                // Более правильно:
+                document.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = btn.dataset.id;
+                        if (confirm('Вы уверены, что хотите удалить это задание? Все связанные работы учеников останутся, но задание будет помечено как неизвестное.')) {
+                            let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                            assignments = assignments.filter(a => a.id != id);
+                            localStorage.setItem('assignments', JSON.stringify(assignments));
+                            if (editingId == id) editingId = null; // сброс редактирования, если удалили редактируемое
+                            renderTeacherView();
+                        }
+                    });
+                });
+
+                // Кнопка сохранения (создание или обновление)
+                document.getElementById('saveBtn').addEventListener('click', () => {
                     const title = document.getElementById('titleInput').value.trim();
                     const desc = document.getElementById('descInput').value.trim();
                     const max = parseInt(document.getElementById('maxScoreInput').value);
                     const ans = document.getElementById('answerInput').value.trim();
-                    if (!title || !desc || !max || !ans) { alert('Заполните все поля'); return; }
-                    const newAss = {
-                        id: Date.now(),
-                        title,
-                        description: desc,
-                        maxScore: max,
-                        answer: ans
-                    };
-                    const all = JSON.parse(localStorage.getItem('assignments'));
-                    all.push(newAss);
-                    localStorage.setItem('assignments', JSON.stringify(all));
+                    if (!title || !desc || !max || !ans) {
+                        alert('Заполните все поля');
+                        return;
+                    }
+
+                    let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+                    if (editingId) {
+                        // Обновление существующего
+                        const index = assignments.findIndex(a => a.id == editingId);
+                        if (index !== -1) {
+                            assignments[index] = {
+                                ...assignments[index],
+                                title,
+                                description: desc,
+                                maxScore: max,
+                                answer: ans
+                            };
+                            localStorage.setItem('assignments', JSON.stringify(assignments));
+                            alert('Задание обновлено');
+                        }
+                        editingId = null;
+                    } else {
+                        // Создание нового
+                        const newAss = {
+                            id: Date.now(),
+                            title,
+                            description: desc,
+                            maxScore: max,
+                            answer: ans
+                        };
+                        assignments.push(newAss);
+                        localStorage.setItem('assignments', JSON.stringify(assignments));
+                        alert('Задание создано');
+                    }
                     renderTeacherView();
+                });
+
+                // Кнопка отмены редактирования
+                if (editingId) {
+                    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                        editingId = null;
+                        renderTeacherView();
+                    });
+                }
+            }
+
+            // Простая защита от XSS в отображении
+            function escapeHtml(unsafe) {
+                return unsafe.replace(/[&<>"]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
                 });
             }
 
-            // УЧЕНИЧЕСКАЯ ВЕРСИЯ (с просмотром проверенных работ)
+            // ---------- УЧЕНИЧЕСКАЯ ВЕРСИЯ (без изменений) ----------
             function renderStudentView() {
                 const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
                 const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
@@ -298,8 +416,8 @@
                     assignListDiv.innerHTML = assignments.map(a => `
                         <div class="assignment-item">
                             <div class="assignment-info">
-                                <h3>${a.title}</h3>
-                                <p>${a.description.substring(0,100)}…</p>
+                                <h3>${escapeHtml(a.title)}</h3>
+                                <p>${escapeHtml(a.description.substring(0,100))}…</p>
                                 <small>Макс. балл: ${a.maxScore}</small>
                             </div>
                             <button class="btn-small" data-id="${a.id}">✍️ Выполнить</button>
@@ -329,10 +447,10 @@
                         return `
                             <div class="result-card">
                                 <div class="result-header">
-                                    <span class="result-title">${ass.title}</span>
+                                    <span class="result-title">${escapeHtml(ass.title)}</span>
                                     <span class="result-score">${sub.score} / ${ass.maxScore} баллов</span>
                                 </div>
-                                ${sub.teacherComment ? `<div class="result-comment">💬 Комментарий учителя: ${sub.teacherComment}</div>` : ''}
+                                ${sub.teacherComment ? `<div class="result-comment">💬 Комментарий учителя: ${escapeHtml(sub.teacherComment)}</div>` : ''}
                                 <div><strong>Ваш ответ:</strong></div>
                                 <div class="student-answer-result">${answerHtml}</div>
                                 ${imagesHtml ? `<div><strong>Прикреплённые фото:</strong> ${imagesHtml}</div>` : ''}
