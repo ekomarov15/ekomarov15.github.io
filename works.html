@@ -3,55 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Работы | Занимательный русский</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Работы учеников — Занимательный русский</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #ecf2f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(16px);
+            padding: 16px 5vw;
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(120,150,200,0.3);
+        }
+        .logo { font-size: 1.8rem; font-weight: 500; color: #1e3a5f; margin-right: auto; }
+        .tab {
+            font-size: 1.2rem;
+            padding: 8px 0;
+            text-decoration: none;
+            color: #1e3a5f;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        .tab.active { border-bottom-color: #1e3a5f; }
+        .logout {
+            margin-left: auto;
+            border: 2px solid #b0c6dd;
+            padding: 8px 20px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .content {
+            flex: 1;
+            padding: 5vh 5vw;
+        }
+        .works-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .section {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 32px;
+            border: 1px solid white;
+        }
+        .section h3 { color: #1e3a5f; font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; }
+        .submission-item {
+            background: white;
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #d7e3f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .submission-meta { font-weight: 500; color: #1a3b5e; }
+        .btn-check {
+            background: #dceaff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #1e3a5f;
+            cursor: pointer;
+        }
+        .check-panel {
+            margin-top: 32px;
+            background: #f0f6ff;
+            border-radius: 40px;
+            padding: 32px;
+            border: 2px solid #b9d0ed;
+        }
+        .check-panel.hidden { display: none; }
+        .student-answer { 
+            background: #fefefe; 
+            padding: 24px; 
+            border-radius: 28px; 
+            margin: 20px 0;
+            border: 1px solid #b5ceec;
+        }
+        .student-answer img { max-width: 200px; border-radius: 24px; margin: 8px; border: 2px solid white; }
+        .teacher-answer {
+            background: #e9f0fa; padding: 16px; border-radius: 24px; margin-bottom: 16px;
+        }
+        .highlight-btn {
+            background: #ffd966; border: none; border-radius: 40px; padding: 8px 16px; margin: 4px; cursor: pointer;
+        }
+        .highlight-btn.yellow { background: #fff2b5; }
+        .highlight-btn.green { background: #ccf0cc; }
+        .highlight-btn.blue { background: #b5d9ff; }
+        .comment-box {
+            width: 100%; padding: 16px; border-radius: 30px; border: 2px solid #b0c6dd; margin: 16px 0;
+        }
+        .score-input { width: 120px; padding: 12px; border-radius: 30px; border: 2px solid #b0c6dd; }
+        .btn-finish {
+            background: #1e3a5f; color: white; padding: 16px 40px; border: none; border-radius: 40px; font-size: 1.2rem; font-weight: 600; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="liquid-container">
-        <div class="tabs">
-            <a href="main.html" class="tab">Главная</a>
-            <a href="homework.html" class="tab">Домашнее задание</a>
-            <a href="works.html" class="tab active">Работы</a>
-        </div>
-        <div class="content">
-            <h2>Работы учеников</h2>
-            <div id="uncheckedSection">
-                <h3>📌 Непроверенные</h3>
-                <ul id="uncheckedList"></ul>
-            </div>
-            <div id="checkedSection">
-                <h3>✅ Проверенные</h3>
-                <ul id="checkedList"></ul>
-            </div>
-        </div>
+    <div class="navbar">
+        <span class="logo">✨ Занимательный русский</span>
+        <a href="home.html" class="tab">Главная</a>
+        <a href="homework.html" class="tab">Домашнее задание</a>
+        <a href="works.html" class="tab active">Работы</a>
+        <button class="logout" id="logoutBtn">Выйти</button>
     </div>
-    <script src="script.js"></script>
+
+    <div class="content" id="worksContent"></div>
+
     <script>
-        checkAuth();
-        if (getRole() !== 'teacher') {
-            alert('Доступ запрещён');
-            window.location.href = 'main.html';
-        }
-        
-        const submissions = getSubmissions();
-        const tasks = getTasks();
-        const uncheckedList = document.getElementById('uncheckedList');
-        const checkedList = document.getElementById('checkedList');
-        
-        submissions.forEach(sub => {
-            const task = tasks.find(t => t.id === sub.taskId);
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="check.html?id=${sub.id}">${task ? task.text.substring(0,50) : 'Задание'}...</a> (${new Date(sub.submittedAt).toLocaleString()})`;
-            if (sub.status === 'submitted') {
-                uncheckedList.appendChild(li);
-            } else {
-                checkedList.appendChild(li);
+        (function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'teacher') {
+                alert('Доступ только учителю');
+                window.location.href = 'home.html';
+                return;
             }
-        });
-        
-        if (uncheckedList.children.length === 0) uncheckedList.innerHTML = '<li>Нет непроверенных работ</li>';
-        if (checkedList.children.length === 0) checkedList.innerHTML = '<li>Нет проверенных работ</li>';
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            });
+
+            const container = document.getElementById('worksContent');
+            let currentCheckId = null; // для хранения id проверяемой работы
+
+            function loadWorks() {
+                const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+                const unchecked = submissions.filter(s => !s.checked);
+                const checked = submissions.filter(s => s.checked);
+
+                container.innerHTML = `
+                    <div class="works-grid">
+                        <div class="section">
+                            <h3>⏳ Непроверенные работы</h3>
+                            <div id="uncheckedList">${renderSubList(unchecked, assignments)}</div>
+                        </div>
+                        <div class="section">
+                            <h3>✅ Проверенные работы</h3>
+                            <div id="checkedList">${renderSubList(checked, assignments, true)}</div>
+                        </div>
+                    </div>
+                    <div id="checkPanel" class="check-panel hidden"></div>
+                `;
+
+                // Навешиваем обработчики на кнопки "Проверить"
+                document.querySelectorAll('.btn-check').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const subId = e.target.dataset.id;
+                        openCheckPanel(subId, assignments, submissions);
+                    });
+                });
+            }
+
+            function renderSubList(list, assignments, checked = false) {
+                if (list.length === 0) return '<p>Нет работ</p>';
+                return list.map(sub => {
+                    const ass = assignments.find(a => a.id == sub.assignmentId) || { title: 'Неизвестное задание' };
+                    return `
+                        <div class="submission-item">
+                            <span class="submission-meta">${ass.title} — ученик: ${sub.student}</span>
+                            <button class="btn-check" data-id="${sub.id}">🔍 Проверить</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function openCheckPanel(subId, assignments, submissions) {
+                currentCheckId = subId;
+                const sub = submissions.find(s => s.id == subId);
+                if (!sub) return;
+                const ass = assignments.find(a => a.id == sub.assignmentId) || { title: '', description: '', answer: '', maxScore: 0 };
+                const panel = document.getElementById('checkPanel');
+                panel.classList.remove('hidden');
+
+                // строим панель проверки
+                panel.innerHTML = `
+                    <h3>Проверка работы: ${ass.title}</h3>
+                    <div class="teacher-answer"><strong>Ответ учителя (справка):</strong><br>${ass.answer}</div>
+                    <div><strong>Текст ученика:</strong></div>
+                    <div id="studentAnswerText" class="student-answer" contenteditable="true">${sub.textAnswer || ''}</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                        <button class="highlight-btn yellow" data-color="#fff2b5">🟡 Выделить жёлтым</button>
+                        <button class="highlight-btn green" data-color="#ccf0cc">🟢 Выделить зелёным</button>
+                        <button class="highlight-btn blue" data-color="#b5d9ff">🔵 Выделить синим</button>
+                        <button class="highlight-btn" style="background:#e0e0e0;" data-color="transparent">❌ Снять выделение</button>
+                    </div>
+                    ${sub.images && sub.images.length ? `
+                        <div><strong>Фото тетради:</strong></div>
+                        <div>${sub.images.map(src => `<img src="${src}" style="max-width:200px; border-radius:24px; margin:8px;">`).join('')}</div>
+                    ` : ''}
+                    <input type="number" id="scoreInput" class="score-input" placeholder="Балл" min="0" max="${ass.maxScore}"> / ${ass.maxScore}
+                    <textarea id="commentInput" class="comment-box" placeholder="Комментарий учителя..."></textarea>
+                    <button class="btn-finish" id="finishCheckBtn">✅ Завершить проверку и выставить оценку</button>
+                `;
+
+                // логика выделения (работает с contenteditable)
+                const answerDiv = document.getElementById('studentAnswerText');
+                document.querySelectorAll('.highlight-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const color = btn.dataset.color;
+                        if (!color) return;
+                        document.execCommand('backColor', false, color);
+                    });
+                });
+
+                document.getElementById('finishCheckBtn').addEventListener('click', () => {
+                    const newText = answerDiv.innerHTML; // сохраняем с тегами highlight
+                    const score = parseInt(document.getElementById('scoreInput').value);
+                    const comment = document.getElementById('commentInput').value.trim();
+                    if (isNaN(score) || score < 0 || score > ass.maxScore) {
+                        alert(`Введите балл от 0 до ${ass.maxScore}`);
+                        return;
+                    }
+                    // обновляем submission
+                    const allSubs = JSON.parse(localStorage.getItem('submissions')) || [];
+                    const index = allSubs.findIndex(s => s.id == subId);
+                    if (index !== -1) {
+                        allSubs[index].textAnswer = newText; // сохраняем выделения
+                        allSubs[index].teacherComment = comment;
+                        allSubs[index].score = score;
+                        allSubs[index].grade = score; // для простоты оценка = балл
+                        allSubs[index].checked = true;
+                        localStorage.setItem('submissions', JSON.stringify(allSubs));
+                    }
+                    alert('Работа проверена, комментарий отправлен ученику');
+                    panel.classList.add('hidden');
+                    loadWorks(); // обновить списки
+                });
+            }
+
+            loadWorks();
+        })();
     </script>
 </body>
 </html>
