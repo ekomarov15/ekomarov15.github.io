@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная | Занимательный русский</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <a href="main.html" class="tab active">Главная</a>
+            <a href="homework.html" class="tab">Домашнее задание</a>
+            <a href="works.html" class="tab" id="worksTab" style="display: none;">Работы</a>
+        </div>
+        <div class="content">
+            <h2>Добро пожаловать, <span id="username"></span>!</h2>
+            <p>Это главная страница сайта «Занимательный русский».</p>
+            <p>Используйте вкладки для навигации.</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        checkAuth();
+        const user = sessionStorage.getItem('user');
+        document.getElementById('username').textContent = user;
+        if (getRole() === 'teacher') {
+            document.getElementById('worksTab').style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
