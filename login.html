@@ -26,7 +26,6 @@
             const password = document.getElementById('password').value;
             const errorEl = document.getElementById('error');
             
-            // Проверка учетных данных
             if ((username === 'tek' && password === 't123') || (username === 'st1' && password === 'st123')) {
                 sessionStorage.setItem('user', username);
                 sessionStorage.setItem('role', username === 'tek' ? 'teacher' : 'student');
