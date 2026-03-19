@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выполнение задания | Занимательный русский</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <a href="main.html" class="tab">Главная</a>
+            <a href="homework.html" class="tab">Домашнее задание</a>
+            <a href="works.html" class="tab" id="worksTab" style="display: none;">Работы</a>
+        </div>
+        <div class="content">
+            <h2>Задание</h2>
+            <div id="taskView"></div>
+            <div id="studentAnswerSection">
+                <h3>Ваш ответ</h3>
+                <div id="answerEditor" contenteditable="true" class="editor"></div>
+                <div>
+                    <label>Прикрепить фото:</label>
+                    <input type="file" id="imageUpload" accept="image/*" multiple>
+                </div>
+                <div id="imagePreview"></div>
+                <button id="submitBtn">Отправить на проверку</button>
+            </div>
+            <div id="resultSection" style="display: none;">
+                <h3>Результат проверки</h3>
+                <p><strong>Комментарий учителя:</strong> <span id="teacherComment"></span></p>
+                <p><strong>Балл:</strong> <span id="score"></span>/<span id="maxScore"></span></p>
+                <div><strong>Работа с пометками:</strong> <div id="correctedAnswer"></div></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        checkAuth();
+        if (getRole() !== 'student') {
+            alert('Доступ только для учеников');
+            window.location.href = 'main.html';
+        }
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('taskId');
+        const viewOnly = urlParams.get('view') === 'true';
+        
+        const tasks = getTasks();
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) {
+            alert('Задание не найдено');
+            window.location.href = 'homework.html';
+        }
+        
+        document.getElementById('taskView').innerHTML = `<p><strong>Задание:</strong> ${task.text}</p>`;
+        
+        const submissions = getSubmissions();
+        let submission = submissions.find(s => s.taskId === taskId && s.studentId === 'st1');
+        
+        if (viewOnly && submission) {
+            document.getElementById('studentAnswerSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('teacherComment').textContent = submission.teacherComment || '';
+            document.getElementById('score').textContent = submission.score || '—';
+            document.getElementById('maxScore').textContent = task.maxScore;
+            if (submission.correctedAnswer) {
+                document.getElementById('correctedAnswer').innerHTML = submission.correctedAnswer;
+            } else {
+                document.getElementById('correctedAnswer').textContent = submission.answerText || '';
+            }
+        } else if (!viewOnly) {
+            if (submission && submission.status !== 'checked') {
+                // Уже отправлено, но не проверено
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').textContent = 'Работа на проверке';
+                if (submission.answerText) {
+                    document.getElementById('answerEditor').innerHTML = submission.answerText;
+                }
+                if (submission.answerImages) {
+                    showImages(submission.answerImages);
+                }
+            }
+            
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                const answerText = document.getElementById('answerEditor').innerHTML;
+                const images = collectImages();
+                const newSubmission = {
+                    id: submission ? submission.id : Date.now().toString(),
+                    taskId: task.id,
+                    studentId: 'st1',
+                    answerText: answerText,
+                    answerImages: images,
+                    status: 'submitted',
+                    submittedAt: new Date().toISOString(),
+                    correctedAnswer: null,
+                    score: null,
+                    teacherComment: null
+                };
+                if (submission) {
+                    updateSubmission(newSubmission);
+                } else {
+                    saveSubmission(newSubmission);
+                }
+                alert('Ответ отправлен на проверку');
+                window.location.href = 'homework.html';
+            });
+            
+            function collectImages() {
+                const preview = document.getElementById('imagePreview');
+                const imgs = preview.querySelectorAll('img');
+                return Array.from(imgs).map(img => img.src);
+            }
+            
+            document.getElementById('imageUpload').addEventListener('change', function(e) {
+                const preview = document.getElementById('imagePreview');
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.style.maxWidth = '200px';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            function showImages(images) {
+                const preview = document.getElementById('imagePreview');
+                images.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.style.maxWidth = '200px';
+                    preview.appendChild(img);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
