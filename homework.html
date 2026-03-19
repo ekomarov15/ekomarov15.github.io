@@ -53,7 +53,7 @@
             padding: 32px;
             border: 1px solid rgba(255,255,255,0.7);
             max-width: 1000px;
-            margin: 0 auto;
+            margin: 0 auto 40px;
         }
         h2 { color: #1e3a5f; margin-bottom: 24px; font-weight: 400; font-size: 2rem; }
         .teacher-form textarea, .teacher-form input {
@@ -66,7 +66,6 @@
             background: white;
             resize: vertical;
         }
-        .teacher-form .ql-editor { min-height: 150px; } /* упрощённо используем textarea */
         .btn {
             background: #1e3a5f;
             color: white;
@@ -103,6 +102,59 @@
             color: #1e3a5f;
             cursor: pointer;
         }
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .result-card {
+            background: white;
+            border-radius: 32px;
+            padding: 28px;
+            border: 1px solid #c9daf2;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .result-title {
+            font-size: 1.5rem;
+            color: #102b44;
+            font-weight: 500;
+        }
+        .result-score {
+            background: #d4e2fc;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+        .result-comment {
+            background: #f0f6ff;
+            border-radius: 24px;
+            padding: 16px;
+            margin: 16px 0;
+            font-style: italic;
+        }
+        .student-answer-result {
+            background: #f9fcff;
+            border: 2px dashed #a0bde0;
+            border-radius: 28px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .student-answer-result img {
+            max-width: 200px;
+            border-radius: 24px;
+            margin: 8px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        hr { border: 1px solid #d4e2f0; margin: 40px 0; }
     </style>
 </head>
 <body>
@@ -120,19 +172,31 @@
 
     <script>
         (function() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (!user) { window.location.href = 'login.html'; return; }
+            // Проверка авторизации и роли
+            let user;
+            try {
+                user = JSON.parse(localStorage.getItem('currentUser'));
+            } catch (e) {
+                user = null;
+            }
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
             const role = user.role;
+            const username = user.username;
 
-            // Навигация: показать вкладку Работы для учителя
-            if (role === 'teacher') document.getElementById('worksTab').style.display = 'inline-block';
+            // Навигация: показать вкладку "Работы" только учителю
+            if (role === 'teacher') {
+                document.getElementById('worksTab').style.display = 'inline-block';
+            }
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             });
 
-            // Инициализация хранилищ
+            // Инициализация хранилищ (если пусты)
             if (!localStorage.getItem('assignments')) {
                 localStorage.setItem('assignments', JSON.stringify([]));
             }
@@ -150,6 +214,7 @@
                 }
             }
 
+            // ---------- УЧИТЕЛЬСКАЯ ВЕРСИЯ (без изменений) ----------
             function renderTeacherView() {
                 container.innerHTML = `
                     <h2>📝 Создать задание</h2>
@@ -160,7 +225,7 @@
                         <textarea id="answerInput" placeholder="Ответ для учителя (виден только при проверке)" rows="3"></textarea>
                         <button class="btn" id="createBtn">➕ Создать задание</button>
                     </div>
-                    <hr style="margin:40px 0; border-color:#c0d4ed;" />
+                    <hr />
                     <h2>📋 Все задания</h2>
                     <div id="allAssignmentsList" class="assignment-list"></div>
                 `;
@@ -197,39 +262,85 @@
                 });
             }
 
+            // ---------- УЧЕНИЧЕСКАЯ ВЕРСИЯ (с просмотром проверенных работ) ----------
             function renderStudentView() {
-                const assignments = JSON.parse(localStorage.getItem('assignments'));
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+
+                // Фильтруем работы текущего ученика
+                const mySubmissions = submissions.filter(s => s.student === username);
+
+                // Разделяем на проверенные и ожидающие (ожидающие не показываем детально, только статус)
+                const checkedSubs = mySubmissions.filter(s => s.checked);
+                const pendingSubs = mySubmissions.filter(s => !s.checked);
+
                 container.innerHTML = `
                     <h2>📚 Доступные задания</h2>
                     <div class="assignment-list" id="studentAssignList"></div>
-                `;
-                const listDiv = document.getElementById('studentAssignList');
-                if (assignments.length === 0) {
-                    listDiv.innerHTML = '<p>Пока нет заданий. Обратитесь к учителю.</p>';
-                    return;
-                }
-                listDiv.innerHTML = assignments.map(a => `
-                    <div class="assignment-item">
-                        <div class="assignment-info">
-                            <h3>${a.title}</h3>
-                            <p>${a.description.substring(0,100)}…</p>
-                            <small>Макс. балл: ${a.maxScore}</small>
-                        </div>
-                        <button class="btn-small" data-id="${a.id}">✍️ Выполнить</button>
-                    </div>
-                `).join('');
 
-                document.querySelectorAll('[data-id]').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.target.dataset.id;
-                        // открываем в новом окне assignment.html?id=...
-                        window.open('assignment.html?id=' + id, '_blank');
+                    <hr />
+
+                    <h2>📋 Мои результаты</h2>
+                    <div id="resultsContainer" class="results-list"></div>
+                `;
+
+                // Список доступных для выполнения заданий
+                const assignListDiv = document.getElementById('studentAssignList');
+                if (assignments.length === 0) {
+                    assignListDiv.innerHTML = '<p>Пока нет заданий. Обратитесь к учителю.</p>';
+                } else {
+                    assignListDiv.innerHTML = assignments.map(a => `
+                        <div class="assignment-item">
+                            <div class="assignment-info">
+                                <h3>${a.title}</h3>
+                                <p>${a.description.substring(0,100)}…</p>
+                                <small>Макс. балл: ${a.maxScore}</small>
+                            </div>
+                            <button class="btn-small" data-id="${a.id}">✍️ Выполнить</button>
+                        </div>
+                    `).join('');
+
+                    document.querySelectorAll('[data-id]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            window.open('assignment.html?id=' + id, '_blank');
+                        });
                     });
-                });
+                }
+
+                // Отображение проверенных работ
+                const resultsDiv = document.getElementById('resultsContainer');
+                if (checkedSubs.length === 0) {
+                    resultsDiv.innerHTML = '<p>У вас пока нет проверенных работ.</p>';
+                } else {
+                    resultsDiv.innerHTML = checkedSubs.map(sub => {
+                        const ass = assignments.find(a => a.id == sub.assignmentId) || { title: 'Неизвестное задание', maxScore: '?' };
+                        // Обрабатываем текст ответа (может содержать HTML-теги выделения)
+                        const answerHtml = sub.textAnswer ? sub.textAnswer.replace(/\n/g, '<br>') : '<em>Нет текстового ответа</em>';
+                        const imagesHtml = sub.images && sub.images.length 
+                            ? sub.images.map(src => `<img src="${src}" alt="Фото тетради">`).join('') 
+                            : '';
+
+                        return `
+                            <div class="result-card">
+                                <div class="result-header">
+                                    <span class="result-title">${ass.title}</span>
+                                    <span class="result-score">${sub.score} / ${ass.maxScore} баллов</span>
+                                </div>
+                                ${sub.teacherComment ? `<div class="result-comment">💬 Комментарий учителя: ${sub.teacherComment}</div>` : ''}
+                                <div><strong>Ваш ответ:</strong></div>
+                                <div class="student-answer-result">${answerHtml}</div>
+                                ${imagesHtml ? `<div><strong>Прикреплённые фото:</strong> ${imagesHtml}</div>` : ''}
+                                <small style="color:#4a6a8a;">Работа проверена</small>
+                            </div>
+                        `;
+                    }).join('');
+                }
             }
 
             render();
         })();
     </script>
 </body>
+</html>
 </html>
