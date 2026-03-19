@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Работы | Занимательный русский</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <a href="main.html" class="tab">Главная</a>
+            <a href="homework.html" class="tab">Домашнее задание</a>
+            <a href="works.html" class="tab active">Работы</a>
+        </div>
+        <div class="content">
+            <h2>Работы учеников</h2>
+            <div id="uncheckedSection">
+                <h3>Непроверенные</h3>
+                <ul id="uncheckedList"></ul>
+            </div>
+            <div id="checkedSection">
+                <h3>Проверенные</h3>
+                <ul id="checkedList"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        checkAuth();
+        if (getRole() !== 'teacher') {
+            alert('Доступ запрещён');
+            window.location.href = 'main.html';
+        }
+        
+        const submissions = getSubmissions();
+        const tasks = getTasks();
+        const uncheckedList = document.getElementById('uncheckedList');
+        const checkedList = document.getElementById('checkedList');
+        
+        submissions.forEach(sub => {
+            const task = tasks.find(t => t.id === sub.taskId);
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="check.html?id=${sub.id}">${task ? task.text.substring(0,50) : 'Задание'}...</a> (${new Date(sub.submittedAt).toLocaleString()})`;
+            if (sub.status === 'submitted') {
+                uncheckedList.appendChild(li);
+            } else {
+                checkedList.appendChild(li);
+            }
+        });
+        
+        if (uncheckedList.children.length === 0) uncheckedList.innerHTML = '<li>Нет непроверенных работ</li>';
+        if (checkedList.children.length === 0) checkedList.innerHTML = '<li>Нет проверенных работ</li>';
+    </script>
+</body>
+</html>
