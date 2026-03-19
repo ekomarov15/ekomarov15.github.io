@@ -66,7 +66,9 @@
             const list = document.getElementById('studentTasksList');
             list.innerHTML = '';
             tasks.forEach(task => {
-                const sub = submissions.find(s => s.taskId === task.id);
+                // Ищем последнюю попытку (по дате)
+                const taskSubs = submissions.filter(s => s.taskId === task.id).sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+                const sub = taskSubs[0];
                 let status = '';
                 let link = '';
                 if (!sub) {
@@ -80,7 +82,7 @@
                     link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть результат</a>`;
                 }
                 const li = document.createElement('li');
-                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> — ${status} ${link}`;
+                li.innerHTML = `<span><strong>${task.text.substring(0,50)}...</strong> — ${status}</span> ${link}`;
                 list.appendChild(li);
             });
         }
@@ -105,4 +107,5 @@
         });
     </script>
 </body>
+</html>
 </html>
