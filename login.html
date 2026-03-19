@@ -3,38 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход | Занимательный русский</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Вход — Занимательный русский</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: linear-gradient(145deg, #f0f4fa 0%, #d9e2ef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 16px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 20, 40, 0.2), 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 40px 32px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #1a2b4c;
+            letter-spacing: -0.02em;
+        }
+        .sub {
+            color: #2c3e6d;
+            margin-bottom: 32px;
+            font-weight: 300;
+            border-left: 4px solid #6c8cbd;
+            padding-left: 16px;
+        }
+        .input-group {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1e3a5f;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+        input {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.7);
+            border: 2px solid rgba(70, 110, 160, 0.2);
+            border-radius: 24px;
+            outline: none;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        input:focus {
+            border-color: #3f6ab3;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(63,106,179,0.1);
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(20,40,70,0.3);
+            margin-top: 16px;
+        }
+        button:hover {
+            background: #15304f;
+            transform: scale(1.02);
+        }
+        .info {
+            margin-top: 28px;
+            font-size: 0.9rem;
+            background: rgba(200,220,250,0.5);
+            padding: 16px;
+            border-radius: 24px;
+            color: #102331;
+        }
+        .info p { margin: 6px 0; }
+        .info code { background: #e2eaf6; padding: 3px 8px; border-radius: 40px; }
+    </style>
 </head>
 <body>
-    <div class="liquid-container">
-        <h1 style="font-size: 40px; margin-bottom: 30px;">📓 Занимательный русский</h1>
+    <div class="login-card">
+        <h1>Занимательный русский</h1>
+        <div class="sub">вход в систему</div>
         <form id="loginForm">
-            <label for="username">Логин</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Пароль</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit" style="width: 100%;">Войти</button>
+            <div class="input-group">
+                <label>Логин</label>
+                <input type="text" id="username" placeholder="tek или st1" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="password" placeholder="••••">
+            </div>
+            <button type="submit">Войти</button>
         </form>
-        <p id="error" class="error hidden" style="color: red; margin-top: 15px;"></p>
-        <p style="margin-top: 20px; font-family: 'Caveat'; font-size: 22px;">учитель: tek / t123<br>ученик: st1 / st123</p>
+        <div class="info">
+            <p><strong>Учитель:</strong> <code>tek</code> / <code>t123</code></p>
+            <p><strong>Ученик:</strong> <code>st1</code> / <code>st123</code></p>
+        </div>
     </div>
-    <script src="script.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('error');
-            
-            if ((username === 'tek' && password === 't123') || (username === 'st1' && password === 'st123')) {
-                sessionStorage.setItem('user', username);
-                sessionStorage.setItem('role', username === 'tek' ? 'teacher' : 'student');
-                window.location.href = 'main.html';
+            const login = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            let role = null;
+            if (login === 'tek' && pass === 't123') role = 'teacher';
+            else if (login === 'st1' && pass === 'st123') role = 'student';
+
+            if (role) {
+                localStorage.setItem('currentUser', JSON.stringify({ username: login, role }));
+                window.location.href = 'home.html';
             } else {
-                errorEl.textContent = 'Неверный логин или пароль';
-                errorEl.classList.remove('hidden');
+                alert('Неверный логин или пароль');
             }
         });
     </script>
