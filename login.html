@@ -129,7 +129,7 @@
             else if (login === 'st1' && pass === 'st123') role = 'student';
 
             if (role) {
-                localStorage.setItem('currentUser', JSON.stringify({ username: login, role }));
+                sessionStorage.setItem('currentUser', JSON.stringify({ username: login, role }));
                 window.location.href = 'home.html';
             } else {
                 alert('Неверный логин или пароль');
@@ -137,4 +137,5 @@
         });
     </script>
 </body>
+</html>
 </html>
