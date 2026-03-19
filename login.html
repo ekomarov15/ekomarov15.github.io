@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход | Занимательный русский</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Занимательный русский</h1>
+    <div class="notebook-page">
+        <h1 style="font-size: 40px; margin-bottom: 30px;">📓 Занимательный русский</h1>
         <form id="loginForm">
             <label for="username">Логин</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Пароль</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Войти</button>
+            <button type="submit" style="width: 100%;">Войти</button>
         </form>
-        <p id="error" class="error hidden"></p>
+        <p id="error" class="error hidden" style="color: red; margin-top: 15px;"></p>
+        <p style="margin-top: 20px; font-family: 'Caveat'; font-size: 22px;">учитель: tek / t123<br>ученик: st1 / st123</p>
     </div>
     <script src="script.js"></script>
     <script>
