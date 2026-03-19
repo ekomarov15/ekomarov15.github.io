@@ -126,7 +126,7 @@
 
     <script>
         (function() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const user = JSON.parse(sessionStorage.getItem('currentUser'));
             if (!user || user.role !== 'teacher') {
                 alert('Доступ только учителю');
                 window.location.href = 'home.html';
@@ -134,12 +134,12 @@
             }
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
-                localStorage.removeItem('currentUser');
+                sessionStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             });
 
             const container = document.getElementById('worksContent');
-            let currentCheckId = null; // для хранения id проверяемой работы
+            let currentCheckId = null;
 
             function loadWorks() {
                 const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
@@ -162,7 +162,6 @@
                     <div id="checkPanel" class="check-panel hidden"></div>
                 `;
 
-                // Навешиваем обработчики на кнопки "Проверить"
                 document.querySelectorAll('.btn-check').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const subId = e.target.dataset.id;
@@ -192,7 +191,6 @@
                 const panel = document.getElementById('checkPanel');
                 panel.classList.remove('hidden');
 
-                // строим панель проверки
                 panel.innerHTML = `
                     <h3>Проверка работы: ${ass.title}</h3>
                     <div class="teacher-answer"><strong>Ответ учителя (справка):</strong><br>${ass.answer}</div>
@@ -213,7 +211,6 @@
                     <button class="btn-finish" id="finishCheckBtn">✅ Завершить проверку и выставить оценку</button>
                 `;
 
-                // логика выделения (работает с contenteditable)
                 const answerDiv = document.getElementById('studentAnswerText');
                 document.querySelectorAll('.highlight-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -224,27 +221,26 @@
                 });
 
                 document.getElementById('finishCheckBtn').addEventListener('click', () => {
-                    const newText = answerDiv.innerHTML; // сохраняем с тегами highlight
+                    const newText = answerDiv.innerHTML;
                     const score = parseInt(document.getElementById('scoreInput').value);
                     const comment = document.getElementById('commentInput').value.trim();
                     if (isNaN(score) || score < 0 || score > ass.maxScore) {
                         alert(`Введите балл от 0 до ${ass.maxScore}`);
                         return;
                     }
-                    // обновляем submission
                     const allSubs = JSON.parse(localStorage.getItem('submissions')) || [];
                     const index = allSubs.findIndex(s => s.id == subId);
                     if (index !== -1) {
-                        allSubs[index].textAnswer = newText; // сохраняем выделения
+                        allSubs[index].textAnswer = newText;
                         allSubs[index].teacherComment = comment;
                         allSubs[index].score = score;
-                        allSubs[index].grade = score; // для простоты оценка = балл
+                        allSubs[index].grade = score;
                         allSubs[index].checked = true;
                         localStorage.setItem('submissions', JSON.stringify(allSubs));
                     }
                     alert('Работа проверена, комментарий отправлен ученику');
                     panel.classList.add('hidden');
-                    loadWorks(); // обновить списки
+                    loadWorks();
                 });
             }
 
@@ -252,4 +248,5 @@
         })();
     </script>
 </body>
+</html>
 </html>
