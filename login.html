@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | Занимательный русский</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Занимательный русский</h1>
+        <form id="loginForm">
+            <label for="username">Логин</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Войти</button>
+        </form>
+        <p id="error" class="error hidden"></p>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error');
+            
+            // Проверка учетных данных
+            if ((username === 'tek' && password === 't123') || (username === 'st1' && password === 'st123')) {
+                sessionStorage.setItem('user', username);
+                sessionStorage.setItem('role', username === 'tek' ? 'teacher' : 'student');
+                window.location.href = 'main.html';
+            } else {
+                errorEl.textContent = 'Неверный логин или пароль';
+                errorEl.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
