@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Домашнее задание | Занимательный русский</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <a href="main.html" class="tab">Главная</a>
+            <a href="homework.html" class="tab active">Домашнее задание</a>
+            <a href="works.html" class="tab" id="worksTab" style="display: none;">Работы</a>
+        </div>
+        <div class="content">
+            <h2>Домашнее задание</h2>
+            <div id="teacherView" style="display: none;">
+                <h3>Создать новое задание</h3>
+                <form id="createTaskForm">
+                    <label for="taskText">Текст задания</label>
+                    <textarea id="taskText" required></textarea>
+                    <label for="maxScore">Максимальный балл</label>
+                    <input type="number" id="maxScore" min="1" value="10" required>
+                    <label for="correctAnswer">Ответ (виден только учителю)</label>
+                    <textarea id="correctAnswer" required></textarea>
+                    <button type="submit">Создать задание</button>
+                </form>
+                <hr>
+                <h3>Все задания</h3>
+                <ul id="allTasksList"></ul>
+            </div>
+            <div id="studentView" style="display: none;">
+                <h3>Текущие задания</h3>
+                <ul id="studentTasksList"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        checkAuth();
+        const role = getRole();
+        if (role === 'teacher') {
+            document.getElementById('teacherView').style.display = 'block';
+            document.getElementById('worksTab').style.display = 'inline-block';
+            loadTeacherTasks();
+        } else {
+            document.getElementById('studentView').style.display = 'block';
+            loadStudentTasks();
+        }
+        
+        function loadTeacherTasks() {
+            const tasks = getTasks();
+            const list = document.getElementById('allTasksList');
+            list.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> (макс. балл: ${task.maxScore}) - создано ${new Date(task.createdAt).toLocaleDateString()}`;
+                list.appendChild(li);
+            });
+        }
+        
+        function loadStudentTasks() {
+            const tasks = getTasks();
+            const submissions = getSubmissions().filter(s => s.studentId === 'st1');
+            const list = document.getElementById('studentTasksList');
+            list.innerHTML = '';
+            tasks.forEach(task => {
+                const sub = submissions.find(s => s.taskId === task.id);
+                let status = '';
+                let link = '';
+                if (!sub) {
+                    status = 'не выполнено';
+                    link = `<a href="do.html?taskId=${task.id}">Выполнить</a>`;
+                } else if (sub.status === 'submitted') {
+                    status = 'на проверке';
+                    link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть</a>`;
+                } else if (sub.status === 'checked') {
+                    status = `проверено (балл: ${sub.score}/${task.maxScore})`;
+                    link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть результат</a>`;
+                }
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> — ${status} ${link}`;
+                list.appendChild(li);
+            });
+        }
+        
+        document.getElementById('createTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const text = document.getElementById('taskText').value;
+            const maxScore = parseInt(document.getElementById('maxScore').value);
+            const correctAnswer = document.getElementById('correctAnswer').value;
+            
+            const newTask = {
+                id: Date.now().toString(),
+                text,
+                maxScore,
+                correctAnswer,
+                createdBy: 'tek',
+                createdAt: new Date().toISOString()
+            };
+            saveTask(newTask);
+            loadTeacherTasks();
+            this.reset();
+        });
+    </script>
+</body>
+</html>
