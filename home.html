@@ -132,13 +132,27 @@
 
     <script>
         (function() {
-            const userData = JSON.parse(sessionStorage.getItem('currentUser'));
-            if (!userData) {
+            // Получаем пользователя сначала из sessionStorage, потом из localStorage (для совместимости)
+            let user;
+            try {
+                user = JSON.parse(sessionStorage.getItem('currentUser'));
+                if (!user) {
+                    user = JSON.parse(localStorage.getItem('currentUser'));
+                    if (user) {
+                        // Переносим в sessionStorage и удаляем из localStorage
+                        sessionStorage.setItem('currentUser', JSON.stringify(user));
+                        localStorage.removeItem('currentUser');
+                    }
+                }
+            } catch (e) {
+                user = null;
+            }
+            if (!user || (user.role !== 'teacher' && user.role !== 'student')) {
                 window.location.href = 'login.html';
                 return;
             }
-            const role = userData.role;
-            const username = userData.username;
+            const role = user.role;
+            const username = user.username;
 
             document.getElementById('greeting').innerText = role === 'teacher' ? 'Здравствуйте, учитель!' : 'Привет, ученик!';
 
@@ -148,9 +162,12 @@
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 sessionStorage.removeItem('currentUser');
+                // также удалим из localStorage на всякий случай
+                localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             });
         })();
     </script>
 </body>
+</html>
 </html>
