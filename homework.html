@@ -175,11 +175,11 @@
             // Проверка авторизации и роли
             let user;
             try {
-                user = JSON.parse(localStorage.getItem('currentUser'));
+                user = JSON.parse(sessionStorage.getItem('currentUser'));
             } catch (e) {
                 user = null;
             }
-            if (!user) {
+            if (!user || (user.role !== 'teacher' && user.role !== 'student')) {
                 window.location.href = 'login.html';
                 return;
             }
@@ -192,7 +192,7 @@
             }
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
-                localStorage.removeItem('currentUser');
+                sessionStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             });
 
@@ -214,7 +214,7 @@
                 }
             }
 
-            // ---------- УЧИТЕЛЬСКАЯ ВЕРСИЯ (без изменений) ----------
+            // УЧИТЕЛЬСКАЯ ВЕРСИЯ
             function renderTeacherView() {
                 container.innerHTML = `
                     <h2>📝 Создать задание</h2>
@@ -258,19 +258,17 @@
                     const all = JSON.parse(localStorage.getItem('assignments'));
                     all.push(newAss);
                     localStorage.setItem('assignments', JSON.stringify(all));
-                    renderTeacherView(); // обновить
+                    renderTeacherView();
                 });
             }
 
-            // ---------- УЧЕНИЧЕСКАЯ ВЕРСИЯ (с просмотром проверенных работ) ----------
+            // УЧЕНИЧЕСКАЯ ВЕРСИЯ (с просмотром проверенных работ)
             function renderStudentView() {
                 const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
                 const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
 
                 // Фильтруем работы текущего ученика
                 const mySubmissions = submissions.filter(s => s.student === username);
-
-                // Разделяем на проверенные и ожидающие (ожидающие не показываем детально, только статус)
                 const checkedSubs = mySubmissions.filter(s => s.checked);
                 const pendingSubs = mySubmissions.filter(s => !s.checked);
 
@@ -284,7 +282,7 @@
                     <div id="resultsContainer" class="results-list"></div>
                 `;
 
-                // Список доступных для выполнения заданий
+                // Список доступных заданий
                 const assignListDiv = document.getElementById('studentAssignList');
                 if (assignments.length === 0) {
                     assignListDiv.innerHTML = '<p>Пока нет заданий. Обратитесь к учителю.</p>';
@@ -315,7 +313,6 @@
                 } else {
                     resultsDiv.innerHTML = checkedSubs.map(sub => {
                         const ass = assignments.find(a => a.id == sub.assignmentId) || { title: 'Неизвестное задание', maxScore: '?' };
-                        // Обрабатываем текст ответа (может содержать HTML-теги выделения)
                         const answerHtml = sub.textAnswer ? sub.textAnswer.replace(/\n/g, '<br>') : '<em>Нет текстового ответа</em>';
                         const imagesHtml = sub.images && sub.images.length 
                             ? sub.images.map(src => `<img src="${src}" alt="Фото тетради">`).join('') 
