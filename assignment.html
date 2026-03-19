@@ -82,7 +82,20 @@
     <div class="container" id="main"></div>
     <script>
         (function() {
-            const user = JSON.parse(sessionStorage.getItem('currentUser'));
+            // Получаем пользователя сначала из sessionStorage, потом из localStorage (для совместимости)
+            let user;
+            try {
+                user = JSON.parse(sessionStorage.getItem('currentUser'));
+                if (!user) {
+                    user = JSON.parse(localStorage.getItem('currentUser'));
+                    if (user) {
+                        sessionStorage.setItem('currentUser', JSON.stringify(user));
+                        localStorage.removeItem('currentUser');
+                    }
+                }
+            } catch (e) {
+                user = null;
+            }
             if (!user || user.role !== 'student') {
                 alert('Доступ только ученикам');
                 window.close();
