@@ -1,186 +1,314 @@
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+/* style.css — тетрадный стиль для всего проекта */
+
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
 }
 
-.container {
-    max-width: 1000px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.tabs {
+body {
+    background-color: #d3d3d3;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 30px 20px;
     display: flex;
-    border-bottom: 2px solid #ddd;
-    margin-bottom: 25px;
-    gap: 5px;
+    justify-content: center;
 }
 
+/* Основной контейнер — тетрадный лист */
+.notebook-page {
+    max-width: 1000px;
+    width: 100%;
+    background-color: #fffdf8;
+    background-image: 
+        repeating-linear-gradient(
+            transparent, 
+            transparent 27px, 
+            #a7d0f0 28px
+        );
+    background-size: 100% 28px;
+    border: 1px solid #b0b0b0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    padding: 40px 50px 30px 60px; /* большой левый отступ для поля */
+    position: relative;
+    border-radius: 2px;
+    line-height: 28px; /* точно под линейку */
+}
+
+/* Красная вертикальная линия (поле слева) */
+.notebook-page::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #f08080;
+    opacity: 0.7;
+}
+
+/* Вкладки навигации (стилизованы под тетрадь) */
+.tabs {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #c0c0c0;
+    padding-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 .tab {
-    padding: 10px 20px;
-    text-decoration: none;
-    color: #333;
-    background: #f1f1f1;
-    border: 1px solid #ccc;
-    border-bottom: none;
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f5f5dc; /* бежевый */
+    border: 1px solid #b0a090;
     border-radius: 8px 8px 0 0;
+    text-decoration: none;
+    color: #3e2e1f;
+    font-size: 16px;
     font-weight: 500;
     transition: 0.2s;
+    border-bottom: 2px solid #b0a090;
 }
-
-.tab:hover {
-    background: #e0e0e0;
-}
-
 .tab.active {
-    background: white;
-    border-bottom: 2px solid white;
+    background-color: #fff8e7;
+    border-bottom-color: #fff8e7;
     font-weight: bold;
-    color: #0077cc;
+    color: #2c3e50;
+}
+.tab:hover {
+    background-color: #ffe4b5;
 }
 
-.content {
-    min-height: 400px;
+/* Заголовки */
+h2, h3 {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 25px 0 15px;
+    font-weight: 400;
+}
+h2 {
+    font-size: 28px;
+    border-left: 10px solid #4682b4;
+    padding-left: 20px;
+    background: linear-gradient(to right, #f0f8ff, transparent);
+}
+h3 {
+    font-size: 24px;
+    color: #2c3e50;
 }
 
-.hidden {
-    display: none;
+/* Блок задания */
+.task-block {
+    background-color: rgba(255, 255, 200, 0.3);
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 8px solid #ffa500;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.7;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.error {
-    color: red;
-    font-weight: bold;
-}
-
-.editor {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    min-height: 200px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #fff;
-    overflow-y: auto;
+/* Текст сочинения (ученика) — как обычный школьный */
+.student-essay {
     font-family: 'Times New Roman', serif;
-    line-height: 1.6;
+    font-size: 18px;
+    text-align: justify;
+    margin: 25px 0;
+}
+.student-essay p {
+    margin: 0 0 20px 0;
+    text-indent: 1.5em;
 }
 
-.color-tools {
-    margin-bottom: 15px;
-}
-
-.color-tools button {
-    margin-right: 8px;
-    padding: 6px 12px;
-    cursor: pointer;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    background: #f9f9f9;
-}
-
-.color-tools button:hover {
-    background: #e0e0e0;
-}
-
-#imagePreview img {
-    margin: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 5px;
-    max-width: 200px;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-li a {
-    text-decoration: none;
-    color: #0066cc;
-    font-weight: 500;
-}
-
-li a:hover {
-    text-decoration: underline;
-}
-
-/* Стили для пометок учителя (как на фото) */
+/* Пометки учителя (жёлтый маркер) */
 .teacher-note {
-    background-color: #fffacd; /* светло-жёлтый */
-    border-bottom: 2px dotted #ff8c00;
-    cursor: help;
+    background-color: #fffacd;
+    border-bottom: 2px dotted #ff4500;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    font-weight: bold;
     position: relative;
+    cursor: help;
+    padding: 0 4px;
 }
 .teacher-note:hover::after {
     content: attr(data-note);
     position: absolute;
     background: #333;
     color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    padding: 4px 12px;
+    border-radius: 6px;
     white-space: nowrap;
-    bottom: 100%;
+    bottom: 130%;
     left: 0;
-    z-index: 10;
+    z-index: 100;
+    box-shadow: 0 2px 8px black;
 }
+
+/* Красное волнистое подчёркивание (орфографическая ошибка) */
+.spelling-error {
+    text-decoration: underline wavy #ff0000 2px;
+    text-underline-offset: 4px;
+}
+
+/* Зачёркивание и исправление */
 .correction {
     background-color: #ffe0e0;
-    text-decoration: line-through 2px red;
+    text-decoration: line-through 2px #c0392b;
 }
 .fixed {
-    background-color: #ccffcc;
+    background-color: #d4edda;
     font-weight: bold;
-}
-.nonsense {
-    background-color: #ffcccc;
-    text-decoration: line-through 2px darkred;
-    cursor: help;
-}
-.teacher-comment-block {
-    background-color: #f0f7ff;
-    padding: 15px;
-    border-left: 4px solid #2196F3;
-    margin: 20px 0;
-    border-radius: 0 8px 8px 0;
-}
-.task-block {
-    background-color: #e8f4fd;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    border: 1px solid #b8d9f5;
-}
-.button {
-    display: inline-block;
-    background: #4CAF50;
-    color: white;
-    padding: 8px 16px;
-    text-decoration: none;
+    padding: 0 6px;
     border-radius: 4px;
+    border: 1px solid #28a745;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+}
+
+/* Заметка на полях (как на фото) */
+.margin-note {
+    position: absolute;
+    left: -50px;
+    width: 45px;
+    color: #c0392b;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    font-weight: bold;
+    transform: rotate(-2deg);
+    text-align: right;
+    background: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Комментарий учителя (от руки) */
+.teacher-comment {
+    background-color: #fcf8e7;
+    padding: 15px 20px 15px 30px;
+    border-left: 12px solid #8b4513;
+    margin: 30px 0 20px;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    line-height: 1.4;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 0 16px 16px 0;
+    position: relative;
+}
+.teacher-comment::before {
+    content: '✎';
+    position: absolute;
+    left: 8px;
+    top: 5px;
+    font-size: 36px;
+    color: #aaa;
+    opacity: 0.3;
+    transform: rotate(-10deg);
+}
+.teacher-comment strong {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+/* Блок с баллом (крупно) */
+.score-block {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2e7d32;
+    background: #e8f5e9;
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 40px;
+    border: 3px solid #2e7d32;
+    margin: 20px 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Кнопка назад в тетрадном стиле */
+.back-link {
+    display: inline-block;
+    background: #5f9ea0;
+    color: white;
+    padding: 12px 30px;
+    text-decoration: none;
+    border-radius: 40px;
+    font-size: 20px;
     border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-top: 30px;
+    transition: 0.2s;
+}
+.back-link:hover {
+    background: #4682b4;
+    transform: scale(1.02);
+}
+
+/* Формы в тетрадном стиле */
+input, textarea, select {
+    background-color: #fffff0;
+    border: 1px solid #c0b0a0;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 15px;
+    font-family: inherit;
+}
+button {
+    background-color: #e0d5c0;
+    border: 1px solid #a09080;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 30px;
     cursor: pointer;
-    font-size: 14px;
+    font-weight: bold;
+    transition: 0.2s;
 }
-.button:hover {
-    background: #45a049;
+button:hover {
+    background-color: #d2b48c;
 }
-.button.retry {
-    background: #ff9800;
+
+/* Списки */
+ul {
+    list-style: none;
+    padding: 0;
 }
-.button.retry:hover {
-    background: #fb8c00;
+li {
+    padding: 10px;
+    border-bottom: 1px dashed #b0a090;
+    font-size: 18px;
+}
+li a {
+    text-decoration: none;
+    color: #0066cc;
+    font-weight: 500;
+}
+li a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптация для встроенного редактора на странице проверки */
+.editor {
+    border: 2px dashed #b0a090;
+    background-color: #fffff0;
+    min-height: 200px;
+    padding: 15px;
+    font-family: 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 28px;
+    margin-bottom: 15px;
+}
+.color-tools button {
+    background-color: #e6e6fa;
+    margin-right: 8px;
+    padding: 6px 12px;
+    font-size: 16px;
+}
+
+/* Скрытые элементы */
+.hidden {
+    display: none;
 }
