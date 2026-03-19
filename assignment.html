@@ -82,7 +82,7 @@
     <div class="container" id="main"></div>
     <script>
         (function() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const user = JSON.parse(sessionStorage.getItem('currentUser'));
             if (!user || user.role !== 'student') {
                 alert('Доступ только ученикам');
                 window.close();
@@ -149,7 +149,7 @@
                         studentName: user.username,
                         textAnswer,
                         images: imagesData,
-                        status: 'submitted', // 'checked' or 'submitted'
+                        status: 'submitted',
                         teacherComment: '',
                         score: null,
                         grade: null,
