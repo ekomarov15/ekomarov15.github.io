@@ -3,107 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Домашнее задание | Занимательный русский</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Домашнее задание — Занимательный русский</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #ecf2f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(16px);
+            padding: 16px 5vw;
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(120,150,200,0.3);
+        }
+        .logo { font-size: 1.8rem; font-weight: 500; color: #1e3a5f; margin-right: auto; }
+        .tab {
+            font-size: 1.2rem;
+            padding: 8px 0;
+            text-decoration: none;
+            color: #1e3a5f;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        .tab.active { border-bottom-color: #1e3a5f; color: #0a1a2c; }
+        .logout {
+            margin-left: auto;
+            border: 2px solid #b0c6dd;
+            padding: 8px 20px;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .content {
+            flex: 1;
+            padding: 5vh 5vw;
+        }
+        .card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.7);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h2 { color: #1e3a5f; margin-bottom: 24px; font-weight: 400; font-size: 2rem; }
+        .teacher-form textarea, .teacher-form input {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(100,140,200,0.3);
+            border-radius: 30px;
+            font-size: 1rem;
+            background: white;
+            resize: vertical;
+        }
+        .teacher-form .ql-editor { min-height: 150px; } /* упрощённо используем textarea */
+        .btn {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .assignment-item {
+            background: white;
+            border-radius: 30px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #d0e0f0;
+        }
+        .assignment-info h3 { margin-bottom: 8px; color: #102b44; }
+        .assignment-info p { color: #2f4b70; }
+        .btn-small {
+            background: #d5e4ff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #1e3a5f;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="liquid-container">
-        <div class="tabs">
-            <a href="main.html" class="tab">Главная</a>
-            <a href="homework.html" class="tab active">Домашнее задание</a>
-            <a href="works.html" class="tab" id="worksTab" style="display: none;">Работы</a>
-        </div>
-        <div class="content">
-            <h2>Домашнее задание</h2>
-            <div id="teacherView" style="display: none;">
-                <h3>✏️ Создать новое задание</h3>
-                <form id="createTaskForm">
-                    <label for="taskText">Текст задания</label>
-                    <textarea id="taskText" required></textarea>
-                    <label for="maxScore">Максимальный балл</label>
-                    <input type="number" id="maxScore" min="1" value="10" required>
-                    <label for="correctAnswer">Ответ (виден только учителю)</label>
-                    <textarea id="correctAnswer" required></textarea>
-                    <button type="submit">Создать задание</button>
-                </form>
-                <hr>
-                <h3>📚 Все задания</h3>
-                <ul id="allTasksList"></ul>
-            </div>
-            <div id="studentView" style="display: none;">
-                <h3>📋 Текущие задания</h3>
-                <ul id="studentTasksList"></ul>
-            </div>
-        </div>
+    <div class="navbar">
+        <span class="logo">✨ Занимательный русский</span>
+        <a href="home.html" class="tab">Главная</a>
+        <a href="homework.html" class="tab active">Домашнее задание</a>
+        <a href="works.html" class="tab" id="worksTab" style="display: none;">Работы</a>
+        <button class="logout" id="logoutBtn">Выйти</button>
     </div>
-    <script src="script.js"></script>
+
+    <div class="content">
+        <div class="card" id="homeworkContainer"></div>
+    </div>
+
     <script>
-        checkAuth();
-        const role = getRole();
-        if (role === 'teacher') {
-            document.getElementById('teacherView').style.display = 'block';
-            document.getElementById('worksTab').style.display = 'inline-block';
-            loadTeacherTasks();
-        } else {
-            document.getElementById('studentView').style.display = 'block';
-            loadStudentTasks();
-        }
-        
-        function loadTeacherTasks() {
-            const tasks = getTasks();
-            const list = document.getElementById('allTasksList');
-            list.innerHTML = '';
-            tasks.forEach(task => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> (макс. балл: ${task.maxScore}) - создано ${new Date(task.createdAt).toLocaleDateString()}`;
-                list.appendChild(li);
+        (function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) { window.location.href = 'login.html'; return; }
+            const role = user.role;
+
+            // Навигация: показать вкладку Работы для учителя
+            if (role === 'teacher') document.getElementById('worksTab').style.display = 'inline-block';
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
             });
-        }
-        
-        function loadStudentTasks() {
-            const tasks = getTasks();
-            const submissions = getSubmissions().filter(s => s.studentId === 'st1');
-            const list = document.getElementById('studentTasksList');
-            list.innerHTML = '';
-            tasks.forEach(task => {
-                const sub = submissions.find(s => s.taskId === task.id);
-                let status = '';
-                let link = '';
-                if (!sub) {
-                    status = 'не выполнено';
-                    link = `<a href="do.html?taskId=${task.id}">Выполнить</a>`;
-                } else if (sub.status === 'submitted') {
-                    status = 'на проверке';
-                    link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть</a>`;
-                } else if (sub.status === 'checked') {
-                    status = `проверено (балл: ${sub.score}/${task.maxScore})`;
-                    link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть результат</a>`;
+
+            // Инициализация хранилищ
+            if (!localStorage.getItem('assignments')) {
+                localStorage.setItem('assignments', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('submissions')) {
+                localStorage.setItem('submissions', JSON.stringify([]));
+            }
+
+            const container = document.getElementById('homeworkContainer');
+
+            function render() {
+                if (role === 'teacher') {
+                    renderTeacherView();
+                } else {
+                    renderStudentView();
                 }
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> — ${status} ${link}`;
-                list.appendChild(li);
-            });
-        }
-        
-        document.getElementById('createTaskForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const text = document.getElementById('taskText').value;
-            const maxScore = parseInt(document.getElementById('maxScore').value);
-            const correctAnswer = document.getElementById('correctAnswer').value;
-            
-            const newTask = {
-                id: Date.now().toString(),
-                text,
-                maxScore,
-                correctAnswer,
-                createdBy: 'tek',
-                createdAt: new Date().toISOString()
-            };
-            saveTask(newTask);
-            loadTeacherTasks();
-            this.reset();
-        });
+            }
+
+            function renderTeacherView() {
+                container.innerHTML = `
+                    <h2>📝 Создать задание</h2>
+                    <div class="teacher-form">
+                        <input type="text" id="titleInput" placeholder="Название задания" />
+                        <textarea id="descInput" placeholder="Текст задания (можно использовать форматирование)" rows="5"></textarea>
+                        <input type="number" id="maxScoreInput" placeholder="Максимальный балл" />
+                        <textarea id="answerInput" placeholder="Ответ для учителя (виден только при проверке)" rows="3"></textarea>
+                        <button class="btn" id="createBtn">➕ Создать задание</button>
+                    </div>
+                    <hr style="margin:40px 0; border-color:#c0d4ed;" />
+                    <h2>📋 Все задания</h2>
+                    <div id="allAssignmentsList" class="assignment-list"></div>
+                `;
+
+                const assignments = JSON.parse(localStorage.getItem('assignments'));
+                const listDiv = document.getElementById('allAssignmentsList');
+                listDiv.innerHTML = assignments.map(a => `
+                    <div class="assignment-item">
+                        <div class="assignment-info">
+                            <h3>${a.title}</h3>
+                            <p>${a.description.substring(0,80)}…</p>
+                            <small>Макс. балл: ${a.maxScore}</small>
+                        </div>
+                    </div>
+                `).join('') || '<p>Пока нет заданий</p>';
+
+                document.getElementById('createBtn').addEventListener('click', () => {
+                    const title = document.getElementById('titleInput').value.trim();
+                    const desc = document.getElementById('descInput').value.trim();
+                    const max = parseInt(document.getElementById('maxScoreInput').value);
+                    const ans = document.getElementById('answerInput').value.trim();
+                    if (!title || !desc || !max || !ans) { alert('Заполните все поля'); return; }
+                    const newAss = {
+                        id: Date.now(),
+                        title,
+                        description: desc,
+                        maxScore: max,
+                        answer: ans
+                    };
+                    const all = JSON.parse(localStorage.getItem('assignments'));
+                    all.push(newAss);
+                    localStorage.setItem('assignments', JSON.stringify(all));
+                    renderTeacherView(); // обновить
+                });
+            }
+
+            function renderStudentView() {
+                const assignments = JSON.parse(localStorage.getItem('assignments'));
+                container.innerHTML = `
+                    <h2>📚 Доступные задания</h2>
+                    <div class="assignment-list" id="studentAssignList"></div>
+                `;
+                const listDiv = document.getElementById('studentAssignList');
+                if (assignments.length === 0) {
+                    listDiv.innerHTML = '<p>Пока нет заданий. Обратитесь к учителю.</p>';
+                    return;
+                }
+                listDiv.innerHTML = assignments.map(a => `
+                    <div class="assignment-item">
+                        <div class="assignment-info">
+                            <h3>${a.title}</h3>
+                            <p>${a.description.substring(0,100)}…</p>
+                            <small>Макс. балл: ${a.maxScore}</small>
+                        </div>
+                        <button class="btn-small" data-id="${a.id}">✍️ Выполнить</button>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('[data-id]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.dataset.id;
+                        // открываем в новом окне assignment.html?id=...
+                        window.open('assignment.html?id=' + id, '_blank');
+                    });
+                });
+            }
+
+            render();
+        })();
     </script>
 </body>
 </html>
