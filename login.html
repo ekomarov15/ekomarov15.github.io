@@ -129,6 +129,8 @@
             else if (login === 'st1' && pass === 'st123') role = 'student';
 
             if (role) {
+                // Удаляем старые данные из localStorage, чтобы не мешали
+                localStorage.removeItem('currentUser');
                 sessionStorage.setItem('currentUser', JSON.stringify({ username: login, role }));
                 window.location.href = 'home.html';
             } else {
