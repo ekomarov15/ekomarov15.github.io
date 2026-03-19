@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Проверка работы | Занимательный русский</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="notebook-page">
         <div class="tabs">
             <a href="main.html" class="tab">Главная</a>
             <a href="homework.html" class="tab">Домашнее задание</a>
@@ -15,7 +16,7 @@
         </div>
         <div class="content">
             <h2>Проверка работы</h2>
-            <div id="taskBlock"></div>
+            <div id="taskBlock" class="task-block"></div>
             <div>
                 <h3>Ответ ученика:</h3>
                 <div id="studentAnswer" contenteditable="true" class="editor"></div>
@@ -29,11 +30,11 @@
             </div>
             <div>
                 <label for="teacherComment">Комментарий учителя:</label>
-                <textarea id="teacherComment" rows="3"></textarea>
+                <textarea id="teacherComment" rows="3" style="width: 100%;"></textarea>
             </div>
             <div>
                 <label for="score">Балл:</label>
-                <input type="number" id="score" min="0">
+                <input type="number" id="score" min="0" style="width: 80px;">
                 <span> / <span id="maxScore"></span></span>
             </div>
             <button id="finishCheck">Завершить проверку</button>
@@ -75,6 +76,7 @@
                 const img = document.createElement('img');
                 img.src = src;
                 img.style.maxWidth = '200px';
+                img.style.margin = '5px';
                 preview.appendChild(img);
             });
         }
