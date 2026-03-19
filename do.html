@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выполнение задания | Занимательный русский</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="notebook-page">
         <div class="tabs">
             <a href="main.html" class="tab">Главная</a>
             <a href="homework.html" class="tab">Домашнее задание</a>
@@ -17,113 +18,83 @@
             <h2>Задание</h2>
             <div id="taskView" class="task-block"></div>
 
-            <!-- Блок для режима просмотра результата (view=true) -->
-            <div id="resultView" style="display: none;">
-                <h3>Ваш ответ с исправлениями учителя</h3>
-                <div id="correctedAnswerBlock" class="editor" style="background-color: #f9f9f9;"></div>
-                
-                <div class="teacher-comment-block">
-                    <h3>Комментарий учителя:</h3>
-                    <p id="teacherCommentDisplay"></p>
-                    <p><strong>Балл:</strong> <span id="scoreDisplay"></span> / <span id="maxScoreDisplay"></span></p>
+            <!-- Блок для ученика (если работа не проверена или новая) -->
+            <div id="studentAnswerSection">
+                <h3>Ваш ответ</h3>
+                <div id="answerEditor" contenteditable="true" class="editor"></div>
+                <div>
+                    <label>Прикрепить фото:</label>
+                    <input type="file" id="imageUpload" accept="image/*" multiple>
                 </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <a href="homework.html" class="button">← К списку заданий</a>
-                    <a href="do.html?taskId=<%= taskId %>" class="button retry" id="retryBtn">Решить заново</a>
-                </div>
+                <div id="imagePreview"></div>
+                <button id="submitBtn">Отправить на проверку</button>
             </div>
 
-            <!-- Блок для выполнения задания (режим редактирования) -->
-            <div id="editView">
-                <div id="studentAnswerSection">
-                    <h3>Ваш ответ</h3>
-                    <div id="answerEditor" contenteditable="true" class="editor"></div>
-                    <div>
-                        <label>Прикрепить фото:</label>
-                        <input type="file" id="imageUpload" accept="image/*" multiple>
-                    </div>
-                    <div id="imagePreview"></div>
-                    <button id="submitBtn" class="button">Отправить на проверку</button>
-                </div>
+            <!-- Блок с результатом проверки (для проверенной работы) -->
+            <div id="resultSection" style="display: none;">
+                <h3>Результат проверки</h3>
+                <div id="correctedAnswerBlock" class="student-essay"></div>
+                <div id="teacherCommentBlock" class="teacher-comment"></div>
+                <div id="scoreBlock" class="score-block"></div>
             </div>
         </div>
     </div>
     <script src="script.js"></script>
     <script>
         checkAuth();
-        const role = getRole();
-        if (role !== 'student') {
+        if (getRole() !== 'student') {
             alert('Доступ только для учеников');
             window.location.href = 'main.html';
         }
-
+        
         const urlParams = new URLSearchParams(window.location.search);
         const taskId = urlParams.get('taskId');
         const viewOnly = urlParams.get('view') === 'true';
-
+        
         const tasks = getTasks();
         const task = tasks.find(t => t.id === taskId);
         if (!task) {
             alert('Задание не найдено');
             window.location.href = 'homework.html';
         }
-
-        // Отображаем полный текст задания
-        document.getElementById('taskView').innerHTML = `
-            <h3>Тема: ${task.text}</h3>
-            <p>${task.fullText || task.text}</p>
-        `;
-
-        const submissions = getSubmissions().filter(s => s.studentId === 'st1' && s.taskId === taskId);
-        // Берём последнюю по дате
-        const lastSubmission = submissions.sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt))[0];
-
-        // Режим просмотра результата (view=true)
-        if (viewOnly && lastSubmission && lastSubmission.status === 'checked') {
-            document.getElementById('editView').style.display = 'none';
-            document.getElementById('resultView').style.display = 'block';
-
-            // Вставляем исправленный ответ с пометками
-            document.getElementById('correctedAnswerBlock').innerHTML = lastSubmission.correctedAnswer || lastSubmission.answerText;
-
-            // Комментарий и балл
-            document.getElementById('teacherCommentDisplay').textContent = lastSubmission.teacherComment || '—';
-            document.getElementById('scoreDisplay').textContent = lastSubmission.score ?? '—';
-            document.getElementById('maxScoreDisplay').textContent = task.maxScore;
-
-            // Настраиваем кнопку "Решить заново"
-            const retryBtn = document.getElementById('retryBtn');
-            retryBtn.href = `do.html?taskId=${taskId}`; // без view, чтобы открыть редактор
-        }
-        else if (!viewOnly) {
-            // Режим редактирования/выполнения
-            document.getElementById('editView').style.display = 'block';
-            document.getElementById('resultView').style.display = 'none';
-
-            // Если есть отправленная, но не проверенная работа — блокируем отправку
-            if (lastSubmission && lastSubmission.status === 'submitted') {
+        
+        document.getElementById('taskView').innerHTML = `<p><strong>Задание:</strong> ${task.text}</p>`;
+        
+        const submissions = getSubmissions();
+        let submission = submissions.find(s => s.taskId === taskId && s.studentId === 'st1');
+        
+        if (viewOnly && submission && submission.status === 'checked') {
+            // Показываем проверенную работу
+            document.getElementById('studentAnswerSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Вставляем исправленный текст (correctedAnswer) — он уже содержит все пометки
+            document.getElementById('correctedAnswerBlock').innerHTML = submission.correctedAnswer || submission.answerText;
+            
+            // Комментарий учителя
+            document.getElementById('teacherCommentBlock').innerHTML = `<strong>Комментарий:</strong> ${submission.teacherComment || ''}`;
+            
+            // Балл
+            document.getElementById('scoreBlock').innerHTML = `Балл: ${submission.score} / ${task.maxScore}`;
+            
+        } else if (!viewOnly) {
+            // Режим выполнения / редактирования
+            if (submission && submission.status !== 'checked') {
                 document.getElementById('submitBtn').disabled = true;
                 document.getElementById('submitBtn').textContent = 'Работа на проверке';
-                if (lastSubmission.answerText) {
-                    document.getElementById('answerEditor').innerHTML = lastSubmission.answerText;
+                if (submission.answerText) {
+                    document.getElementById('answerEditor').innerHTML = submission.answerText;
                 }
-                if (lastSubmission.answerImages) {
-                    showImages(lastSubmission.answerImages);
+                if (submission.answerImages) {
+                    showImages(submission.answerImages);
                 }
-            } else if (lastSubmission && lastSubmission.status === 'checked') {
-                // Если была проверена, можно начать заново — очищаем поле
-                document.getElementById('answerEditor').innerHTML = '';
-                // Можно также предложить загрузить новые фото
             }
-
+            
             document.getElementById('submitBtn').addEventListener('click', function() {
                 const answerText = document.getElementById('answerEditor').innerHTML;
                 const images = collectImages();
-
-                // Создаём новую попытку (всегда новую, чтобы сохранить историю)
                 const newSubmission = {
-                    id: Date.now().toString(),
+                    id: submission ? submission.id : Date.now().toString(),
                     taskId: task.id,
                     studentId: 'st1',
                     answerText: answerText,
@@ -134,17 +105,21 @@
                     score: null,
                     teacherComment: null
                 };
-                saveSubmission(newSubmission);
+                if (submission) {
+                    updateSubmission(newSubmission);
+                } else {
+                    saveSubmission(newSubmission);
+                }
                 alert('Ответ отправлен на проверку');
                 window.location.href = 'homework.html';
             });
-
+            
             function collectImages() {
                 const preview = document.getElementById('imagePreview');
                 const imgs = preview.querySelectorAll('img');
                 return Array.from(imgs).map(img => img.src);
             }
-
+            
             document.getElementById('imageUpload').addEventListener('change', function(e) {
                 const preview = document.getElementById('imagePreview');
                 Array.from(e.target.files).forEach(file => {
@@ -153,30 +128,27 @@
                         const img = document.createElement('img');
                         img.src = ev.target.result;
                         img.style.maxWidth = '200px';
+                        img.style.margin = '5px';
                         preview.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 });
             });
-
+            
             function showImages(images) {
                 const preview = document.getElementById('imagePreview');
                 images.forEach(src => {
                     const img = document.createElement('img');
                     img.src = src;
                     img.style.maxWidth = '200px';
+                    img.style.margin = '5px';
                     preview.appendChild(img);
                 });
             }
         } else {
-            // viewOnly true, но нет проверенной работы
+            // Если viewOnly, но работа не проверена или не найдена
             alert('Работа ещё не проверена');
             window.location.href = 'homework.html';
-        }
-
-        // Показываем вкладку "Работы" для учителя, но здесь ученик, так что скрыто
-        if (role === 'teacher') {
-            document.getElementById('worksTab').style.display = 'inline-block';
         }
     </script>
 </body>
