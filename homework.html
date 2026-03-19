@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Домашнее задание | Занимательный русский</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="notebook-page">
         <div class="tabs">
             <a href="main.html" class="tab">Главная</a>
             <a href="homework.html" class="tab active">Домашнее задание</a>
@@ -16,7 +17,7 @@
         <div class="content">
             <h2>Домашнее задание</h2>
             <div id="teacherView" style="display: none;">
-                <h3>Создать новое задание</h3>
+                <h3>✏️ Создать новое задание</h3>
                 <form id="createTaskForm">
                     <label for="taskText">Текст задания</label>
                     <textarea id="taskText" required></textarea>
@@ -27,11 +28,11 @@
                     <button type="submit">Создать задание</button>
                 </form>
                 <hr>
-                <h3>Все задания</h3>
+                <h3>📚 Все задания</h3>
                 <ul id="allTasksList"></ul>
             </div>
             <div id="studentView" style="display: none;">
-                <h3>Текущие задания</h3>
+                <h3>📋 Текущие задания</h3>
                 <ul id="studentTasksList"></ul>
             </div>
         </div>
@@ -66,9 +67,7 @@
             const list = document.getElementById('studentTasksList');
             list.innerHTML = '';
             tasks.forEach(task => {
-                // Ищем последнюю попытку (по дате)
-                const taskSubs = submissions.filter(s => s.taskId === task.id).sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-                const sub = taskSubs[0];
+                const sub = submissions.find(s => s.taskId === task.id);
                 let status = '';
                 let link = '';
                 if (!sub) {
@@ -82,7 +81,7 @@
                     link = `<a href="do.html?taskId=${task.id}&view=true">Посмотреть результат</a>`;
                 }
                 const li = document.createElement('li');
-                li.innerHTML = `<span><strong>${task.text.substring(0,50)}...</strong> — ${status}</span> ${link}`;
+                li.innerHTML = `<strong>${task.text.substring(0,50)}...</strong> — ${status} ${link}`;
                 list.appendChild(li);
             });
         }
@@ -107,5 +106,4 @@
         });
     </script>
 </body>
-</html>
 </html>
