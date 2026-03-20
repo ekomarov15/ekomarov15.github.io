@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Проверка работы | Экспертная проверка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #f1f5f9;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .review-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+        }
+        h2 {
+            margin-bottom: 0.5rem;
+        }
+        .criteria-box {
+            background: #fef9e3;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            border-left: 5px solid #facc15;
+        }
+        .answer-area {
+            background: #fafcff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin: 1rem 0;
+        }
+        .answer-text {
+            min-height: 200px;
+            outline: none;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem;
+        }
+        .photo-answer {
+            max-width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .color-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin: 1rem 0;
+        }
+        .color-btn {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.85rem;
+            color: #1f2937;
+        }
+        .color-btn:active { transform: scale(0.96);}
+        .comment-section, .score-section {
+            margin: 1.5rem 0;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            border: 1px solid #cbd5e1;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .btn-save {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-finish {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .info-badge {
+            background: #eef2ff;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="works.html" class="back-link">← Вернуться к списку работ</a>
+    <div class="review-card" id="reviewContainer">
+        <div style="text-align: center;">Загрузка работы...</div>
+    </div>
+</div>
+
+<script>
+    // цветовые кнопки согласно ТЗ
+    const MARKERS = [
+        { name: "Орфография", color: "#D2C2FA" },
+        { name: "Пунктуация", color: "#96B2FF" },
+        { name: "Грамматика", color: "#E7D6DE" },
+        { name: "Речь", color: "#FFC69C" },
+        { name: "Тавтология", color: "#E79C9C" },
+        { name: "Недочёты", color: "#FFE2E7" },
+        { name: "Фактологическая точность", color: "#FFEFC5" },
+        { name: "Хорошо", color: "#D6EFD6" }
+    ];
+
+    let currentWork = null;
+    let workId = null;
+
+    function loadWork() {
+        const urlParams = new URLSearchParams(window.location.search);
+        workId = urlParams.get('id');
+        if(!workId) {
+            document.getElementById('reviewContainer').innerHTML = '<div class="review-card">Ошибка: не указана работа</div>';
+            return;
+        }
+        const stored = localStorage.getItem('expert_works');
+        if(!stored) { showError('Нет сохранённых работ'); return; }
+        const works = JSON.parse(stored);
+        currentWork = works.find(w => w.id == workId);
+        if(!currentWork) { showError('Работа не найдена'); return; }
+        renderReviewPage();
+    }
+
+    function showError(msg) {
+        document.getElementById('reviewContainer').innerHTML = `<div class="review-card">${msg}</div>`;
+    }
+
+    function renderReviewPage() {
+        const container = document.getElementById('reviewContainer');
+        const isText = currentWork.answerType === 'text';
+        const answerHtml = currentWork.answerHtml || currentWork.answerContent || '';
+        const criteriaHtml = currentWork.criteria ? `<div class="criteria-box"><strong>📋 Критерии проверки:</strong><br>${escapeHtml(currentWork.criteria)}</div>` : '';
+
+        let answerDisplay = '';
+        if(isText) {
+            answerDisplay = `
+                <div class="answer-area">
+                    <strong>✏️ Ответ ученика (текст):</strong>
+                    <div id="editableAnswer" class="answer-text" contenteditable="true" style="border:1px solid #ddd; padding:1rem; background:#fff;">${answerHtml}</div>
+                    <div class="info-badge" style="margin-top:0.5rem;">💡 Выделите текст и нажмите цветную кнопку, чтобы отметить ошибку/похвалу</div>
+                </div>
+            `;
+        } else {
+            answerDisplay = `
+                <div class="answer-area">
+                    <strong>📸 Ответ ученика (фото):</strong><br>
+                    <img src="${currentWork.answerContent}" class="photo-answer" style="max-width:100%; max-height:400px; object-fit:contain;">
+                    <div class="info-badge">Для фото выделение недоступно, вы можете выставить балл и комментарий.</div>
+                </div>
+            `;
+        }
+
+        const buttonsHtml = MARKERS.map(m => `<button class="color-btn" style="background:${m.color};" data-marker="${m.name}">${m.name}</button>`).join('');
+
+        const savedGrade = currentWork.grade !== null ? currentWork.grade : '';
+        const savedMax = currentWork.maxScore !== null ? currentWork.maxScore : '';
+        const savedComment = currentWork.comment || '';
+
+        container.innerHTML = `
+            <h2>${escapeHtml(currentWork.title)}</h2>
+            ${criteriaHtml}
+            ${answerDisplay}
+            ${isText ? `<div class="color-buttons" id="markerButtons">${buttonsHtml}</div>` : ''}
+            <div class="comment-section">
+                <label>📝 Комментарий преподавателя</label>
+                <textarea id="commentInput" rows="3" placeholder="Напишите общий комментарий...">${escapeHtml(savedComment)}</textarea>
+            </div>
+            <div class="score-section">
+                <label>🎯 Баллы (максимальный балл)</label>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input type="number" id="gradeInput" placeholder="Балл ученика" value="${savedGrade}" step="1" style="width: 120px;">
+                    <span>/</span>
+                    <input type="number" id="maxScoreInput" placeholder="Макс. балл" value="${savedMax}" step="1" style="width: 120px;">
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="saveBtn" class="btn-save">💾 Выставить балл и сохранить (без завершения)</button>
+                <button id="finishBtn" class="btn-finish">✅ Завершить проверку и выставить оценку</button>
+            </div>
+        `;
+
+        if(isText) {
+            attachMarkerEvents();
+        }
+        document.getElementById('saveBtn').addEventListener('click', () => saveReview(false));
+        document.getElementById('finishBtn').addEventListener('click', () => saveReview(true));
+    }
+
+    function attachMarkerEvents() {
+        const editableDiv = document.getElementById('editableAnswer');
+        if(!editableDiv) return;
+        const btns = document.querySelectorAll('.color-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const markerName = btn.getAttribute('data-marker');
+                const color = MARKERS.find(m => m.name === markerName).color;
+                wrapSelectedText(editableDiv, markerName, color);
+            });
+        });
+    }
+
+    function wrapSelectedText(element, markerName, bgColor) {
+        const selection = window.getSelection();
+        if(!selection.rangeCount || selection.isCollapsed) {
+            alert('Сначала выделите фрагмент текста, который нужно отметить');
+            return;
+        }
+        const range = selection.getRangeAt(0);
+        if(!element.contains(range.commonAncestorContainer)) {
+            alert('Выделяйте текст только внутри области ответа');
+            return;
+        }
+        const span = document.createElement('span');
+        span.style.backgroundColor = bgColor;
+        span.style.padding = '0 2px';
+        span.style.borderRadius = '4px';
+        span.setAttribute('data-marker', markerName);
+        span.title = markerName;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+        selection.removeAllRanges();
+        // сохраняем HTML после изменения
+        currentWork.answerHtml = element.innerHTML;
+    }
+
+    function saveReview(finish) {
+        const isText = currentWork.answerType === 'text';
+        if(isText) {
+            const editableDiv = document.getElementById('editableAnswer');
+            if(editableDiv) {
+                currentWork.answerHtml = editableDiv.innerHTML;
+                // синхронизируем plain content для совместимости
+                currentWork.answerContent = editableDiv.innerText;
+            }
+        }
+        const comment = document.getElementById('commentInput')?.value || '';
+        const gradeVal = document.getElementById('gradeInput')?.value;
+        const maxVal = document.getElementById('maxScoreInput')?.value;
+        const grade = gradeVal !== '' ? Number(gradeVal) : null;
+        const maxScore = maxVal !== '' ? Number(maxVal) : null;
+
+        currentWork.comment = comment;
+        currentWork.grade = grade;
+        currentWork.maxScore = maxScore;
+
+        if(finish) {
+            currentWork.isChecked = true;
+            currentWork.checkedAt = new Date().toLocaleString();
+        } else {
+            // сохраняем как черновик, но работа остаётся непроверенной (но данные сохраняются)
+            // по желанию оставляем isChecked = false
+            currentWork.isChecked = false;
+        }
+
+        // обновляем в localStorage
+        const stored = localStorage.getItem('expert_works');
+        let allWorks = stored ? JSON.parse(stored) : [];
+        const index = allWorks.findIndex(w => w.id == workId);
+        if(index !== -1) {
+            allWorks[index] = currentWork;
+            localStorage.setItem('expert_works', JSON.stringify(allWorks));
+        } else {
+            alert('Ошибка сохранения');
+            return;
+        }
+
+        if(finish) {
+            alert('Проверка завершена! Оценка и комментарий сохранены.');
+            window.location.href = 'works.html';
+        } else {
+            alert('Баллы и комментарий сохранены (работа остаётся в непроверенных).');
+            // можно обновить страницу, чтобы показать актуальные данные
+            renderReviewPage(); // перерисовка с новыми значениями
+        }
+    }
+
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    loadWork();
+</script>
+</body>
+</html>
