@@ -63,7 +63,6 @@
             overflow-y: visible;
             resize: vertical;
         }
-        /* фото-редактор */
         .photo-editor {
             display: flex;
             flex-direction: column;
@@ -140,10 +139,6 @@
             width: 100%;
             height: 100%;
             cursor: crosshair;
-        }
-        .photo-answer {
-            max-width: 100%;
-            border-radius: 1rem;
         }
         .color-buttons {
             display: flex;
@@ -229,7 +224,6 @@
 </div>
 
 <script>
-    // цветовые кнопки для текста
     const MARKERS = [
         { name: "Орфография", color: "#D2C2FA" },
         { name: "Пунктуация", color: "#96B2FF" },
@@ -244,7 +238,6 @@
     let currentWork = null;
     let workId = null;
 
-    // переменные для фото-редактора
     let photoEditor = {
         img: null,
         canvas: null,
@@ -252,11 +245,9 @@
         isDrawing: false,
         lastX: 0, lastY: 0,
         currentColor: "#FF0000",
-        currentTool: "brush", // brush или eraser
+        currentTool: "brush",
         scale: 1,
-        originalImgWidth: 0,
-        originalImgHeight: 0,
-        drawingData: []       // массив для хранения аннотаций
+        drawingData: []
     };
 
     function loadWork() {
@@ -294,7 +285,6 @@
                 </div>
             `;
         } else {
-            // фото: редактор с зумом и рисованием
             answerDisplay = `
                 <div class="answer-area">
                     <strong>📸 Ответ ученика (фото):</strong>
@@ -365,7 +355,6 @@
         document.getElementById('finishBtn').addEventListener('click', () => saveReview(true));
     }
 
-    // ---------- Текстовая часть ----------
     function attachMarkerEvents() {
         const editableDiv = document.getElementById('editableAnswer');
         if(!editableDiv) return;
@@ -417,22 +406,17 @@
         alert('Все цветные выделения удалены');
     }
 
-    // ---------- Фото-редактор ----------
     function initPhotoEditor() {
         const img = document.getElementById('photoImage');
         const canvas = document.getElementById('drawCanvas');
         if(!img || !canvas) return;
 
-        // загружаем сохранённые аннотации
         photoEditor.drawingData = currentWork.drawingData || [];
         photoEditor.img = img;
         photoEditor.canvas = canvas;
         photoEditor.ctx = canvas.getContext('2d');
-
-        // установка цвета по умолчанию (первый цвет из MARKERS)
         photoEditor.currentColor = MARKERS[0].color;
 
-        // создаём палитру цветов
         const colorGroup = document.getElementById('colorPickerGroup');
         if(colorGroup) {
             MARKERS.forEach(m => {
@@ -443,7 +427,6 @@
                 swatch.addEventListener('click', () => {
                     photoEditor.currentColor = m.color;
                     if(photoEditor.currentTool === 'eraser') {
-                        // переключаем на кисть при выборе цвета
                         document.getElementById('brushBtn').click();
                     }
                 });
@@ -452,20 +435,15 @@
         }
 
         img.onload = () => {
-            photoEditor.originalImgWidth = img.naturalWidth;
-            photoEditor.originalImgHeight = img.naturalHeight;
             resizeCanvas();
             restoreDrawings();
             setupCanvasEvents();
         };
         if(img.complete) img.onload();
 
-        // кнопки зума
         document.getElementById('zoomInBtn').addEventListener('click', () => zoom(0.2));
         document.getElementById('zoomOutBtn').addEventListener('click', () => zoom(-0.2));
         document.getElementById('resetZoomBtn').addEventListener('click', () => resetZoom());
-
-        // инструменты
         document.getElementById('brushBtn').addEventListener('click', () => setTool('brush'));
         document.getElementById('eraserBtn').addEventListener('click', () => setTool('eraser'));
         document.getElementById('clearDrawingBtn').addEventListener('click', () => clearAllDrawings());
@@ -486,7 +464,6 @@
         function applyZoom() {
             const wrapper = document.getElementById('zoomWrapper');
             wrapper.style.transform = `scale(${photoEditor.scale})`;
-            // обновляем размер canvas
             resizeCanvas();
             restoreDrawings();
         }
@@ -497,7 +474,6 @@
             canvas.height = rect.height;
             canvas.style.width = `${rect.width}px`;
             canvas.style.height = `${rect.height}px`;
-            // перерисовываем
             if(photoEditor.ctx) {
                 photoEditor.ctx.clearRect(0, 0, canvas.width, canvas.height);
                 restoreDrawings();
@@ -508,18 +484,10 @@
             photoEditor.currentTool = tool;
             document.getElementById('brushBtn').classList.toggle('active-tool', tool === 'brush');
             document.getElementById('eraserBtn').classList.toggle('active-tool', tool === 'eraser');
-            if(tool === 'eraser') {
-                // ластик: рисуем белым цветом
-                photoEditor.currentColor = '#FFFFFF';
-            } else {
-                // восстанавливаем текущий цвет из палитры
-                const activeColor = document.querySelector('.color-swatch:active');
-                // не будем менять, оставим последний выбранный
-            }
         }
 
         function setupCanvasEvents() {
-            let isDrawingLocal = false;
+            let isDrawing = false;
             canvas.addEventListener('mousedown', startDraw);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDraw);
@@ -548,7 +516,7 @@
             }
 
             function startDraw(e) {
-                isDrawingLocal = true;
+                isDrawing = true;
                 const { x, y } = getCoords(e);
                 photoEditor.lastX = x;
                 photoEditor.lastY = y;
@@ -556,7 +524,7 @@
             }
 
             function draw(e) {
-                if(!isDrawingLocal) return;
+                if(!isDrawing) return;
                 const { x, y } = getCoords(e);
                 const ctx = photoEditor.ctx;
                 ctx.beginPath();
@@ -567,7 +535,6 @@
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.stroke();
-                // сохраняем точки для восстановления
                 photoEditor.drawingData.push({
                     x1: photoEditor.lastX, y1: photoEditor.lastY,
                     x2: x, y2: y,
@@ -579,7 +546,7 @@
             }
 
             function stopDraw() {
-                isDrawingLocal = false;
+                isDrawing = false;
             }
         }
 
@@ -592,7 +559,6 @@
                 ctx.lineTo(line.x2, line.y2);
                 ctx.strokeStyle = line.color;
                 ctx.lineWidth = line.lineWidth;
-                ctx.lineCap = 'round';
                 ctx.stroke();
             });
         }
@@ -605,7 +571,6 @@
         }
     }
 
-    // сохранение
     function saveReview(finish) {
         const isText = currentWork.answerType === 'text';
         if(isText) {
@@ -615,7 +580,6 @@
                 currentWork.answerContent = editableDiv.innerText;
             }
         } else {
-            // сохраняем аннотации фото
             currentWork.drawingData = photoEditor.drawingData;
         }
 
@@ -652,7 +616,7 @@
             window.location.href = 'works.html';
         } else {
             alert('Баллы и комментарий сохранены (работа остаётся в непроверенных).');
-            renderReviewPage(); // перезагрузка для обновления данных
+            renderReviewPage();
         }
     }
 
