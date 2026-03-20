@@ -215,9 +215,13 @@
                     <div><strong>Текст ученика:</strong></div>
                     <div id="studentAnswerText" class="student-answer" contenteditable="true">${sub.textAnswer || ''}</div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-                        <button class="highlight-btn yellow" data-color="#fff2b5">🟡 Выделить жёлтым</button>
-                        <button class="highlight-btn green" data-color="#ccf0cc">🟢 Выделить зелёным</button>
-                        <button class="highlight-btn blue" data-color="#b5d9ff">🔵 Выделить синим</button>
+                        <button class="highlight-btn.orf" data-color="#fff2b5">Орфография</button>
+                        <button class="highlight-btn.punkt" data-color="#ccf0cc">Пунктуация</button>
+                        <button class="highlight-btn.gr" data-color="#b5d9ff">Грамматика</button>
+                        <button class="highlight-btn.speech" data-color="#b5d9ff">Речь</button>
+                        <button class="highlight-btn.tavt" data-color="#b5d9ff">Тавтология</button>
+                        <button class="highlight-btn.fact" data-color="#b5d9ff">Фактологическая точность</button>
+                        <button class="highlight-btn.super" data-color="#b5d9ff">Хорошо</button>
                         <button class="highlight-btn" style="background:#e0e0e0;" data-color="transparent">❌ Снять выделение</button>
                     </div>
                     ${sub.images && sub.images.length ? `
