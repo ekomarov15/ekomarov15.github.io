@@ -186,10 +186,17 @@
         }
         .modal-card input, .modal-card textarea, .modal-card select {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.8rem;
             margin: 0.5rem 0 1rem;
             border: 1px solid #cbd5e1;
             border-radius: 1rem;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        textarea {
+            resize: vertical;
+            overflow-y: visible;  /* убираем прокрутку */
+            min-height: 80px;
         }
         .toolbar {
             display: flex;
@@ -240,11 +247,11 @@
     <div class="modal-card">
         <h3>➕ Добавить задание / ответ ученика</h3>
         <label>Название / тема задания *</label>
-        <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу">
+        <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу" style="font-size:16px;">
 
-        <label>Критерии (можно вставить таблицу)</label>
+        <label>Критерии (можно вставить текстовую таблицу)</label>
         <div class="toolbar">
-            <button type="button" id="insertTableBtn">📊 Вставить таблицу</button>
+            <button type="button" id="insertTableBtn">📊 Вставить текстовую таблицу</button>
         </div>
         <textarea id="workCriteria" rows="4" placeholder="Грамматика, структура, аргументация..."></textarea>
 
@@ -370,24 +377,32 @@
     const photoPreview = document.getElementById('photoPreview');
     let currentPhotoBase64 = null;
 
-    // Вставка таблицы в поле критериев
+    // Вставка текстовой таблицы в поле критериев (plain text)
     const insertTableBtn = document.getElementById('insertTableBtn');
     const criteriaTextarea = document.getElementById('workCriteria');
     insertTableBtn.addEventListener('click', () => {
         const rows = prompt('Количество строк (включая заголовок):', '3');
         const cols = prompt('Количество столбцов:', '3');
         if(!rows || !cols) return;
-        let tableHtml = '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">';
+        let tableText = '';
+        // Строим таблицу с разделителями
         for(let i = 0; i < parseInt(rows); i++) {
-            tableHtml += '<tr>';
+            let rowCells = [];
             for(let j = 0; j < parseInt(cols); j++) {
-                const tag = (i === 0) ? 'th' : 'td';
-                tableHtml += `<${tag}>${(i===0 ? 'Заголовок' : 'Ячейка')} ${j+1}</${tag}>`;
+                if(i === 0) rowCells.push(`[Заголовок ${j+1}]`);
+                else rowCells.push(`[Ячейка ${j+1}]`);
             }
-            tableHtml += '</tr>';
+            tableText += rowCells.join(' | ') + '\n';
+            if(i === 0) {
+                // разделительная линия
+                let separator = '';
+                for(let k = 0; k < parseInt(cols); k++) {
+                    separator += '--------' + (k === parseInt(cols)-1 ? '' : '|');
+                }
+                tableText += separator + '\n';
+            }
         }
-        tableHtml += '</table><br>';
-        criteriaTextarea.value += tableHtml;
+        criteriaTextarea.value += tableText + '\n';
     });
 
     addBtn.onclick = () => { modal.style.display = 'flex'; resetModal(); };
@@ -431,7 +446,7 @@
         if(answerType === 'text') {
             answerContent = document.getElementById('workTextAnswer').value;
             if(!answerContent) { alert('Введите текст ответа ученика'); return; }
-            answerHtml = answerContent; // изначально чистый текст
+            answerHtml = answerContent;
         } else {
             if(!currentPhotoBase64) { alert('Загрузите фото ответа'); return; }
             answerContent = currentPhotoBase64;
