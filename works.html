@@ -174,7 +174,7 @@
         }
         .modal-card {
             background: white;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
             border-radius: 2rem;
             padding: 1.8rem;
@@ -190,6 +190,19 @@
             margin: 0.5rem 0 1rem;
             border: 1px solid #cbd5e1;
             border-radius: 1rem;
+        }
+        .toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .toolbar button {
+            background: #eef2ff;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
         .radio-group {
             display: flex;
@@ -229,8 +242,11 @@
         <label>Название / тема задания *</label>
         <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу">
 
-        <label>Критерии (необязательно)</label>
-        <textarea id="workCriteria" rows="2" placeholder="Грамматика, структура, аргументация..."></textarea>
+        <label>Критерии (можно вставить таблицу)</label>
+        <div class="toolbar">
+            <button type="button" id="insertTableBtn">📊 Вставить таблицу</button>
+        </div>
+        <textarea id="workCriteria" rows="4" placeholder="Грамматика, структура, аргументация..."></textarea>
 
         <label>Тип ответа ученика</label>
         <div class="radio-group">
@@ -296,7 +312,7 @@
 
     function renderWorkCard(work) {
         const previewContent = work.answerType === 'text' 
-            ? (work.answerHtml ? work.answerHtml.substring(0, 150) : (work.answerContent || '').substring(0,150)) 
+            ? (work.answerHtml ? work.answerHtml.replace(/<[^>]*>/g, '').substring(0, 150) : (work.answerContent || '').substring(0,150)) 
             : '📸 Фото ответа (нажмите проверить для просмотра)';
         const statusClass = work.isChecked ? 'checked' : 'unchecked';
         let gradeHtml = '';
@@ -354,6 +370,26 @@
     const photoPreview = document.getElementById('photoPreview');
     let currentPhotoBase64 = null;
 
+    // Вставка таблицы в поле критериев
+    const insertTableBtn = document.getElementById('insertTableBtn');
+    const criteriaTextarea = document.getElementById('workCriteria');
+    insertTableBtn.addEventListener('click', () => {
+        const rows = prompt('Количество строк (включая заголовок):', '3');
+        const cols = prompt('Количество столбцов:', '3');
+        if(!rows || !cols) return;
+        let tableHtml = '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">';
+        for(let i = 0; i < parseInt(rows); i++) {
+            tableHtml += '<tr>';
+            for(let j = 0; j < parseInt(cols); j++) {
+                const tag = (i === 0) ? 'th' : 'td';
+                tableHtml += `<${tag}>${(i===0 ? 'Заголовок' : 'Ячейка')} ${j+1}</${tag}>`;
+            }
+            tableHtml += '</tr>';
+        }
+        tableHtml += '</table><br>';
+        criteriaTextarea.value += tableHtml;
+    });
+
     addBtn.onclick = () => { modal.style.display = 'flex'; resetModal(); };
     closeModal.onclick = () => { modal.style.display = 'none'; };
     window.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
@@ -399,7 +435,7 @@
         } else {
             if(!currentPhotoBase64) { alert('Загрузите фото ответа'); return; }
             answerContent = currentPhotoBase64;
-            answerHtml = ''; // для фото не используется
+            answerHtml = '';
         }
         const newWork = {
             id: Date.now(),
@@ -407,7 +443,7 @@
             criteria: criteria,
             answerType: answerType,
             answerContent: answerContent,
-            answerHtml: answerHtml,   // для текста храним разметку с выделениями
+            answerHtml: answerHtml,
             isChecked: false,
             grade: null,
             maxScore: null,
