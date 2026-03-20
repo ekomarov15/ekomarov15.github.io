@@ -41,6 +41,7 @@
             border-radius: 1rem;
             margin: 1rem 0;
             border-left: 5px solid #facc15;
+            overflow-x: auto;
         }
         .answer-area {
             background: #fafcff;
@@ -51,12 +52,17 @@
         }
         .answer-text {
             min-height: 200px;
+            height: auto;
             outline: none;
             white-space: pre-wrap;
             line-height: 1.5;
             background: white;
             border-radius: 1rem;
             padding: 0.8rem;
+            font-size: 18px;          /* крупный шрифт */
+            overflow-y: visible;       /* убираем прокрутку */
+            resize: vertical;          /* разрешаем ручное растягивание */
+            transition: height 0.1s;
         }
         .photo-answer {
             max-width: 100%;
@@ -80,6 +86,14 @@
             color: #1f2937;
         }
         .color-btn:active { transform: scale(0.96);}
+        .clear-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
         .comment-section, .score-section {
             margin: 1.5rem 0;
         }
@@ -176,14 +190,14 @@
         const container = document.getElementById('reviewContainer');
         const isText = currentWork.answerType === 'text';
         const answerHtml = currentWork.answerHtml || currentWork.answerContent || '';
-        const criteriaHtml = currentWork.criteria ? `<div class="criteria-box"><strong>📋 Критерии проверки:</strong><br>${escapeHtml(currentWork.criteria)}</div>` : '';
+        const criteriaHtml = currentWork.criteria ? `<div class="criteria-box"><strong>📋 Критерии проверки:</strong><br>${currentWork.criteria}</div>` : '';
 
         let answerDisplay = '';
         if(isText) {
             answerDisplay = `
                 <div class="answer-area">
                     <strong>✏️ Ответ ученика (текст):</strong>
-                    <div id="editableAnswer" class="answer-text" contenteditable="true" style="border:1px solid #ddd; padding:1rem; background:#fff;">${answerHtml}</div>
+                    <div id="editableAnswer" class="answer-text" contenteditable="true">${answerHtml}</div>
                     <div class="info-badge" style="margin-top:0.5rem;">💡 Выделите текст и нажмите цветную кнопку, чтобы отметить ошибку/похвалу</div>
                 </div>
             `;
@@ -198,6 +212,7 @@
         }
 
         const buttonsHtml = MARKERS.map(m => `<button class="color-btn" style="background:${m.color};" data-marker="${m.name}">${m.name}</button>`).join('');
+        const clearButton = `<button class="clear-btn" id="clearMarkersBtn">🧹 Очистить все выделения</button>`;
 
         const savedGrade = currentWork.grade !== null ? currentWork.grade : '';
         const savedMax = currentWork.maxScore !== null ? currentWork.maxScore : '';
@@ -207,7 +222,7 @@
             <h2>${escapeHtml(currentWork.title)}</h2>
             ${criteriaHtml}
             ${answerDisplay}
-            ${isText ? `<div class="color-buttons" id="markerButtons">${buttonsHtml}</div>` : ''}
+            ${isText ? `<div class="color-buttons" id="markerButtons">${buttonsHtml} ${clearButton}</div>` : ''}
             <div class="comment-section">
                 <label>📝 Комментарий преподавателя</label>
                 <textarea id="commentInput" rows="3" placeholder="Напишите общий комментарий...">${escapeHtml(savedComment)}</textarea>
@@ -228,6 +243,8 @@
 
         if(isText) {
             attachMarkerEvents();
+            const clearBtn = document.getElementById('clearMarkersBtn');
+            if(clearBtn) clearBtn.addEventListener('click', clearAllMarkers);
         }
         document.getElementById('saveBtn').addEventListener('click', () => saveReview(false));
         document.getElementById('finishBtn').addEventListener('click', () => saveReview(true));
@@ -270,13 +287,39 @@
         currentWork.answerHtml = element.innerHTML;
     }
 
+    function clearAllMarkers() {
+        const editableDiv = document.getElementById('editableAnswer');
+        if(!editableDiv) return;
+        // Удаляем все span с атрибутом data-marker, оставляя их содержимое
+        const spans = editableDiv.querySelectorAll('span[data-marker]');
+        spans.forEach(span => {
+            const parent = span.parentNode;
+            while(span.firstChild) {
+                parent.insertBefore(span.firstChild, span);
+            }
+            parent.removeChild(span);
+        });
+        // Также удаляем возможные span с inline background без data-marker (на всякий случай)
+        const allSpans = editableDiv.querySelectorAll('span');
+        allSpans.forEach(span => {
+            if(span.style.backgroundColor && !span.hasAttribute('data-marker')) {
+                const parent = span.parentNode;
+                while(span.firstChild) {
+                    parent.insertBefore(span.firstChild, span);
+                }
+                parent.removeChild(span);
+            }
+        });
+        currentWork.answerHtml = editableDiv.innerHTML;
+        alert('Все цветные выделения удалены');
+    }
+
     function saveReview(finish) {
         const isText = currentWork.answerType === 'text';
         if(isText) {
             const editableDiv = document.getElementById('editableAnswer');
             if(editableDiv) {
                 currentWork.answerHtml = editableDiv.innerHTML;
-                // синхронизируем plain content для совместимости
                 currentWork.answerContent = editableDiv.innerText;
             }
         }
@@ -294,12 +337,9 @@
             currentWork.isChecked = true;
             currentWork.checkedAt = new Date().toLocaleString();
         } else {
-            // сохраняем как черновик, но работа остаётся непроверенной (но данные сохраняются)
-            // по желанию оставляем isChecked = false
             currentWork.isChecked = false;
         }
 
-        // обновляем в localStorage
         const stored = localStorage.getItem('expert_works');
         let allWorks = stored ? JSON.parse(stored) : [];
         const index = allWorks.findIndex(w => w.id == workId);
@@ -316,8 +356,7 @@
             window.location.href = 'works.html';
         } else {
             alert('Баллы и комментарий сохранены (работа остаётся в непроверенных).');
-            // можно обновить страницу, чтобы показать актуальные данные
-            renderReviewPage(); // перерисовка с новыми значениями
+            renderReviewPage();
         }
     }
 
