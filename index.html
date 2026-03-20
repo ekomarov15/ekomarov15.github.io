@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Главная | Экспертная проверка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* навигация */
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .nav a.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 6px 14px rgba(59,130,246,0.25);
+        }
+        .nav a:not(.active):hover {
+            background: #eef2ff;
+        }
+
+        /* карточки */
+        .hero {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #0f172a;
+        }
+        .card p {
+            color: #334155;
+        }
+        .badge {
+            display: inline-block;
+            background: #eef2ff;
+            border-radius: 2rem;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1e40af;
+        }
+        hr {
+            margin: 2rem 0;
+            border: none;
+            border-top: 2px dashed #cbd5e1;
+        }
+        footer {
+            text-align: center;
+            color: #475569;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .hero h1 { font-size: 1.6rem; }
+            .nav a { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a href="index.html" class="active">🏠 Главная</a>
+        <a href="works.html">📚 Работы</a>
+        <a href="#" style="pointer-events: none; opacity:0.6;">✍️ Проверка (откроется из работ)</a>
+    </div>
+
+    <div class="hero">
+        <h1>📝 Экспертная проверка творческих работ</h1>
+        <p>Удобный инструмент для преподавателей: цветовое выделение ошибок, комментарии, баллы и мгновенное сохранение. Работы учеников всегда под рукой.</p>
+    </div>
+
+    <div class="features">
+        <div class="card">
+            <div class="badge">✨ 8 типов ошибок</div>
+            <h3>Цветовая маркировка</h3>
+            <p>Орфография, пунктуация, грамматика, речь, тавтология, недочёты, фактология и даже похвала — одним кликом.</p>
+        </div>
+        <div class="card">
+            <div class="badge">📂 Гибкое хранение</div>
+            <h3>Текст или фото</h3>
+            <p>Ученики могут присылать текст или фотографии тетради. Преподаватель проверяет в удобном формате.</p>
+        </div>
+        <div class="card">
+            <div class="badge">🎯 Полный цикл</div>
+            <h3>Выгрузка → проверка → оценка</h3>
+            <p>Добавляйте работы, проверяйте, выставляйте баллы и комментарии. Все проверенные работы сохраняются в истории.</p>
+        </div>
+    </div>
+
+    <hr />
+    <div style="background: #e6f0ff; border-radius: 1.5rem; padding: 1.5rem; text-align: center;">
+        <h3 style="margin-bottom: 0.5rem;">🚀 Как начать?</h3>
+        <p style="margin-bottom: 1rem;">Перейдите во вкладку «Работы» → добавьте новое задание (текст или фото ученика) → нажмите «Проверить» → используйте цветные кнопки, комментарий и завершите проверку.</p>
+        <a href="works.html" style="background: #3b82f6; color: white; padding: 0.6rem 1.8rem; border-radius: 2rem; text-decoration: none; font-weight: 500; display: inline-block;">Перейти к работам →</a>
+    </div>
+    <footer>
+        © Экспертная проверка — интерактивная система для преподавателей
+    </footer>
+</div>
+</body>
+</html>
