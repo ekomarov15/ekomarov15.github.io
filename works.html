@@ -2,273 +2,425 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Работы учеников — Занимательный русский</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Работы | Экспертная проверка</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+        }
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: #ecf2f9;
+            background: #f1f5f9;
+            padding: 2rem 1.5rem;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .nav {
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .navbar {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(16px);
-            padding: 16px 5vw;
-            display: flex;
-            gap: 32px;
-            align-items: center;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(120,150,200,0.3);
-        }
-        .logo { font-size: 1.8rem; font-weight: 500; color: #1e3a5f; margin-right: auto; }
-        .tab {
-            font-size: 1.2rem;
-            padding: 8px 0;
-            text-decoration: none;
-            color: #1e3a5f;
-            border-bottom: 3px solid transparent;
-            font-weight: 500;
-        }
-        .tab.active { border-bottom-color: #1e3a5f; }
-        .logout {
-            margin-left: auto;
-            border: 2px solid #b0c6dd;
-            padding: 8px 20px;
-            border-radius: 40px;
-            background: rgba(255,255,255,0.5);
-            cursor: pointer;
-        }
-        .content {
-            flex: 1;
-            padding: 5vh 5vw;
-        }
-        .works-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-        .section {
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 48px;
-            padding: 32px;
-            border: 1px solid white;
-        }
-        .section h3 { color: #1e3a5f; font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; }
-        .submission-item {
+            gap: 1.5rem;
             background: white;
-            border-radius: 32px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid #d7e3f5;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: #1e293b;
+            transition: 0.2s;
+        }
+        .nav a.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .nav a:not(.active):hover {
+            background: #eef2ff;
+        }
+        .header-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            margin-bottom: 2rem;
+            gap: 1rem;
         }
-        .submission-meta { font-weight: 500; color: #1a3b5e; }
-        .btn-check {
-            background: #dceaff;
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 40px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2rem;
             font-weight: 600;
-            color: #1e3a5f;
             cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
         }
-        .check-panel {
-            margin-top: 32px;
-            background: #f0f6ff;
-            border-radius: 40px;
-            padding: 32px;
-            border: 2px solid #b9d0ed;
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: scale(0.97);
         }
-        .check-panel.hidden { display: none; }
-        .student-answer { 
-            background: #fefefe; 
-            padding: 24px; 
-            border-radius: 28px; 
-            margin: 20px 0;
-            border: 1px solid #b5ceec;
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem 0;
+            border-left: 5px solid #3b82f6;
+            padding-left: 1rem;
         }
-        .student-answer img { max-width: 200px; border-radius: 24px; margin: 8px; border: 2px solid white; }
-        .teacher-answer {
-            background: #e9f0fa; padding: 16px; border-radius: 24px; margin-bottom: 16px;
+        .works-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
         }
-        .highlight-btn {
-            background: #ffd966; border: none; border-radius: 40px; padding: 8px 16px; margin: 4px; cursor: pointer;
+        .work-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
         }
-        .highlight-btn.orf { background: #D2C2FA; }
-        .highlight-btn.punkt { background: #96B2FF; }
-        .highlight-btn.gr { background: #E7D6DE; }
-        .highlight-btn.speech { background: #FFC69C; }
-        .highlight-btn.tavt { background: #E79C9C; }
-        .highlight-btn.super { background: #D6EFD6; }
-        .highlight-btn.fact { background: #FFEFC5; }
-        .comment-box {
-            width: 100%; padding: 16px; border-radius: 30px; border: 2px solid #b0c6dd; margin: 16px 0;
+        .work-card.unchecked {
+            border-left: 6px solid #f97316;
         }
-        .score-input { width: 120px; padding: 12px; border-radius: 30px; border: 2px solid #b0c6dd; }
-        .btn-finish {
-            background: #1e3a5f; color: white; padding: 16px 40px; border: none; border-radius: 40px; font-size: 1.2rem; font-weight: 600; cursor: pointer;
+        .work-card.checked {
+            border-left: 6px solid #22c55e;
+        }
+        .work-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .work-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 0.8rem;
+        }
+        .work-preview {
+            background: #f8fafc;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin: 0.8rem 0;
+            max-height: 120px;
+            overflow: auto;
+            font-size: 0.9rem;
+        }
+        .work-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-check {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-delete {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .grade-badge {
+            background: #e6f7e6;
+            color: #15803d;
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .comment-preview {
+            color: #334155;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 2rem;
+            color: #64748b;
+        }
+        /* модалка */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: white;
+            max-width: 600px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-card h3 {
+            margin-bottom: 1rem;
+        }
+        .modal-card input, .modal-card textarea, .modal-card select {
+            width: 100%;
+            padding: 0.7rem;
+            margin: 0.5rem 0 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 1rem;
+        }
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0 1rem;
+        }
+        .photo-preview {
+            max-width: 100%;
+            margin-top: 0.5rem;
+            border-radius: 1rem;
+        }
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <span class="logo">✨ Занимательный русский</span>
-        <a href="home.html" class="tab">Главная</a>
-        <a href="homework.html" class="tab">Домашнее задание</a>
-        <a href="works.html" class="tab active">Работы</a>
-        <button class="logout" id="logoutBtn">Выйти</button>
+<div class="container">
+    <div class="nav">
+        <a href="index.html">🏠 Главная</a>
+        <a href="works.html" class="active">📚 Работы</a>
+        <a href="#" style="pointer-events: none; opacity:0.6;">✍️ Проверка (откроется из работ)</a>
     </div>
 
-    <div class="content" id="worksContent"></div>
+    <div class="header-actions">
+        <h2>📂 Все работы учеников</h2>
+        <button class="btn-primary" id="addWorkBtn">+ Новая работа</button>
+    </div>
 
-    <script>
-        (function() {
-            // Получаем пользователя сначала из sessionStorage, потом из localStorage (для совместимости)
-            let user;
-            try {
-                user = JSON.parse(sessionStorage.getItem('currentUser'));
-                if (!user) {
-                    user = JSON.parse(localStorage.getItem('currentUser'));
-                    if (user) {
-                        sessionStorage.setItem('currentUser', JSON.stringify(user));
-                        localStorage.removeItem('currentUser');
-                    }
-                }
-            } catch (e) {
-                user = null;
-            }
-            if (!user || user.role !== 'teacher') {
-                alert('Доступ только учителю');
-                window.location.href = 'home.html';
-                return;
-            }
+    <div id="worksContainer"></div>
+</div>
 
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                sessionStorage.removeItem('currentUser');
-                localStorage.removeItem('currentUser');
-                window.location.href = 'login.html';
+<!-- Модалка добавления работы -->
+<div id="workModal" class="modal">
+    <div class="modal-card">
+        <h3>➕ Добавить задание / ответ ученика</h3>
+        <label>Название / тема задания *</label>
+        <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу">
+
+        <label>Критерии (необязательно)</label>
+        <textarea id="workCriteria" rows="2" placeholder="Грамматика, структура, аргументация..."></textarea>
+
+        <label>Тип ответа ученика</label>
+        <div class="radio-group">
+            <label><input type="radio" name="answerType" value="text" checked> Текстовый редактор</label>
+            <label><input type="radio" name="answerType" value="photo"> Фото тетради</label>
+        </div>
+
+        <div id="textAnswerBlock">
+            <label>Текст ответа ученика</label>
+            <textarea id="workTextAnswer" rows="5" placeholder="Введите ответ ученика..."></textarea>
+        </div>
+        <div id="photoAnswerBlock" style="display:none;">
+            <label>Загрузить фото</label>
+            <input type="file" id="workPhoto" accept="image/*">
+            <div id="photoPreview"></div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+            <button class="btn-delete" id="closeModalBtn" style="background:#e2e8f0; color:#1e293b;">Отмена</button>
+            <button class="btn-primary" id="saveWorkBtn">Сохранить работу</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---- Хранилище ----
+    let works = [];
+
+    function loadWorks() {
+        const stored = localStorage.getItem('expert_works');
+        if(stored) works = JSON.parse(stored);
+        else works = [];
+        renderWorks();
+    }
+
+    function saveWorks() {
+        localStorage.setItem('expert_works', JSON.stringify(works));
+        renderWorks();
+    }
+
+    function renderWorks() {
+        const container = document.getElementById('worksContainer');
+        const unchecked = works.filter(w => !w.isChecked);
+        const checked = works.filter(w => w.isChecked);
+        if(works.length === 0) {
+            container.innerHTML = `<div class="empty-state">📭 Пока нет ни одной работы. Нажмите «Новая работа».</div>`;
+            return;
+        }
+        let html = `<div class="section-title">📌 Непроверенные (${unchecked.length})</div><div class="works-grid">`;
+        if(unchecked.length === 0) html += `<div class="empty-state" style="padding:1rem;">✨ Все работы проверены</div>`;
+        unchecked.forEach(w => {
+            html += renderWorkCard(w);
+        });
+        html += `</div><div class="section-title">✅ Проверенные (${checked.length})</div><div class="works-grid">`;
+        if(checked.length === 0) html += `<div class="empty-state" style="padding:1rem;">⏳ Пока нет проверенных</div>`;
+        checked.forEach(w => {
+            html += renderWorkCard(w);
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+        attachCardEvents();
+    }
+
+    function renderWorkCard(work) {
+        const previewContent = work.answerType === 'text' 
+            ? (work.answerHtml ? work.answerHtml.substring(0, 150) : (work.answerContent || '').substring(0,150)) 
+            : '📸 Фото ответа (нажмите проверить для просмотра)';
+        const statusClass = work.isChecked ? 'checked' : 'unchecked';
+        let gradeHtml = '';
+        if(work.isChecked) {
+            gradeHtml = `<div class="grade-badge">⭐ ${work.grade || 0} / ${work.maxScore || 0}</div>`;
+            if(work.comment) gradeHtml += `<div class="comment-preview">💬 ${work.comment.substring(0,80)}${work.comment.length>80?'…':''}</div>`;
+        }
+        return `
+            <div class="work-card ${statusClass}" data-id="${work.id}">
+                <div class="work-title">${escapeHtml(work.title)}</div>
+                <div class="work-meta">
+                    <span>📋 ${work.answerType === 'text' ? 'Текст' : 'Фото'}</span>
+                    <span>🕒 ${work.createdAt || 'недавно'}</span>
+                </div>
+                <div class="work-preview">${escapeHtml(previewContent)}</div>
+                ${gradeHtml}
+                <div class="work-actions">
+                    <button class="btn-check" data-id="${work.id}">🔍 Проверить</button>
+                    ${!work.isChecked ? `<button class="btn-delete" data-id="${work.id}">🗑 Удалить</button>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    function attachCardEvents() {
+        document.querySelectorAll('.btn-check').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                window.location.href = `review.html?id=${id}`;
             });
+        });
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.getAttribute('data-id');
+                if(confirm('Удалить работу без возможности восстановления?')) {
+                    works = works.filter(w => w.id != id);
+                    saveWorks();
+                }
+            });
+        });
+    }
 
-            const container = document.getElementById('worksContent');
-            let currentCheckId = null;
+    // модалка добавления
+    const modal = document.getElementById('workModal');
+    const addBtn = document.getElementById('addWorkBtn');
+    const closeModal = document.getElementById('closeModalBtn');
+    const saveWork = document.getElementById('saveWorkBtn');
+    const radioText = document.querySelector('input[value="text"]');
+    const radioPhoto = document.querySelector('input[value="photo"]');
+    const textBlock = document.getElementById('textAnswerBlock');
+    const photoBlock = document.getElementById('photoAnswerBlock');
+    const photoInput = document.getElementById('workPhoto');
+    const photoPreview = document.getElementById('photoPreview');
+    let currentPhotoBase64 = null;
 
-            function loadWorks() {
-                const submissions = JSON.parse(localStorage.getItem('submissions')) || [];
-                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+    addBtn.onclick = () => { modal.style.display = 'flex'; resetModal(); };
+    closeModal.onclick = () => { modal.style.display = 'none'; };
+    window.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
 
-                const unchecked = submissions.filter(s => !s.checked);
-                const checked = submissions.filter(s => s.checked);
+    function resetModal() {
+        document.getElementById('workTitle').value = '';
+        document.getElementById('workCriteria').value = '';
+        document.getElementById('workTextAnswer').value = '';
+        radioText.checked = true;
+        textBlock.style.display = 'block';
+        photoBlock.style.display = 'none';
+        currentPhotoBase64 = null;
+        photoPreview.innerHTML = '';
+        photoInput.value = '';
+    }
 
-                container.innerHTML = `
-                    <div class="works-grid">
-                        <div class="section">
-                            <h3>⏳ Непроверенные работы</h3>
-                            <div id="uncheckedList">${renderSubList(unchecked, assignments)}</div>
-                        </div>
-                        <div class="section">
-                            <h3>✅ Проверенные работы</h3>
-                            <div id="checkedList">${renderSubList(checked, assignments, true)}</div>
-                        </div>
-                    </div>
-                    <div id="checkPanel" class="check-panel hidden"></div>
-                `;
+    radioText.onchange = () => { textBlock.style.display = 'block'; photoBlock.style.display = 'none'; };
+    radioPhoto.onchange = () => { textBlock.style.display = 'none'; photoBlock.style.display = 'block'; };
 
-                document.querySelectorAll('.btn-check').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const subId = e.target.dataset.id;
-                        openCheckPanel(subId, assignments, submissions);
-                    });
-                });
-            }
+    photoInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if(file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                currentPhotoBase64 = ev.target.result;
+                photoPreview.innerHTML = `<img src="${currentPhotoBase64}" class="photo-preview" style="max-width:100%; max-height:150px;">`;
+            };
+            reader.readAsDataURL(file);
+        } else { currentPhotoBase64 = null; photoPreview.innerHTML = '<span style="color:red;">Не фото</span>'; }
+    };
 
-            function renderSubList(list, assignments, checked = false) {
-                if (list.length === 0) return '<p>Нет работ</p>';
-                return list.map(sub => {
-                    const ass = assignments.find(a => a.id == sub.assignmentId) || { title: 'Неизвестное задание' };
-                    return `
-                        <div class="submission-item">
-                            <span class="submission-meta">${ass.title} — ученик: ${sub.student}</span>
-                            <button class="btn-check" data-id="${sub.id}">🔍 Проверить</button>
-                        </div>
-                    `;
-                }).join('');
-            }
+    saveWork.onclick = () => {
+        const title = document.getElementById('workTitle').value.trim();
+        if(!title) { alert('Введите название работы'); return; }
+        const criteria = document.getElementById('workCriteria').value;
+        const answerType = document.querySelector('input[name="answerType"]:checked').value;
+        let answerContent = '';
+        let answerHtml = '';
+        if(answerType === 'text') {
+            answerContent = document.getElementById('workTextAnswer').value;
+            if(!answerContent) { alert('Введите текст ответа ученика'); return; }
+            answerHtml = answerContent; // изначально чистый текст
+        } else {
+            if(!currentPhotoBase64) { alert('Загрузите фото ответа'); return; }
+            answerContent = currentPhotoBase64;
+            answerHtml = ''; // для фото не используется
+        }
+        const newWork = {
+            id: Date.now(),
+            title: title,
+            criteria: criteria,
+            answerType: answerType,
+            answerContent: answerContent,
+            answerHtml: answerHtml,   // для текста храним разметку с выделениями
+            isChecked: false,
+            grade: null,
+            maxScore: null,
+            comment: '',
+            checkedAt: null,
+            createdAt: new Date().toLocaleString()
+        };
+        works.push(newWork);
+        saveWorks();
+        modal.style.display = 'none';
+    };
 
-            function openCheckPanel(subId, assignments, submissions) {
-                currentCheckId = subId;
-                const sub = submissions.find(s => s.id == subId);
-                if (!sub) return;
-                const ass = assignments.find(a => a.id == sub.assignmentId) || { title: '', description: '', answer: '', maxScore: 0 };
-                const panel = document.getElementById('checkPanel');
-                panel.classList.remove('hidden');
-
-                panel.innerHTML = `
-                    <h3>Проверка работы: ${ass.title}</h3>
-                    <div class="teacher-answer"><strong>Ответ учителя (справка):</strong><br>${ass.answer}</div>
-                    <div><strong>Текст ученика:</strong></div>
-                    <div id="studentAnswerText" class="student-answer" contenteditable="true">${sub.textAnswer || ''}</div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-                        <button class="highlight-btn.orf" data-color="#fff2b5">Орфография</button>
-                        <button class="highlight-btn.punkt" data-color="#ccf0cc">Пунктуация</button>
-                        <button class="highlight-btn.gr" data-color="#b5d9ff">Грамматика</button>
-                        <button class="highlight-btn.speech" data-color="#b5d9ff">Речь</button>
-                        <button class="highlight-btn.tavt" data-color="#b5d9ff">Тавтология</button>
-                        <button class="highlight-btn.fact" data-color="#b5d9ff">Фактологическая точность</button>
-                        <button class="highlight-btn.super" data-color="#b5d9ff">Хорошо</button>
-                        <button class="highlight-btn" style="background:#e0e0e0;" data-color="transparent">❌ Снять выделение</button>
-                    </div>
-                    ${sub.images && sub.images.length ? `
-                        <div><strong>Фото тетради:</strong></div>
-                        <div>${sub.images.map(src => `<img src="${src}" style="max-width:200px; border-radius:24px; margin:8px;">`).join('')}</div>
-                    ` : ''}
-                    <input type="number" id="scoreInput" class="score-input" placeholder="Балл" min="0" max="${ass.maxScore}"> / ${ass.maxScore}
-                    <textarea id="commentInput" class="comment-box" placeholder="Комментарий учителя..."></textarea>
-                    <button class="btn-finish" id="finishCheckBtn">✅ Завершить проверку и выставить оценку</button>
-                `;
-
-                const answerDiv = document.getElementById('studentAnswerText');
-                document.querySelectorAll('.highlight-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const color = btn.dataset.color;
-                        if (!color) return;
-                        document.execCommand('backColor', false, color);
-                    });
-                });
-
-                document.getElementById('finishCheckBtn').addEventListener('click', () => {
-                    const newText = answerDiv.innerHTML;
-                    const score = parseInt(document.getElementById('scoreInput').value);
-                    const comment = document.getElementById('commentInput').value.trim();
-                    if (isNaN(score) || score < 0 || score > ass.maxScore) {
-                        alert(`Введите балл от 0 до ${ass.maxScore}`);
-                        return;
-                    }
-                    const allSubs = JSON.parse(localStorage.getItem('submissions')) || [];
-                    const index = allSubs.findIndex(s => s.id == subId);
-                    if (index !== -1) {
-                        allSubs[index].textAnswer = newText;
-                        allSubs[index].teacherComment = comment;
-                        allSubs[index].score = score;
-                        allSubs[index].grade = score;
-                        allSubs[index].checked = true;
-                        localStorage.setItem('submissions', JSON.stringify(allSubs));
-                    }
-                    alert('Работа проверена, комментарий отправлен ученику');
-                    panel.classList.add('hidden');
-                    loadWorks();
-                });
-            }
-
-            loadWorks();
-        })();
-    </script>
+    loadWorks();
+</script>
 </body>
-</html>
 </html>
