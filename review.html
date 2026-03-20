@@ -42,6 +42,8 @@
             margin: 1rem 0;
             border-left: 5px solid #facc15;
             overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
         }
         .answer-area {
             background: #fafcff;
@@ -59,10 +61,9 @@
             background: white;
             border-radius: 1rem;
             padding: 0.8rem;
-            font-size: 18px;          /* крупный шрифт */
-            overflow-y: visible;       /* убираем прокрутку */
-            resize: vertical;          /* разрешаем ручное растягивание */
-            transition: height 0.1s;
+            font-size: 18px;
+            overflow-y: visible;
+            resize: vertical;
         }
         .photo-answer {
             max-width: 100%;
@@ -107,6 +108,7 @@
             padding: 0.8rem;
             border-radius: 1rem;
             border: 1px solid #cbd5e1;
+            font-size: 16px;
         }
         .action-buttons {
             display: flex;
@@ -152,7 +154,6 @@
 </div>
 
 <script>
-    // цветовые кнопки согласно ТЗ
     const MARKERS = [
         { name: "Орфография", color: "#D2C2FA" },
         { name: "Пунктуация", color: "#96B2FF" },
@@ -190,7 +191,7 @@
         const container = document.getElementById('reviewContainer');
         const isText = currentWork.answerType === 'text';
         const answerHtml = currentWork.answerHtml || currentWork.answerContent || '';
-        const criteriaHtml = currentWork.criteria ? `<div class="criteria-box"><strong>📋 Критерии проверки:</strong><br>${currentWork.criteria}</div>` : '';
+        const criteriaHtml = currentWork.criteria ? `<div class="criteria-box"><strong>📋 Критерии проверки:</strong><br><pre style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(currentWork.criteria)}</pre></div>` : '';
 
         let answerDisplay = '';
         if(isText) {
@@ -283,14 +284,12 @@
         span.appendChild(range.extractContents());
         range.insertNode(span);
         selection.removeAllRanges();
-        // сохраняем HTML после изменения
         currentWork.answerHtml = element.innerHTML;
     }
 
     function clearAllMarkers() {
         const editableDiv = document.getElementById('editableAnswer');
         if(!editableDiv) return;
-        // Удаляем все span с атрибутом data-marker, оставляя их содержимое
         const spans = editableDiv.querySelectorAll('span[data-marker]');
         spans.forEach(span => {
             const parent = span.parentNode;
@@ -298,17 +297,6 @@
                 parent.insertBefore(span.firstChild, span);
             }
             parent.removeChild(span);
-        });
-        // Также удаляем возможные span с inline background без data-marker (на всякий случай)
-        const allSpans = editableDiv.querySelectorAll('span');
-        allSpans.forEach(span => {
-            if(span.style.backgroundColor && !span.hasAttribute('data-marker')) {
-                const parent = span.parentNode;
-                while(span.firstChild) {
-                    parent.insertBefore(span.firstChild, span);
-                }
-                parent.removeChild(span);
-            }
         });
         currentWork.answerHtml = editableDiv.innerHTML;
         alert('Все цветные выделения удалены');
