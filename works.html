@@ -178,51 +178,71 @@
             width: 90%;
             border-radius: 2rem;
             padding: 1.8rem;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow-y: auto;
         }
         .modal-card h3 {
             margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
-        .modal-card input, .modal-card textarea, .modal-card select {
+        .modal-card label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            display: block;
+        }
+        .modal-card input,
+        .modal-card textarea {
             width: 100%;
             padding: 0.8rem;
-            margin: 0.5rem 0 1rem;
+            margin: 0.4rem 0 0.8rem;
             border: 1px solid #cbd5e1;
             border-radius: 1rem;
             font-size: 16px;
             line-height: 1.4;
-        }
-        textarea {
+            font-family: inherit;
             resize: vertical;
-            overflow-y: visible;  /* убираем прокрутку */
+            min-height: 50px;
+        }
+        .modal-card textarea {
             min-height: 80px;
-        }
-        .toolbar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .toolbar button {
-            background: #eef2ff;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 1rem;
-            cursor: pointer;
-            font-size: 0.8rem;
         }
         .radio-group {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             margin: 0.5rem 0 1rem;
+            align-items: center;
+        }
+        .radio-group label {
+            font-weight: normal;
+            margin-top: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
         .photo-preview {
             max-width: 100%;
             margin-top: 0.5rem;
             border-radius: 1rem;
         }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
         @media (max-width: 640px) {
             body { padding: 1rem; }
+            .modal-card { padding: 1.2rem; }
         }
     </style>
 </head>
@@ -247,15 +267,15 @@
     <div class="modal-card">
         <h3>➕ Добавить задание / ответ ученика</h3>
         <label>Название / тема задания *</label>
-        <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу" style="font-size:16px;">
+        <input type="text" id="workTitle" placeholder="например: Сочинение по рассказу">
 
-        <label>Критерии (можно вставить текстовую таблицу)</label>
-        <textarea id="workCriteria" rows="4" placeholder="Грамматика, структура, аргументация..."></textarea>
+        <label>Критерии (необязательно)</label>
+        <textarea id="workCriteria" rows="3" placeholder="Грамматика, структура, аргументация..."></textarea>
 
         <label>Тип ответа ученика</label>
         <div class="radio-group">
-            <label><input type="radio" name="answerType" value="text" checked> Текстовый редактор</label>
-            <label><input type="radio" name="answerType" value="photo"> Фото тетради</label>
+            <label><input type="radio" name="answerType" value="text" checked> 📝 Текстовый редактор</label>
+            <label><input type="radio" name="answerType" value="photo"> 📸 Фото тетради</label>
         </div>
 
         <div id="textAnswerBlock">
@@ -268,15 +288,14 @@
             <div id="photoPreview"></div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
-            <button class="btn-delete" id="closeModalBtn" style="background:#e2e8f0; color:#1e293b;">Отмена</button>
+        <div class="modal-buttons">
+            <button class="btn-secondary" id="closeModalBtn">Отмена</button>
             <button class="btn-primary" id="saveWorkBtn">Сохранить работу</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ---- Хранилище ----
     let works = [];
 
     function loadWorks() {
@@ -361,7 +380,7 @@
         });
     }
 
-    // модалка добавления
+    // модалка
     const modal = document.getElementById('workModal');
     const addBtn = document.getElementById('addWorkBtn');
     const closeModal = document.getElementById('closeModalBtn');
@@ -374,32 +393,13 @@
     const photoPreview = document.getElementById('photoPreview');
     let currentPhotoBase64 = null;
 
-    // Вставка текстовой таблицы в поле критериев (plain text)
-    const insertTableBtn = document.getElementById('insertTableBtn');
-    const criteriaTextarea = document.getElementById('workCriteria');
-    insertTableBtn.addEventListener('click', () => {
-        const rows = prompt('Количество строк (включая заголовок):', '3');
-        const cols = prompt('Количество столбцов:', '3');
-        if(!rows || !cols) return;
-        let tableText = '';
-        // Строим таблицу с разделителями
-        for(let i = 0; i < parseInt(rows); i++) {
-            let rowCells = [];
-            for(let j = 0; j < parseInt(cols); j++) {
-                if(i === 0) rowCells.push(`[Заголовок ${j+1}]`);
-                else rowCells.push(`[Ячейка ${j+1}]`);
-            }
-            tableText += rowCells.join(' | ') + '\n';
-            if(i === 0) {
-                // разделительная линия
-                let separator = '';
-                for(let k = 0; k < parseInt(cols); k++) {
-                    separator += '--------' + (k === parseInt(cols)-1 ? '' : '|');
-                }
-                tableText += separator + '\n';
-            }
-        }
-        criteriaTextarea.value += tableText + '\n';
+    const autoExpand = (el) => {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 400) + 'px';
+    };
+    document.querySelectorAll('textarea').forEach(ta => {
+        ta.addEventListener('input', function() { autoExpand(this); });
+        autoExpand(ta);
     });
 
     addBtn.onclick = () => { modal.style.display = 'flex'; resetModal(); };
@@ -416,6 +416,7 @@
         currentPhotoBase64 = null;
         photoPreview.innerHTML = '';
         photoInput.value = '';
+        document.querySelectorAll('textarea').forEach(ta => autoExpand(ta));
     }
 
     radioText.onchange = () => { textBlock.style.display = 'block'; photoBlock.style.display = 'none'; };
@@ -461,7 +462,8 @@
             maxScore: null,
             comment: '',
             checkedAt: null,
-            createdAt: new Date().toLocaleString()
+            createdAt: new Date().toLocaleString(),
+            drawingData: [] // для фото
         };
         works.push(newWork);
         saveWorks();
