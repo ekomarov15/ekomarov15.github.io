@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Результаты проверки сочинения | Литература</title>
+    <!-- Подключение Font Awesome для иконок (аккуратно, без лишнего веса) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f4f8;
+            font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1e2a3a;
+        }
+
+        /* контейнер */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* карточка результата */
+        .result-card {
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        /* заголовок с мета-информацией */
+        .meta-header {
+            background: #fef9e6;
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #ffe0a3;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #2c3e66;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.9rem;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.75rem;
+        }
+
+        .student-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #4a5b6e;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .student-name i {
+            color: #e6b12e;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1e2f4b, #2c4766);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0.2rem 0 0.25rem 0;
+        }
+
+        .theme-title {
+            background: #f0f4fa;
+            padding: 1rem 2rem;
+            border-left: 6px solid #b8860b;
+            margin: 0;
+            font-weight: 500;
+            font-size: 1.05rem;
+            color: #2c3e50;
+        }
+
+        .theme-title i {
+            margin-right: 8px;
+            color: #b8860b;
+        }
+
+        /* секция сочинения */
+        .essay-section {
+            padding: 1.8rem 2rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #1e3a5f;
+            border-left: 4px solid #e6b12e;
+            padding-left: 16px;
+        }
+
+        .section-title i {
+            color: #d49b2b;
+            font-size: 1.3rem;
+        }
+
+        .essay-text {
+            font-size: 1rem;
+            color: #1f2e3c;
+            background: #fdfdf9;
+            padding: 0.5rem 0;
+        }
+
+        .essay-text p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        .essay-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .quote {
+            font-style: italic;
+            background: #f6f2e3;
+            padding: 0.1rem 0.3rem;
+            border-radius: 8px;
+            color: #8b5a2b;
+            font-weight: 500;
+        }
+
+        /* комментарий куратора */
+        .review-section {
+            background: #fefaf5;
+            padding: 1.8rem 2rem;
+            border-top: 1px solid #ffe3c2;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header i {
+            font-size: 1.8rem;
+            color: #c27e3a;
+        }
+
+        .review-header h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #a55820;
+        }
+
+        .curator-comment {
+            background: #fff7ef;
+            border-radius: 24px;
+            padding: 1.2rem 1.6rem;
+            border: 1px solid #fae1b3;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        .curator-comment p {
+            margin-bottom: 0.9rem;
+            line-height: 1.55;
+            color: #2c3a47;
+        }
+
+        .curator-comment .highlight {
+            background: #ffecb3;
+            padding: 0.1rem 0.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            color: #a14500;
+        }
+
+        .curator-comment .mistake {
+            text-decoration: underline;
+            text-decoration-color: #e28c3d;
+            text-decoration-thickness: 2px;
+            background: #fff0db;
+            padding: 0 0.1rem;
+            border-radius: 6px;
+        }
+
+        .praise {
+            background: #e9f3e6;
+            border-left: 5px solid #2c7a3e;
+            padding: 0.8rem 1.2rem;
+            margin-top: 1rem;
+            border-radius: 18px;
+            font-weight: 500;
+            color: #1f5420;
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e6f4ea;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #2e6b3e;
+            margin-top: 1rem;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #ffe0a3, transparent);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6c7a8e;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 650px) {
+            .essay-section, .review-section, .meta-header, .theme-title {
+                padding-left: 1.2rem;
+                padding-right: 1.2rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        .tooltip {
+            border-bottom: 1px dashed #c97e2a;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="result-card">
+        <!-- Верхняя часть: задание и данные -->
+        <div class="meta-header">
+            <span class="badge"><i class="fas fa-pen-fancy" style="margin-right: 6px;"></i> Итоговое сочинение · Задание № 5</span>
+            <h1>Горе от ума<br><span style="font-size: 1rem; font-weight: normal;">Анализ «фамусовского общества»</span></h1>
+            <div class="student-name">
+                <i class="fas fa-user-graduate"></i> Ученица 11 «А» класса · Иванова Софья
+                <span style="font-size: 0.85rem; background: #eef2f9; padding: 2px 10px; border-radius: 30px;"><i class="far fa-calendar-alt"></i> 21 марта 2026</span>
+            </div>
+        </div>
+
+        <!-- Тема сочинения -->
+        <div class="theme-title">
+            <i class="fas fa-book-open"></i> Тема 5.2: «Фамусовское общество и его представители (по пьесе А.С. Грибоедова "Горе от ума")»
+        </div>
+
+        <!-- Блок с самим сочинением -->
+        <div class="essay-section">
+            <div class="section-title">
+                <i class="fas fa-feather-alt"></i>
+                <span>Сочинение ученицы</span>
+            </div>
+            <div class="essay-text">
+                <p><strong>5.2.</strong> После войны 1812 года в обществе сложилось два политических лагеря: лагерь передовой дворянской молодежи и феодально-крепостной лагерь. Идеологиями-выразителями "века минувшего" и "века нынешнего" являются Павел Афанасьевич Фамусов и Александр Андреевич Чацкий. Все гости в доме Фамусова на стороне хозяина, поэтому "век нынешний" называется "фамусовским обществом". Столкновение двух противоборствующих позиций нашло своё отражение в комедии А.С. Грибоедова "Горе от ума".</p>
+
+                <p>Идеалом Фамусова является Максим Петрович, который заслужил расположение императрицы, падая нарочно к ней в ноги. Этот пример иллюстрирует, что для "фамусовского общества" <span class="tooltip" title="В тексте сочинения: орфографическая ошибка, должно быть 'чины'">чин<span style="text-decoration: underline; text-decoration-color: #e67e22;">ь</span></span> и звания являются высшими нравственными ценностями. Павел Афанасьевич смотрит на службу как на источник личного возвышения в обществе. Он готов льстить, чтобы добиться уважения от людей, которые находятся выше его по службе.</p>
+
+                <p>По мнению Фамусова, книги — источник вольнодумства в обществе, что является главной опасностью для представителей консервативного дворянства. Павел Афанасьевич говорит: <span class="quote">«Уж коли зло пресечь; / Забрать все книги бы да сжечь»</span>. Один из родственников Фамусова, который работает в Учёном комитете, выступает против образования. Также <span class="tooltip" title="Имя персонажа: Скалозуб">Сказоуб</span> говорит насчёт школ, гимназий и университетов: <span class="quote">«"Я вас обращу": всеобщая мода, / Что есть проект насчёт лицеев, школ, гимназий; / Там будут лишь учить по-нашему: раз, два; / А книги сохранят так: для больших оказий»</span>. Эти примеры иллюстрируют негативное отношение феодально-крепостного общества к образованию.</p>
+
+                <p>Отношение Фамусовского общества к иностранному неоднозначно. С одной стороны, Павел Афанасьевич рад видеть в своём доме иностранного гостя, а также представители крепостного дворянства всегда стараются подражать западу. С другой — Фамусов понимает, что европейская культура несёт опасную для их общества идею — стремление к личной свободе.</p>
+
+                <p>Таким образом, представители фамусовского общества <span class="tooltip" title="Грамматическая ошибка: нужно 'стремятся'">стремится</span> получить высокое положение в обществе, несмотря на цели достижения.</p>
+            </div>
+        </div>
+
+        <!-- Комментарий куратора (в точности, как на фото + акценты) -->
+        <div class="review-section">
+            <div class="review-header">
+                <i class="fas fa-chalkboard-user"></i>
+                <h3>Комментарий куратора</h3>
+            </div>
+            <div class="curator-comment">
+                <p><strong>5.2.</strong> После войны 1812 года в обществе сложилось два политических лагеря: лагерь передовой дворянской молодежи и феодально-крепостной лагерь. Идеологиями-выразителями "века минувшего" и "века нынешнего" являются Павел Афанасьевич Фамусов и Александр Андреевич Чацкий. Все гости в доме Фамусова на стороне хозяина, поэтому "век нынешний" называется "фамусовским обществом". Столкновение двух противоборствующих позиций нашло своё отражение в комедии А.С. Грибоедова "Горе от ума".<br>
+                Идеалом Фамусова является Максим Петрович, который заслужил расположение императрицы, падая нарочно к ней в ноги. Этот пример иллюстрирует, что для "фамусовского общества" <span class="highlight">чинь и звания</span> являются высшими нравственными ценностями.<br>
+                Павел Афанасьевич смотрит на службу как на источник личного возвышения в обществе. Он готов льстить, чтобы добиться уважения от людей, которые находятся выше его по службе.<br>
+                По мнению Фамусова, книги — источник вольнодумства в обществе, что является главной опасностью для представителей консервативного дворянства. Павел Афанасьевич говорит: "Уж коли зло пресечь; / Забрать все книги бы да сжечь". Один из родственников Фамусова, который работает в Учёном комитете выступает против образования. Также <span class="highlight">Сказоуб</span> говорит насчёт школ, гимназий и университетов: "«Я вас обращу»: всеобщая мода, / Что есть проект насчёт лицеев, школ, гимназий; / Там будут лишь учить по-нашему: раз, два; / А книги сохранят так: для больших оказий». Эти примеры иллюстрируют негативное отношение феодально-крепостного общества к образованию.<br>
+                <span class="highlight">Отношение (тавтология)</span> Фамусовского общества к иностранному неоднозначно. С одной стороны, Павел Афанасьевич рад видеть в своём доме иностранного гостя, а также представители крепостного дворянства всегда стараются подражать западу. С другой — Фамусов понимает, что европейская культура несёт опасную для их общества идею — стремление к личной свободе.<br>
+                Таким образом, представители фамусовского общества <span class="highlight">стремится (стремится)</span> получить высокое положение в обществе, несмотря на цели достижения.</p>
+                
+                <hr>
+                <p><i class="fas fa-comment-dots" style="margin-right: 8px; color: #c27e3a;"></i> <strong>Разбор и рекомендации:</strong><br>
+                — В тексте встречаются единичные речевые и грамматические недочёты: <span class="mistake">«чинЬ»</span> (верно: «чины»), <span class="mistake">«стремится»</span> (нужно «стремятся»), повтор «отношение» (тавтология).<br>
+                — Имя персонажа: <span class="mistake">Сказоуб</span> → следует писать «Скалозуб».<br>
+                — В целом, соблюдена структура: сформулированы тезисы о ценностях фамусовского общества, о службе как средстве возвышения, об отношении к образованию и иностранному. Приведены убедительные цитаты из текста.</p>
+                
+                <div class="praise">
+                    <i class="fas fa-star-of-life" style="margin-right: 8px;"></i> 
+                    Это очень сильная работа, отличный язык, просто умница! Речевых недочетов — единицы, их доработать, и будет просто идеально.
+                </div>
+                
+                <div class="score-badge">
+                    <i class="fas fa-check-circle"></i> Итоговая оценка: «ЗАЧТЕНО» / 5 баллов 
+                    <i class="fas fa-smile-wink" style="margin-left: 6px;"></i>
+                </div>
+                <p style="font-size: 0.85rem; margin-top: 0.8rem; color:#6b4c2c;"><i class="fas fa-edit"></i> Куратор: Анна Сергеевна Воронцова · 21.03.2026</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <i class="far fa-copy"></i> Соответствие критериям: тезисы раскрыты, использованы примеры из текста, логика изложения соблюдена
+    </footer>
+</div>
+</body>
+</html>
